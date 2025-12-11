@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   extends: [
-    'my-layer',
+    'base-layer',
   ],
   devtools: { enabled: true }
 })

@@ -1,5 +1,5 @@
 {
-  "name": "my-layer",
+  "name": "base-layer",
   "type": "module",
   "version": "0.0.1",
   "main": "./nuxt.config.ts",

@@ -3,7 +3,7 @@ import Aura from '@primeuix/themes/aura'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   $meta: {
-    name: 'my-layer',
+    name: 'base-layer',
   },
   devtools: { enabled: false },
   modules: [
