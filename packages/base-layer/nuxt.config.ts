@@ -1,4 +1,8 @@
 import Aura from '@primeuix/themes/aura'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
+
+const currentDir = dirname(fileURLToPath(import.meta.url))
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -10,7 +14,10 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@primevue/nuxt-module'
   ],
-  css: ['@/assets/tailwind.css', '@/assets/styles.scss'],
+  css: [
+    join(currentDir, './assets/tailwind.css'),
+    join(currentDir, './assets/styles.scss')
+  ],
   primevue: {
       options: {
           theme: {
