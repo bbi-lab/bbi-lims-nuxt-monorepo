@@ -19,6 +19,11 @@ export default defineNuxtConfig({
                   darkModeSelector: '.app-dark'
               }
           }
+      },
+  },
+  postcss: {
+    plugins: {
+        '@tailwindcss/postcss': {},
       }
   },
 })
