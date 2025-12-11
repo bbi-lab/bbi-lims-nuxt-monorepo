@@ -14,6 +14,12 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@primevue/nuxt-module'
   ],
+  components: [
+    {
+      path: join(currentDir, './components'),
+      pathPrefix: false,
+    },
+  ],
   css: [
     join(currentDir, './assets/tailwind.css'),
     join(currentDir, './assets/styles.scss')
