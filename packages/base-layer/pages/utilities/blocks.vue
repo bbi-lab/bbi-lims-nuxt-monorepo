@@ -1,7 +1,4 @@
 <script setup>
-import BlockViewer from '@/components/BlockViewer.vue';
-import { ref } from 'vue';
-
 const password = ref('');
 const checked1 = ref(true);
 
