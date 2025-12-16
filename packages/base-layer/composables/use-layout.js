@@ -3,7 +3,7 @@ const layoutConfig = reactive({
     primary: 'emerald',
     surface: null,
     darkTheme: false,
-    menuMode: 'static'
+    menuMode: 'overlay'
 });
 
 const layoutState = reactive({
@@ -48,6 +48,12 @@ export function useLayout() {
         }
     };
 
+    const resetMenu = () => {
+        layoutState.overlayMenuActive = false;
+        layoutState.staticMenuMobileActive = false;
+        layoutState.menuHoverActive = false;
+    };
+
     const isSidebarActive = computed(() => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive);
 
     const isDarkTheme = computed(() => layoutConfig.darkTheme);
@@ -64,6 +70,7 @@ export function useLayout() {
         isDarkTheme,
         getPrimary,
         getSurface,
+        resetMenu,
         setActiveMenuItem,
         toggleDarkMode
     };

@@ -5,6 +5,7 @@ const outsideClickListener = ref(null);
 
 watch(isSidebarActive, (newVal) => {
     if (newVal) {
+        console.log('bindOutsideClickListener');
         bindOutsideClickListener();
     } else {
         unbindOutsideClickListener();

@@ -27,7 +27,7 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                     </g>
                 </svg>
 
-                <span>DEMO</span>
+                <span>Demo</span>
             </router-link>
         </div>
 
@@ -36,6 +36,16 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
                 </button>
+                <div class="relative">
+                    <button
+                        v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'p-anchored-overlay-enter-active', leaveToClass: 'hidden', leaveActiveClass: 'p-anchored-overlay-leave-active', hideOnOutsideClick: true }"
+                        type="button"
+                        class="layout-topbar-action layout-topbar-action-highlight"
+                    >
+                        <i class="pi pi-palette"></i>
+                    </button>
+                    <AppConfigurator />
+                </div>
             </div>
 
             <button
