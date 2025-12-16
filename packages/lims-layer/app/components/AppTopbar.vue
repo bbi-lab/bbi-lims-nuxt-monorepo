@@ -1,6 +1,8 @@
 <script setup>
 const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout()
-// const { clear } = useUserSession()
+
+const config = useRuntimeConfig()
+const { clear } = useUserSession()
 
 const userMenu = ref()
 
@@ -8,7 +10,7 @@ const toggleUserMenu = (event) => {
     userMenu.value.toggle(event)
 }
 function logout() {
-    // clear()
+    clear()
     nextTick(() => navigateTo('/login'))
 }
 const items = ref([
@@ -32,7 +34,7 @@ const items = ref([
                 <i class="pi pi-bars"></i>
             </button>
             <router-link to="/" class="layout-topbar-logo">
-                <span>LIMS layer</span>
+                <span>{{config.public.appName}}</span>
             </router-link>
         </div>
 
