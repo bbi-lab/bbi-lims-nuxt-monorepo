@@ -1,7 +1,9 @@
 <script setup>
-import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
 
+definePageMeta({
+  layout: "empty",
+})
 const email = ref('');
 const password = ref('');
 const checked = ref(false);

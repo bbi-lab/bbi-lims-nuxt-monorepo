@@ -1,5 +1,5 @@
 <script setup>
-const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout()
+const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout()
 
 const config = useRuntimeConfig()
 const { clear } = useUserSession()
