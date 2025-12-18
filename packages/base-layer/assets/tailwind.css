@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+@source '../../lims-app/app/**/*.{vue,js,ts}';
+@source '../../lims-layer/app/**/*.{vue,js,ts}';
+
 @plugin 'tailwindcss-primeui';
 
 @custom-variant dark (&:where([class*="app-dark"], [class*="app-dark"] *));
