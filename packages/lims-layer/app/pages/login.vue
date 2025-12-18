@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import { loginUser } from '@/utils/auth'
 const { fetch, loggedIn } = useUserSession()
+const toast = useToast()
+const router = useRouter()
 
 definePageMeta({
   layout: "empty",

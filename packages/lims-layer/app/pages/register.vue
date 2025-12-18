@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import { AuthService } from '@/utils/service/AuthService'
+import { registerUser } from '@/utils/auth'
 
 definePageMeta({
   layout: "empty",
@@ -12,15 +12,15 @@ const name = ref('')
 const passwordsMatch = computed(() => password.value == confirmPassword.value)
 
 async function onDidClickSignUp() {
-    // if (email.value && password.value) {
-    //     const result:any = await AuthService.registerUser(name.value, email.value, password.value)
+    if (email.value && password.value) {
+        const result = await registerUser(name.value, email.value, password.value)
 
-    //     if (result.user) {
-    //         navigateTo('/login')
-    //     } else {
-    //         toast.add({severity: 'error', summary: result.errorMessage})
-    //     }
-    // }
+        if (result.user) {
+            navigateTo('/login')
+        } else {
+            toast.add({severity: 'error', summary: result.errorMessage})
+        }
+    }
 }
 </script>
 
@@ -64,7 +64,7 @@ async function onDidClickSignUp() {
                             :feedback="false"
                         ></Password>
                         <Message :class="{ invisible: !(confirmPassword && !passwordsMatch), 'mb-6': true }" severity="error">Passwords don't match</Message>
-                        <Button label="Register" class="w-full" :disabled="!passwordsMatch || !name || !email" @click="onDidClickSignUp"></Button>
+                        <Button label="Register" class="w-full" :disabled="!passwordsMatch || !name || !email" @click="onDidClickSignUp" />
                     </div>
                 </div>
             </div>
