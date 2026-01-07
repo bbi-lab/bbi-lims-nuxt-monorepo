@@ -63,6 +63,7 @@ export function applySelectParamsToRecords<T>(selectParams: SelectParams, record
     return result
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parsePutPostError(error: any) {
     let data
 
@@ -80,7 +81,8 @@ export function parsePutPostError(error: any) {
     if (!data) {
         try {
             data = JSON.parse(error.message)
-        } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (e: unknown) {
             data = {}
         }
     }

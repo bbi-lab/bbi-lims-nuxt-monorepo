@@ -1,8 +1,9 @@
 import { createSelectSchema } from 'drizzle-zod'
 import _ from 'lodash'
-import { users, userGroups, userGroupMemberships } from './user'
+import { users, userGroups, userGroupMemberships } from '../schema/user'
 import type { PgTable, TableConfig } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
+import { genes } from '../schema/gene'
 
 // relations config
 // defines M:M between users and groups
@@ -73,3 +74,11 @@ export const userGroupMembershipsRelationsConfig: RelationsConfig = {
 export const usersRelations = relationsConfigToRelations(users, usersRelationsConfig)
 export const userGroupsRelations = relationsConfigToRelations(userGroups, userGroupsRelationsConfig)
 export const userGroupMembershipsRelations = relationsConfigToRelations(userGroupMemberships, userGroupMembershipsRelationsConfig)
+
+const genesRelationsConfig: RelationsConfig = {}
+
+export const genesRelations = relationsConfigToRelations(genes, genesRelationsConfig)
+
+export const relationsConfigs: { [tableName: string] : RelationsConfig } = {
+    genes: genesRelationsConfig,
+}

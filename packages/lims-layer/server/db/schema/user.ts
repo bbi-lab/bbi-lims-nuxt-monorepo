@@ -5,7 +5,6 @@ import type { ZodObject } from 'zod'
 import { z } from 'zod'
 import _ from 'lodash'
 import { dateSchema } from '../helpers/schemas'
-import type { $ZodType, $ZodTypeInternals } from 'zod/v4/core'
 
 export const usersSchema = pgSchema("users");
 
@@ -86,7 +85,7 @@ const changePasswordSchema = z.object({
   newPassword: z.string(),
 })
 
-export const schemas: Record<string, ZodObject<Readonly<{ [k: string]: $ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>}>>> = {
+export const schemas: Record<string, ZodObject> = {
   selectUserSchema: selectUserSchema.extend({
     createdAt: dateSchema,
     updatedAt: dateSchema}).omit({password: true, code: true}),
@@ -102,7 +101,7 @@ const selectUserGroupSchema = createSelectSchema(userGroups)
 const newUserGroupSchema = selectUserGroupSchema.pick({name: true})
 const updateUserGroupSchema = selectUserGroupSchema.pick({name: true})
 
-export const userGroupSchemas: Record<string, ZodObject<Readonly<{ [k: string]: $ZodType<unknown, unknown, $ZodTypeInternals<unknown, unknown>>}>>> = {
+export const userGroupSchemas: Record<string, ZodObject> = {
   selectUserGroupSchema,
   newUserGroupSchema,
   updateUserGroupSchema,

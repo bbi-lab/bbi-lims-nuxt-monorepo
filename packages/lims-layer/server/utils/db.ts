@@ -1,9 +1,10 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
 import pg from 'pg'
 
-import type { PgTable, AnyPgColumn } from 'drizzle-orm/pg-core'
+import type { PgTable, PgColumn } from 'drizzle-orm/pg-core'
 import {users, userGroups, userGroupMemberships} from '../db/schema/user'
-import {usersRelations, userGroupsRelations, userGroupMembershipsRelations} from '../db/schema/relations'
+import {genes} from '../db/schema/gene'
+import {usersRelations, userGroupsRelations, userGroupMembershipsRelations} from '../db/relations/relations'
 import type {ZodObject} from 'zod'
 
 // By checking whether useRuntimeConfig is defined, we support use outside the Nuxt lifecycle.
@@ -18,6 +19,8 @@ export const schema = {
   usersRelations,
   userGroupsRelations,
   userGroupMembershipsRelations,
+
+  genes,
 }
 
 const ssl = config?.ssl != null ? config.ssl
@@ -43,24 +46,24 @@ export function useDrizzle() {
 export interface RelationsConfig {
     one?: {
       [relationName: string]: {
-        fields: [AnyPgColumn<any>, ...AnyPgColumn<any>[]],
-        referenceTable: PgTable<any>,
-        references: [AnyPgColumn<any>, ...AnyPgColumn<any>[]],
+        fields:  [PgColumn, ...PgColumn[]],
+        referenceTable: PgTable,
+        references: [PgColumn, ...PgColumn[]],
         relationName?: string,
       }
     },
     many?: {
       [relationName: string]: {
-        table: PgTable<any>,
-        schema: ZodObject<any>,
-        fields: [AnyPgColumn<any>, ...AnyPgColumn<any>[]],
+        table: PgTable,
+        schema: ZodObject,
+        fields: [PgColumn, ...PgColumn[]],
         relationsConfig?: RelationsConfig,
         relationName?: string,
       }
     },
     oneToOne?: {
       [relationName: string]: {
-        table: PgTable<any>,
+        table: PgTable<never>,
       }
     },
   }
