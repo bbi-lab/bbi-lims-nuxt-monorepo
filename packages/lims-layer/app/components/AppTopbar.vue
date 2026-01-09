@@ -1,6 +1,7 @@
 <script setup>
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout()
 
+console.log(toggleMenu)
 const config = useRuntimeConfig()
 const { clear } = useUserSession()
 

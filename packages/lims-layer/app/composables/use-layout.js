@@ -64,7 +64,7 @@ export function useLayout() {
         document.documentElement.classList.toggle('app-dark');
     };
 
-    const onMenuToggle = () => {
+    const toggleMenu = () => {
         if (layoutConfig.menuMode === 'overlay') {
             layoutState.overlayMenuActive = !layoutState.overlayMenuActive;
         }
@@ -92,5 +92,5 @@ export function useLayout() {
 
     const getSurface = computed(() => layoutConfig.surface);
 
-    return { layoutConfig: readonly(layoutConfig), layoutState: readonly(layoutState), onMenuToggle, isSidebarActive, isDarkTheme, isLoginModalVisible, getPrimary, getSurface, setActiveMenuItem, toggleDarkMode, setPrimary, setSurface, setPreset, resetMenu, setMenuMode, hideLoginModal, showLoginModal, breakpoints,};
+    return { layoutConfig: readonly(layoutConfig), layoutState: readonly(layoutState), toggleMenu, isSidebarActive, isDarkTheme, isLoginModalVisible, getPrimary, getSurface, setActiveMenuItem, toggleDarkMode, setPrimary, setSurface, setPreset, resetMenu, setMenuMode, hideLoginModal, showLoginModal, breakpoints,};
 }
