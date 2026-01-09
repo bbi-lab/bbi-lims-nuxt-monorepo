@@ -1,25 +1,32 @@
-import zodToJsonSchema, { type JsonSchema7AnyType, type JsonSchema7ArrayType, type JsonSchema7Type } from "zod-to-json-schema"
-import {getAllVerifiedUsersInfo, getUserGroups} from './user'
+import z from "zod"
+import {getAllVerifiedUsersInfo} from './user'
 import { users } from '../db/schema/user'
 import _ from 'lodash'
 import type { RelationsConfig} from "./db"
-import type { UserGroup } from "../db/schema/user"
-// import { type EnumLookup } from "../db/schema/sge/enum-lookups"
+import type { EnumLookup } from "../../shared/types/enumLookups"
 
-export async function refineJsonSchema(jsonSchema:JsonSchema7Type, relationsConfig: RelationsConfig, defaultId?: string, enumLookup?: any) {
+export function zodToSafeTypeJSONSchema(zodSchema: z.ZodObject<z.core.$ZodLooseShape, z.core.$strip>) {
+  return z.toJSONSchema(zodSchema, {
+    unrepresentable: "any",
+    override: (ctx) => {
+        const def = ctx.zodSchema._zod.def
+        if(def.type ==="date"){
+            ctx.jsonSchema.type = "string"
+            ctx.jsonSchema.format = "date-time"
+        } else if(def.type ==="bigint"){
+            ctx.jsonSchema.type = "integer"
+            ctx.jsonSchema.format = "int64"
+        }
+    }
+  })
+}
 
+export async function refineJsonSchema(jsonSchema: z.core.ZodStandardJSONSchemaPayload<z.ZodObject<z.core.$ZodLooseShape, z.core.$strip>>, relationsConfig: RelationsConfig, defaultId?: string, enumLookup?: EnumLookup) {
     // define JSON schema property as coded list of users, to be applied to JSON schema
     const usersInfo = await getAllVerifiedUsersInfo()
-    const usersJsonSchemaProperty:JsonSchema7AnyType = {
+    const usersJsonSchemaProperty = {
       type: 'string',
       oneOf: [{ const: null, title: '(none)' }, ..._.map(usersInfo, (x) => { return { const: x.id, title: x.name } })],
-    }
-
-    // define JSON schema property to select a user group
-    const userGroups = await getUserGroups() as UserGroup[]
-    const userGroupsJsonSchemaProperty:JsonSchema7AnyType = {
-      type: 'string',
-      oneOf: _.map(userGroups, (x) => { return { const: x.id, title: x.name } }),
     }
 
     // iterate over properties and replace one-to-many relations with corresponding JsonSchema property
@@ -30,14 +37,14 @@ export async function refineJsonSchema(jsonSchema:JsonSchema7Type, relationsConf
           _.set(jsonSchema, ['properties', property], usersJsonSchemaProperty)
         }
       }
-      // if (enumLookup && Object.keys(enumLookup).includes(property)) {
-      //   const enumLookupProperty = enumLookup[property]
-      //   const enumLookupJsonSchemaProperty:JsonSchema7AnyType = {
-      //     type: 'string',
-      //     oneOf: _.map(enumLookupProperty, (val, key) => { return { const: key, title: val.label } }),
-      //   }
-      //   _.set(jsonSchema, ['properties', property], enumLookupJsonSchemaProperty)
-      // }
+      if (enumLookup && Object.keys(enumLookup).includes(property)) {
+        const enumLookupProperty = enumLookup[property]
+        const enumLookupJsonSchemaProperty = {
+          type: 'string',
+          oneOf: _.map(enumLookupProperty, (val, key) => { return { const: key, title: val.label } }),
+        }
+        _.set(jsonSchema, ['properties', property], enumLookupJsonSchemaProperty)
+      }
     }
 
     // iterate over many-to-many relations and add each to JSON schema as a new array property
@@ -47,7 +54,7 @@ export async function refineJsonSchema(jsonSchema:JsonSchema7Type, relationsConf
 
         // get full schema of many-to-many table
         const itemsZodSchema = val.schema
-        const itemsJsonSchema = zodToJsonSchema(itemsZodSchema)
+        const itemsJsonSchema = zodToSafeTypeJSONSchema(itemsZodSchema)
 
         // set foreign key value as default to be used for new items added to array
         // TODO - add support for composite foreign keys
@@ -63,27 +70,29 @@ export async function refineJsonSchema(jsonSchema:JsonSchema7Type, relationsConf
 
           if (itemsRelationName) {
             const itemsRelationConfig = val.relationsConfig.one[itemsRelationName]
-            const itemsRelationsConfigField = itemsRelationConfig.fields[0]
+            if (itemsRelationConfig && itemsRelationConfig.fields?.[0]) {
+              const itemsRelationsConfigField = itemsRelationConfig.fields[0]
 
-            // get related records
-            //const relatedRecords = await db.select().from(itemsRelationConfig.referenceTable)
+              // get related records
+              const relatedRecords = await db.select().from(itemsRelationConfig.referenceTable)
 
-            // convert to JsonSchema property
-            // TODO - needs to handle string IDs and alternative fields for title, composite fields
-            // const relatedRecordsJsonSchemaProperty:JsonSchema7AnyType = {
-            //   type: 'number',
-            //   oneOf: _.map(relatedRecords, (x) => { return { const: x.id, title: x.name } }),
-            // }
+              // convert to JsonSchema property
+              // TODO - needs to handle string IDs and alternative fields for title, composite fields
+              const relatedRecordsJsonSchemaProperty = {
+                type: 'number',
+                oneOf: _.map(relatedRecords, (x) => { return { const: x.id, title: x.name } }),
+              }
 
-            // TODO - this will only be true as long as column name in drizzle table defintion is camel-case version of column name in the database
-            const propNameToReplace = _.camelCase(itemsRelationsConfigField.name)
-            _.set(itemsJsonSchema, ['properties', propNameToReplace], userGroupsJsonSchemaProperty)
+              // TODO - this will only be true as long as column name in drizzle table defintion is camel-case version of column name in the database
+              const propNameToReplace = _.camelCase(itemsRelationsConfigField.name)
+              _.set(itemsJsonSchema, ['properties', propNameToReplace], relatedRecordsJsonSchemaProperty)
+            }
           } else {
             throw createError({statusCode: 500})
           }
         }
 
-        const jsonSchemaArrayProperty:JsonSchema7ArrayType = {
+        const jsonSchemaArrayProperty = {
           type: 'array',
           items: itemsJsonSchema
         }

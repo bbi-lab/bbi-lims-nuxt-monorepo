@@ -2,25 +2,29 @@ import { schemas } from '../../../db/zod/zodSchemas'
 import { relationsConfigs } from '../../../db/relations/relations'
 import _ from 'lodash'
 import type { ZodObject } from 'zod'
-import { zodToJsonSchema } from 'zod-to-json-schema'
 import type { RelationsConfig } from '../../../utils/db'
-import { refineJsonSchema } from '../../../utils/jsonSchema'
-// import { ENUM_LOOKUPS, type EnumLookup } from '~/server/db/schema/sge/enum-lookups'
+import { refineJsonSchema, zodToSafeTypeJSONSchema } from '../../../utils/jsonSchema'
+import type { EnumLookup } from '../../../../shared/types/enumLookups'
+
+const appConfig = useAppConfig()
 
 export default defineEventHandler(async (event) => {
     const { recordType, schema } = event.context.params as {recordType: string, schema: string}
     const { id } = getQuery(event) as {id: string}
 
     try {
-        const currentSchema = _.get(schemas, [_.camelCase(recordType), _.camelCase(schema)]) as ZodObject<any>
+        const currentSchema = _.get(schemas, [_.camelCase(recordType), _.camelCase(schema)]) as ZodObject
 
         // generate JSON Schema from Zod object
-        const jsonSchema = zodToJsonSchema(currentSchema, { $refStrategy: 'none' })
+        // and convert unrepresentable types like date and bigint (see https://zod.dev/json-schema#unrepresentable)
+        // TODO - using "unrepresentable: 'any'" here prevents errors for all unrepresentable types but we only want that for the types covered in override
+        // Ideally, other types if encountered should would still throw an error. See related issue: https://github.com/colinhacks/zod/issues/5234
+        const jsonSchema = zodToSafeTypeJSONSchema(currentSchema)
 
         const relationsConfig = _.get(relationsConfigs, _.camelCase(recordType)) as RelationsConfig
-        // const enumLookups = _.get(ENUM_LOOKUPS, _.camelCase(recordType), {}) as EnumLookup
+        const enumLookups = _.get(appConfig.enumLookups, _.camelCase(recordType), {}) as EnumLookup
 
-        if (relationsConfig) await refineJsonSchema(jsonSchema, relationsConfig, id, {})
+        if (relationsConfig) await refineJsonSchema(jsonSchema, relationsConfig, id, enumLookups)
 
         return jsonSchema
 
