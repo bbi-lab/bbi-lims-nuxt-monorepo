@@ -366,7 +366,13 @@ const exportXLSX = function() {
 // }
 
 const addOrRefreshRecordIds = async (recordIds: string[]) => {
-    const currentRecords = await RecordService.getRecordsByIds(apiBaseUrl.value, recordIds, props.withClause, props.expandEnums)
+    let currentRecords
+    if (recordIds.length == 1) {
+        const record = await RecordService.getRecord(apiBaseUrl.value, recordIds[0]!, props.withClause, props.expandEnums)
+        currentRecords = record ? [record] : []
+    } else {
+        currentRecords = await RecordService.getRecordsByIds(apiBaseUrl.value, recordIds, props.withClause, props.expandEnums)
+    }
 
     const newRecordIds: string[] = []
     for (const recordId of recordIds) {
