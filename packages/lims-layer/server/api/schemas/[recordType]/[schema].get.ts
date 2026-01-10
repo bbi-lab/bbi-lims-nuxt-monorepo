@@ -5,8 +5,7 @@ import type { ZodObject } from 'zod'
 import type { RelationsConfig } from '../../../utils/db'
 import { refineJsonSchema, zodToSafeTypeJSONSchema } from '../../../utils/jsonSchema'
 import type { EnumLookup } from '../../../../shared/types/enumLookups'
-
-const appConfig = useAppConfig()
+import { appConstants } from '../../../../shared/constants'
 
 export default defineEventHandler(async (event) => {
     const { recordType, schema } = event.context.params as {recordType: string, schema: string}
@@ -22,7 +21,7 @@ export default defineEventHandler(async (event) => {
         const jsonSchema = zodToSafeTypeJSONSchema(currentSchema)
 
         const relationsConfig = _.get(relationsConfigs, _.camelCase(recordType)) as RelationsConfig
-        const enumLookups = _.get(appConfig.enumLookups, _.camelCase(recordType), {}) as EnumLookup
+        const enumLookups = _.get(appConstants.enumLookups, _.camelCase(recordType), {}) as EnumLookup
 
         if (relationsConfig) await refineJsonSchema(jsonSchema, relationsConfig, id, enumLookups)
 

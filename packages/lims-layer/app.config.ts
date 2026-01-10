@@ -1,8 +1,7 @@
 export default defineAppConfig({
   limsLayer: {
-    name: 'Hello from Nuxt layer'
+    name: 'Hello from Nuxt layer: LIMS layer'
   },
-  enumLookups: {}
 })
 
 declare module '@nuxt/schema' {
