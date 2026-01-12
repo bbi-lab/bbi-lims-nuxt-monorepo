@@ -39,7 +39,6 @@ async function onDidClickSignIn(event) {
                         <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">LIMS</div>
                         <span class="text-muted-color font-medium">Sign in to continue</span>
                     </div>
-
                     <div>
                         <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
                         <InputText id="email1" type="text" placeholder="Email address" class="w-full md:w-[30rem] mb-8" v-model="email" />
@@ -54,7 +53,11 @@ async function onDidClickSignIn(event) {
                             </div>
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                         </div>
-                        <Button label="Sign In" class="w-full" @click="onDidClickSignIn"></Button>
+                        <Button label="Sign In" class="w-full" @click="onDidClickSignIn" />
+                        <div class="flex items-center justify-center mt-4">
+                            <span>New user?</span>
+                            <a class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" @click="() => router.push('/register')">Create an account</a>
+                        </div>
                     </div>
                 </div>
             </div>
