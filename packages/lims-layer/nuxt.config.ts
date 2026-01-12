@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   extends: [
     'base-layer',
   ],
-  modules: ['nuxt-auth-utils'],
+  modules: ['nuxt-auth-utils', '@nuxt/icon'],
   // Environment variables to read. These are available on the server side only, except for those in public, which are
   // also available on the application (client) side. Each is read from a capitalized snake-case variable with the
   // prefix NUXT_, so, for instance, `authSecret` is read from `NUXT_AUTH_SECRET`. If the environment variable is not

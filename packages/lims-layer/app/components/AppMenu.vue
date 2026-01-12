@@ -1,15 +1,17 @@
 <script setup>
 import _ from 'lodash'
+import { Icon } from '#components'
+
 const { user } = useUserSession()
+
+const DnaIcon = h(Icon, { name: 'mdi:dna', class: 'm-1' })
 
 const model = ref([
     {
         label: 'Menu',
         items: [
             { label: 'Home', icon: 'pi pi-fw pi-home', to: '/' },
-            { label: 'Login', icon: 'pi pi-fw pi-home', to: '/login' },
-            { label: 'Register', icon: 'pi pi-fw pi-home', to: '/register' },
-            { label: 'Access Denied', icon: 'pi pi-fw pi-home', to: '/access-denied' }
+            { label: 'Genes', iconComponent: DnaIcon, to: '/genes' },
         ]
     },
     {
@@ -20,7 +22,7 @@ const model = ref([
             { label: 'Groups', icon: 'pi pi-fw pi-users', to: '/admin/user-groups' },
         ]
     },
-]);
+])
 </script>
 
 <template>

@@ -12,6 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@nuxt/icon": "^2.2.0",
     "@vueuse/core": "^14.1.0",
     "argon2": "^0.44.0",
     "drizzle-kit": "^0.31.8",
@@ -30,6 +31,7 @@
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
+    "@iconify-json/mdi": "^1.2.3",
     "@nuxt/eslint": "latest",
     "@types/json-logic-js": "^2.0.8",
     "@types/jsonwebtoken": "^9.0.10",
