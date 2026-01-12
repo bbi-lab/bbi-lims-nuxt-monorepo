@@ -1,28 +1,11 @@
 import _ from "lodash"
-import { VALID_WELL_COLORS, type PlateDiagramWell } from "~/lib/plate-diagram"
-import { RecordService } from "~/utils/service/RecordService"
-import type { Well, WellContent } from "~/server/db/schema/sge/well"
-// import type { NucleicAcid } from "~/server/db/schema/sge/nucleic-acid"
-// import type { Pellet } from "~/server/db/schema/sge/pellet"
-import type { User } from "~/server/db/schema/user"
+import { VALID_WELL_COLORS, type PlateDiagramWell } from "../../shared/lib/plate-diagram"
+import { RecordService } from "../utils/record"
+import type { Well, WellContent } from "../../server/db/schema/well"
+import type { User } from "../../server/db/schema/user"
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
-import type { AmplificationPrimer, HomologyArmPrimer, LinearizationPrimer, preseq1Primer, preseq2Primer } from "~/server/db/schema/sge/primer"
-import type { Plate } from "~/server/db/schema/sge/plate"
-
-type WellWithContents = Well & {
-    wellContents: WellContent & {
-        wellable: {
-            amplificationPrimer: AmplificationPrimer
-            linearizationPrimer: LinearizationPrimer
-            homologyArmPrimer: HomologyArmPrimer
-            preseq1Primer: preseq1Primer
-            preseq2Primer: preseq2Primer
-            nucleicAcid: NucleicAcid & {
-                pellet: Pellet
-            },
-        }
-    }[]
-}
+import type { Plate } from "../../server/db/schema/plate"
+import type { WellWithContents } from "../../shared/types/wells"
 
 type PlateWithWellContents = Plate & {
     wells: WellWithContents[]
@@ -301,73 +284,74 @@ export const usePlateLayout = () => {
         return newRecords
     }
 
-    const poolPreSeq1PlateToSelectedWells = async (preseq1PlateId: string) => {
-        let recordsToAdd: {
-            wellId: string;
-            wellableId: string;
-            sourceWellIds: String[];
-            createdBy: string | null;
-        }[]
-        // sort wells by x and inverse y coordinate to achieve the correct order
-        const sortedWellIds = _.map(_.sortBy(selectedWells.value, (well) => `${_.padStart(_.toString(well.x), 2, '0')}_${(_.toString(100-well.y))}`), 'id')
+    // SGE-specific function, TODO: move to SGE layer
+    // const poolPreSeq1PlateToSelectedWells = async (preseq1PlateId: string) => {
+    //     let recordsToAdd: {
+    //         wellId: string;
+    //         wellableId: string;
+    //         sourceWellIds: String[];
+    //         createdBy: string | null;
+    //     }[]
+    //     // sort wells by x and inverse y coordinate to achieve the correct order
+    //     const sortedWellIds = _.map(_.sortBy(selectedWells.value, (well) => `${_.padStart(_.toString(well.x), 2, '0')}_${(_.toString(100-well.y))}`), 'id')
 
-        const preseq1Plate = await RecordService.getRecord(`${config.public.apiBase}/plates`, preseq1PlateId, {
-            wells: {
-                columns: {id: true},
-                with: {
-                    wellContents: {
-                        columns: {id: true},
-                        with: {
-                            wellable: {
-                                with: {
-                                    nucleicAcid: {
-                                        columns: {id: true},
-                                        with: {
-                                            pellet: {
-                                                columns: {id: true, name: true, isBackup: true},
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            }
-        }) as PlateWithWellContents
+    //     const preseq1Plate = await RecordService.getRecord(`${config.public.apiBase}/plates`, preseq1PlateId, {
+    //         wells: {
+    //             columns: {id: true},
+    //             with: {
+    //                 wellContents: {
+    //                     columns: {id: true},
+    //                     with: {
+    //                         wellable: {
+    //                             with: {
+    //                                 nucleicAcid: {
+    //                                     columns: {id: true},
+    //                                     with: {
+    //                                         pellet: {
+    //                                             columns: {id: true, name: true, isBackup: true},
+    //                                         },
+    //                                     },
+    //                                 },
+    //                             },
+    //                         },
+    //                     },
+    //                 },
+    //             },
+    //         }
+    //     }) as PlateWithWellContents
 
-        type NucleicAcidWithPellet = NucleicAcid & {pellet: Pellet}
-        type NucleicAcidWithPelletAndWellIds = NucleicAcidWithPellet & {wellIds: String[]}
+    //     type NucleicAcidWithPellet = NucleicAcid & {pellet: Pellet}
+    //     type NucleicAcidWithPelletAndWellIds = NucleicAcidWithPellet & {wellIds: String[]}
 
-        const pooledNucleicAcids = _.sortBy(_.values(preseq1Plate.wells.reduce((acc, well: WellWithContents) => {
-            const nucleicAcid = _.get(well, ['wellContents', 0, 'wellable', 'nucleicAcid'])
-            if (nucleicAcid?.id) {
-                const existingWellIds = _.get(acc, [nucleicAcid.id, 'wellIds'], [])
-                _.set(acc, nucleicAcid.id, {...nucleicAcid, wellIds: [...existingWellIds, well.id]})
-            }
-            return acc
-        }, {})), (x) => {
-            return x.pellet.name
-        }) as NucleicAcidWithPelletAndWellIds[]
+    //     const pooledNucleicAcids = _.sortBy(_.values(preseq1Plate.wells.reduce((acc, well: WellWithContents) => {
+    //         const nucleicAcid = _.get(well, ['wellContents', 0, 'wellable', 'nucleicAcid'])
+    //         if (nucleicAcid?.id) {
+    //             const existingWellIds = _.get(acc, [nucleicAcid.id, 'wellIds'], [])
+    //             _.set(acc, nucleicAcid.id, {...nucleicAcid, wellIds: [...existingWellIds, well.id]})
+    //         }
+    //         return acc
+    //     }, {})), (x) => {
+    //         return x.pellet.name
+    //     }) as NucleicAcidWithPelletAndWellIds[]
 
-        if (pooledNucleicAcids.length > sortedWellIds.length) {
-            throw new Error('Number of selected wells is less than number of nucleic acids in the plate')
-        } else {
-            const wellContentsAndSources = _.map(pooledNucleicAcids, (value, index) => {
-                const userId = (user.value as User)?.id || null
-                return {
-                    wellId: sortedWellIds[index],
-                    wellableId: value.id,
-                    sourceWellIds: value.wellIds,
-                    createdBy: userId,
-                }
-            })
-            recordsToAdd = wellContentsAndSources
-        }
+    //     if (pooledNucleicAcids.length > sortedWellIds.length) {
+    //         throw new Error('Number of selected wells is less than number of nucleic acids in the plate')
+    //     } else {
+    //         const wellContentsAndSources = _.map(pooledNucleicAcids, (value, index) => {
+    //             const userId = (user.value as User)?.id || null
+    //             return {
+    //                 wellId: sortedWellIds[index],
+    //                 wellableId: value.id,
+    //                 sourceWellIds: value.wellIds,
+    //                 createdBy: userId,
+    //             }
+    //         })
+    //         recordsToAdd = wellContentsAndSources
+    //     }
 
-        const newRecords = await addWellContents(recordsToAdd)
-        return newRecords
-    }
+    //     const newRecords = await addWellContents(recordsToAdd)
+    //     return newRecords
+    // }
 
     const wellRangeSelected = function(wells: PlateDiagramWell[]) {
         selectedWells.value = _.filter(plateWithPlateDiagramWells.value?.wells, (x) => {
@@ -441,7 +425,7 @@ export const usePlateLayout = () => {
         // assign content to wells
         assignIdToSelectedWells,
         addWellContents,
-        poolPreSeq1PlateToSelectedWells,
+        // poolPreSeq1PlateToSelectedWells
 
         // export plate layout
         exportPlateLayout,
