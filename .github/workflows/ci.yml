@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          repository: 'bbi-lab/bbi-lims-nuxt-monorepo'
+          token: ${{ secrets.PRIVATE_REPO_PAT }}
       - run: corepack enable
       - uses: actions/setup-node@v6
         with:
