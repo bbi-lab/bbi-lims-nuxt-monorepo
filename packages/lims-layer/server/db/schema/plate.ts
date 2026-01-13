@@ -1,8 +1,7 @@
 import { pgTable, smallint, uuid, varchar, boolean } from 'drizzle-orm/pg-core'
 import { createSelectSchema } from 'drizzle-zod'
 import _ from 'lodash'
-import type { z, ZodObject } from 'zod'
-import type { InferSelectModel } from 'drizzle-orm'
+import type { ZodObject } from 'zod'
 import type { PlateType } from '../../../shared/types/plates'
 import { appConstants } from '../../../shared/constants'
 
@@ -25,7 +24,3 @@ export const schemas: Record<string, ZodObject> = {
     insertPlateSchema,
     updatePlateSchema,
 }
-
-export type Plate = InferSelectModel<typeof plates>
-export type NewPlate = z.infer<typeof insertPlateSchema>
-export type UpdatePlate = z.infer<typeof updatePlateSchema>

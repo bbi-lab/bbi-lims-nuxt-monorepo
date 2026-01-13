@@ -1,25 +1,20 @@
 import * as d3 from "d3"
-import {type ValueFn} from "d3"
+import type { ValueFn } from "d3"
 import _ from "lodash"
-import type { PlateWithPlateDiagramWells } from "~/components/PlateDiagram.vue"
-import type { PlateType } from "~/server/db/schema/sge/plate"
-
-type Accessor<T, Self> = (value?: T) => T | Self
-
-interface CoordinatePair {x: number, y: number}
+import type { PlateType, PlateWithPlateDiagramWells } from "../types/plates"
 
 function hexToRgb(hex: string): {r: number, g: number, b: number} | null {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
+      r: parseInt(result[1]!, 16),
+      g: parseInt(result[2]!, 16),
+      b: parseInt(result[3]!, 16)
     } : null;
   }
 export function getWellTextColor(hex: string): string {
     const rgb = hexToRgb(hex)
     if (rgb) {
-        var sum = Math.round(((rgb.r * 299) + (rgb.g * 587) + (rgb.b * 114)) / 1000)
+        const sum = Math.round(((rgb.r * 299) + (rgb.g * 587) + (rgb.b * 114)) / 1000)
         return (sum > 128) ? '#000' : '#fff'
     } else {
         return 'var(--p-text-color)'
@@ -53,37 +48,6 @@ export const VALID_WELL_COLORS = [
     "#FF5005"
 ]
 
-export interface PlateDiagramWell {
-    id: string,
-    x: number,
-    y: number,
-    data?: any,
-    color?: string,
-    tooltip?: string,
-    symbol?: string,
-    contentFKs?: string[],
-    selected?: boolean,
-    inSelectionRange?: boolean,
-}
-
-export interface PlateDiagram {
-    title?: string,
-    id?: string,
-
-    wells: (value: PlateDiagramWell[]) => PlateDiagram
-    getWells: () => PlateDiagramWell[]
-
-    render: (container: HTMLElement) => PlateDiagram
-    refresh: () => PlateDiagram
-    resize: () => PlateDiagram
-
-    wellRangeSelected: Accessor<((wells: PlateDiagramWell[]) => void) | null, PlateDiagram>
-    updateWellContents: (updatedWells: PlateDiagramWell[]) => PlateDiagram
-
-    clearSelection: () => PlateDiagram
-    selectAllWells: () => PlateDiagram
-}
-
 export function wellCoordinateToChar(number: number) {
     return String.fromCharCode(96 + number).toUpperCase()
 }
@@ -103,14 +67,12 @@ export function makePlateDiagram(plateType: PlateType, sizeX: number = 12, sizeY
     let wellSelectionStart: PlateDiagramWell | null = null
 
     // default plate and well sizes
-    let wellSize: CoordinatePair = { x: 20, y: 20 }
-    let wellSpacing: CoordinatePair = { x: 0, y: 0 }
+    const wellSize: CoordinatePair = { x: 20, y: 20 }
+    const wellSpacing: CoordinatePair = { x: 0, y: 0 }
 
-    let plate: PlateWithPlateDiagramWells = {
+    const plate: PlateWithPlateDiagramWells = {
         id: '',
         name: '',
-        plasmidExperimentId: null,
-        pcrExperimentId: null,
         sizeX: sizeX,
         sizeY: sizeY,
         plateType,
@@ -119,7 +81,7 @@ export function makePlateDiagram(plateType: PlateType, sizeX: number = 12, sizeY
         wells: [],  // wells to be set via wells() method
     }
     // set the dimensions and margins of the graph
-    let margin = {top: 10, right: 10, bottom: 20, left: 20}
+    const margin = {top: 10, right: 10, bottom: 20, left: 20}
     const plateWidth = () => wellSize.x * plate.sizeX + (wellSpacing.x * plate.sizeX)
     const plateHeight = () => wellSize.y * plate.sizeY + (wellSpacing.y * plate.sizeY)
 
@@ -139,7 +101,6 @@ export function makePlateDiagram(plateType: PlateType, sizeX: number = 12, sizeY
                     if (d.inSelectionRange || d.selected) {
                         d3.select(this)
                             .style('opacity', 1.0)
-                        // @ts-ignore
                         d3.select(this.parentNode).raise()
                     } else {
                         d3.select(this)

@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { genes } from '../schema/gene'
 import { plates } from '../schema/plate'
 import { wellContents, wellContentSources, wells } from '../schema/well'
+import { viewPlatesWithWellCounts } from '../schema/views'
 
 const selectGeneSchema = createSelectSchema(genes)
 const updateGeneSchema = createSelectSchema(genes, {
@@ -29,6 +30,8 @@ const selectWellContentSourcesSchema = createSelectSchema(wellContentSources, {c
 const insertWellContentSourcesSchema = selectWellContentSourcesSchema.omit({id: true}).partial()
 const updateWellContentSourcesSchema = insertWellContentSourcesSchema
 
+// views
+const selectViewPlatesWithWellCountsSchema = createSelectSchema(viewPlatesWithWellCounts)
 
 export const schemas = {
     // tables
@@ -55,5 +58,9 @@ export const schemas = {
         select: selectWellContentSourcesSchema,
         insert: insertWellContentSourcesSchema,
         update: updateWellContentSourcesSchema,
+    },
+    // views
+    viewPlatesWithWellCounts: {
+        select: selectViewPlatesWithWellCountsSchema,
     },
 }
