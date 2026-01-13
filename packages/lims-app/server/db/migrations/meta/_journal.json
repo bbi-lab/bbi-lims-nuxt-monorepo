@@ -15,6 +15,13 @@
       "when": 1767745594350,
       "tag": "0001_tricky_rocket_racer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768331629568,
+      "tag": "0002_early_the_call",
+      "breakpoints": true
     }
   ]
 }
