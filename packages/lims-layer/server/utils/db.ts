@@ -6,6 +6,8 @@ import {users, userGroups, userGroupMemberships} from '../db/schema/user'
 import {genes} from '../db/schema/gene'
 import {usersRelations, userGroupsRelations, userGroupMembershipsRelations} from '../db/relations/relations'
 import type {ZodObject} from 'zod'
+import { plates } from '../db/schema/plate'
+import { wellables, wellContents, wellContentSources, wells } from '../db/schema/well'
 
 // By checking whether useRuntimeConfig is defined, we support use outside the Nuxt lifecycle.
 const config = typeof useRuntimeConfig == 'undefined' ? undefined : useRuntimeConfig()
@@ -21,6 +23,11 @@ export const schema = {
   userGroupMembershipsRelations,
 
   genes,
+  plates,
+  wells,
+  wellContents,
+  wellables,
+  wellContentSources,
 }
 
 const ssl = config?.ssl != null ? config.ssl

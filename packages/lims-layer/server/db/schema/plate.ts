@@ -20,7 +20,7 @@ const selectPlateSchema = createSelectSchema(plates)
 const insertPlateSchema = selectPlateSchema.omit({id: true}).partial()
 const updatePlateSchema = selectPlateSchema.omit({id: true}).partial()
 
-export const schemas: Record<string, ZodObject<any>> = {
+export const schemas: Record<string, ZodObject> = {
     selectPlateSchema,
     insertPlateSchema,
     updatePlateSchema,
