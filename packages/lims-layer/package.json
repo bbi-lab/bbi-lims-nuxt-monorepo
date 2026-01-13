@@ -15,6 +15,7 @@
     "@nuxt/icon": "^2.2.0",
     "@vueuse/core": "^14.1.0",
     "argon2": "^0.44.0",
+    "d3": "^7.9.0",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
@@ -32,7 +33,9 @@
   },
   "devDependencies": {
     "@iconify-json/mdi": "^1.2.3",
+    "@iconify-json/ph": "^1.2.2",
     "@nuxt/eslint": "latest",
+    "@types/d3": "^7.4.3",
     "@types/json-logic-js": "^2.0.8",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.21",

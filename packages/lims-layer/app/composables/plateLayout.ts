@@ -1,11 +1,11 @@
 import _ from "lodash"
-import { VALID_WELL_COLORS, type PlateDiagramWell } from "../../shared/lib/plate-diagram"
+import { VALID_WELL_COLORS } from "../../shared/lib/plate-diagram"
 import { RecordService } from "../utils/record"
 import type { Well, WellContent } from "../../server/db/schema/well"
-import type { User } from "../../server/db/schema/user"
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
 import type { Plate } from "../../server/db/schema/plate"
 import type { WellWithContents } from "../../shared/types/wells"
+import type { Plate, PlateDiagramWell } from "../../shared/types/plates"
 
 type PlateWithWellContents = Plate & {
     wells: WellWithContents[]

@@ -5,6 +5,7 @@ import { Icon } from '#components'
 const { user } = useUserSession()
 
 const DnaIcon = h(Icon, { name: 'mdi:dna', class: 'm-1' })
+const PhGridNineFill = h(Icon, { name: 'ph:grid-nine-fill', class: 'm-1' })
 
 const model = ref([
     {
@@ -12,6 +13,7 @@ const model = ref([
         items: [
             { label: 'Home', icon: 'pi pi-fw pi-home', to: '/' },
             { label: 'Genes', iconComponent: DnaIcon, to: '/genes' },
+            { label: 'Plates', iconComponent: PhGridNineFill, to: '/plates' },
         ]
     },
     {
