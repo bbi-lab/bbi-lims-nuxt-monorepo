@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   extends: [
-    'base-layer',
+    '../base-layer',
   ],
   modules: ['nuxt-auth-utils', '@nuxt/icon'],
   // Environment variables to read. These are available on the server side only, except for those in public, which are

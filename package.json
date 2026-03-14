@@ -1,13 +1,29 @@
 {
-  "name": "nuxt-layers-typecheck",
+  "name": "bbi-lims-nuxt-monorepo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepare": "pnpm run -r dev:prepare"
+    "prepare": "pnpm run -r dev:prepare",
+    "clean-install": "rm -rf node_modules packages/*/node_modules pnpm-lock.yaml && pnpm install"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.25.0"
+  "packageManager": "pnpm@10.25.0",
+  "pnpm": {
+    "overrides": {
+      "vue": "3.5.26"
+    },
+    "peerDependencyRules": {
+      "ignoreMissing": ["vue"]
+    },
+    "packageExtensions": {
+      "base-layer": {
+        "peerDependencies": {
+          "vue": "3.5.26"
+        }
+      }
+    }
+  }
 }

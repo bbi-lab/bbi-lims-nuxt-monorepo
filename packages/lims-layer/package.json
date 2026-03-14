@@ -12,6 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "base-layer": "workspace:*",
     "@nuxt/icon": "^2.2.0",
     "@vueuse/core": "^14.1.0",
     "argon2": "^0.44.0",

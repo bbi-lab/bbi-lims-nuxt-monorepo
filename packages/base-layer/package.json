@@ -14,22 +14,22 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.17",
-    "primevue": "^4.5.3",
+    "primevue": "^4.5.4",
     "tailwindcss": "^4.1.17",
     "tailwindcss-primeui": "^0.6.1",
     "primeicons": "^7.0.0",
     "@primeuix/themes": "^2.0.2",
     "vue-router": "^4.6.3",
-    "chart.js": "^4.5.1"
+    "chart.js": "^4.5.1",
+    "vue": "3.5.26"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.12.1",
-    "@primevue/nuxt-module": "^4.5.3",
+    "@primevue/nuxt-module": "^4.5.4",
     "eslint": "^9.39.1",
     "nuxt": "^4.2.2",
     "sass-embedded": "^1.96.0",
     "typescript": "^5.9.3",
-    "vue": "^3.5.25",
     "vue-tsc": "^3.1.8"
   }
 }
