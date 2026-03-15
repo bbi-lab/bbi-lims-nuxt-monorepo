@@ -78,12 +78,7 @@ export async function getUserById(userId: string, withClause?: any, columns?: an
 }
 
 export async function getUserByEmail(email: string) {
-  console.log("Looking for user by email:", email)
-  const selectResult = await db.select().from(users)
-  console.log("here")
-  console.log("Query result:", selectResult)
   const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1)
-  console.log("Found user:", user)
   return user
 }
 

@@ -5,7 +5,6 @@ import _ from 'lodash'
 export default defineEventHandler<{ body: NewUserGroup[] }>(async (event) => {
     const session = await getUserSession(event)
     try {
-        console.log(session.user)
         if (_.get(session, 'user.isAdmin')) {
             const body = await readBody(event)
 

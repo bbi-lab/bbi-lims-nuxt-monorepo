@@ -39,7 +39,6 @@ const refreshFormattedValues = (ids?: string[]) => {
     }
 }
 const loadTableData = async () => {
-    console.log('Loading table data for', props.tableName)
     tableSchema.value = props.schemaName ? await RecordService.getSchema(schemasUrl.value, props.schemaName) : null
     records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where, props.expandEnums)
 
@@ -81,7 +80,6 @@ watch(isLoginModalVisible, (newValue, oldValue) => {
 
 onMounted(async() => {
     if (!loggedIn.value) {
-        console.log('User not logged in, showing login modal')
         showLoginModal()
     } else {
         await loadTableData()
