@@ -1,6 +1,24 @@
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node dependencies
 node_modules
 
-db/migrations/
+# Logs
+logs
+*.log
 
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
 .env
-.playground/
+.env.*
+!.env.example
