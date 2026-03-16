@@ -3,10 +3,27 @@ import { fileURLToPath } from 'node:url'
 export default defineNuxtConfig({
   extends: ['..'],
   modules: ['@nuxt/eslint'],
+  devtools: { enabled: true },
   eslint: {
     config: {
       // Use the generated ESLint config for lint root project as well
       rootDir: fileURLToPath(new URL('..', import.meta.url))
     }
-  }
+  },
+  runtimeConfig: {
+    dbHost: 'localhost',
+    dbPort: 5432,
+    dbDatabaseName: '',
+    dbUsername: '',
+    dbPassword: '',
+    dbSsl: false,
+    authJwtAccessTokenExpiresIn: '5m',
+    authJwtRefreshTokenExpiresIn: '60m',
+    authJwtAccessTokenSecret: 'access-token-secret-base64',
+    authJwtRefreshTokenSecret: 'refresh-token-secret-base64',
+    public: {
+      appName: 'LIMS layer',
+      apiBase: '/api',
+    }
+  },
 })
