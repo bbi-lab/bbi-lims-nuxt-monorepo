@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     '../base-layer',
   ],
   modules: ['nuxt-auth-utils', '@nuxt/icon'],
+  // vite-specific configurations need to be defined in each layer's configuration file, not just in extended layers
   vite: {
     optimizeDeps: {
       include: [
@@ -14,6 +15,7 @@ export default defineNuxtConfig({
         'papaparse',
         '@vueuse/core',
         'xlsx',
+        'd3',
       ]
     }
   }

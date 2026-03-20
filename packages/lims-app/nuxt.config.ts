@@ -3,6 +3,20 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
   extends: ['../lims-layer'],
+  // vite-specific configurations need to be defined in each layer's configuration file, not just in extended layers
+  vite: {
+    optimizeDeps: {
+      include: [
+        'uuid',
+        'lodash',
+        'moment',
+        'papaparse',
+        '@vueuse/core',
+        'xlsx',
+        'd3',
+      ]
+    }
+  },
   runtimeConfig: {
     dbHost: 'localhost',
     dbPort: 5432,
