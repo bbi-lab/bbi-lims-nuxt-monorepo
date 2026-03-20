@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { insertRecords, type RecordValues } from '../utils/record'
-import { schemas } from '../db/zod/zodSchemas'
+import { schemas } from '../../shared/db/zod/zodSchemas'
 import type { ZodObject } from 'zod'
 import { useDrizzle } from '../utils/db'
 import { parsePutPostError } from '../utils/restApi'

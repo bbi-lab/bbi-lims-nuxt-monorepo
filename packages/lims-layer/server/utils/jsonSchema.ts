@@ -2,7 +2,6 @@ import z from "zod"
 import {getAllVerifiedUsersInfo} from './user'
 import { users } from '../db/schema/user'
 import _ from 'lodash'
-import type { EnumLookup } from "../../shared/types/enumLookups"
 
 export function zodToSafeTypeJSONSchema(zodSchema: z.ZodObject<z.core.$ZodLooseShape, z.core.$strip>) {
   return z.toJSONSchema(zodSchema, {

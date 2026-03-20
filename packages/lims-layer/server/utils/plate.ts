@@ -1,5 +1,5 @@
-import { plates, type NewPlate} from '../db/schema/plate'
-import { wells } from '../db/schema/well'
+import { plates } from '../../shared/db/schema/plate'
+import { wells } from '../../shared/db/schema/well'
 
 import { db } from './db'
 import _ from 'lodash'

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import _ from 'lodash'
-import { appConstants } from '../../shared/constants'
-import type { PlateType } from '../../shared/types/plates'
 import { v4 as uuidv4 } from 'uuid'
 
 const router = useRouter()

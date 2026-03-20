@@ -4,7 +4,7 @@ import { createSelectSchema } from 'drizzle-zod'
 import type { ZodObject } from 'zod'
 import { z } from 'zod'
 import _ from 'lodash'
-import { dateSchema } from '../helpers/schemas'
+import { dateSchema } from '../../../shared/db/helpers/schemas'
 
 export const usersSchema = pgSchema("users");
 

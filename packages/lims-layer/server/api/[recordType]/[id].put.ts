@@ -1,6 +1,6 @@
 import { updateRecord } from '../../utils/record'
 import _ from 'lodash'
-import { schemas } from '../../db/zod/zodSchemas'
+import { schemas } from '../../../shared/db/zod/zodSchemas'
 import type { ZodObject } from 'zod'
 // import { updateTargets as updateTranfectExperimentTargets} from '~/server/services/transfect-experiment-services'
 import { parsePutPostError } from '../../utils/restApi'

@@ -1,11 +1,7 @@
 import _ from "lodash"
 import { VALID_WELL_COLORS } from "../../shared/lib/plate-diagram"
 import { RecordService } from "../utils/record"
-import type { Well, WellContent } from "../../server/db/schema/well"
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
-import type { Plate } from "../../server/db/schema/plate"
-import type { WellWithContents } from "../../shared/types/wells"
-import type { Plate, PlateDiagramWell } from "../../shared/types/plates"
 
 type PlateWithWellContents = Plate & {
     wells: WellWithContents[]
@@ -54,7 +50,7 @@ export const usePlateLayout = () => {
     const wellContentsWithClause = ref()
     const plateDiagramRef = ref()
     const selectionTableRef = ref()
-    const { user } = useUserSession()
+    // const { user } = useUserSession()
     const plateId = ref()
 
     let exportPlateLayoutConifg: ExportPlateLayoutConfig

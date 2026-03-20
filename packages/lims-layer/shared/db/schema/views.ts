@@ -1,4 +1,4 @@
-import { appConstants } from '../../../shared/constants'
+import { appConstants } from '../../utils/constants'
 import _ from 'lodash'
 import { pgView, uuid, varchar, smallint, boolean } from 'drizzle-orm/pg-core'
 import { plates } from './plate'

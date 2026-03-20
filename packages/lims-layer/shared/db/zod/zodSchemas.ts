@@ -19,11 +19,11 @@ const insertPlateSchema = selectPlateSchema.omit({id: true}).partial()
 const updatePlateSchema = insertPlateSchema
 
 const selectWellsSchema = createSelectSchema(wells)
-const insertWellsSchema = selectWellsSchema.omit({id: true}).partial()
+const insertWellsSchema = selectWellsSchema.omit({id: true})
 const updateWellsSchema = insertWellsSchema.omit({plateId: true, x: true, y: true})
 
 const selectWellContentsSchema = createSelectSchema(wellContents)
-const insertWellContentsSchema = selectWellContentsSchema.omit({id: true}).partial()
+const insertWellContentsSchema = selectWellContentsSchema.omit({id: true})
 const updateWellContentsSchema = insertWellContentsSchema
 
 const selectWellContentSourcesSchema = createSelectSchema(wellContentSources, {createdAt: nullableDateSchema})

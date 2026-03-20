@@ -1,12 +1,8 @@
-import type { InferSelectModel } from 'drizzle-orm'
 import { sql } from 'drizzle-orm/sql'
 import { pgTable, uuid, smallint, varchar, unique, check, timestamp} from 'drizzle-orm/pg-core'
-import { createSelectSchema } from 'drizzle-zod'
-import type { ZodObject } from 'zod'
-import { z } from 'zod'
 import { plates } from './plate'
-import { users } from './user'
-import { appConstants } from '../../../shared/constants'
+import { users } from '../../../server/db/schema/user'
+import { appConstants } from '../../utils/constants'
 import _ from 'lodash'
 
 export const wells = pgTable('wells', {
@@ -63,19 +59,3 @@ export const wellContentSources = pgTable('well_content_sources', {
 }, (t) => [
   unique('unique_well_content_id_source_well_id').on(t.wellContentId, t.sourceWellId),
 ])
-
-const selectWellSchema = createSelectSchema(wells)
-const insertWellSchema = z.object({})
-
-export const schemas: Record<string, ZodObject> = {
-    selectWellSchema,
-    insertWellSchema
-}
-
-export const insertWellContentSchema = createSelectSchema(wellContents).omit({id: true}).partial()
-
-export type Well = InferSelectModel<typeof wells>
-export type NewWell = z.infer<typeof insertWellSchema>
-
-export type WellContent = InferSelectModel<typeof wellContents>
-export type NewWellContent = z.infer<typeof insertWellContentSchema>

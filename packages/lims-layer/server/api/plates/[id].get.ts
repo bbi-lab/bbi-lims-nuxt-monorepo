@@ -1,5 +1,5 @@
 import { selectRecord } from '../../utils/record'
-import { plates } from '../../db/schema/plate'
+import { plates } from '../../../shared/db/schema/plate'
 import _ from 'lodash'
 
 export default defineEventHandler(async (event) => {
