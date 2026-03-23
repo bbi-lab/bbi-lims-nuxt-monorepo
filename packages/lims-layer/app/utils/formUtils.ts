@@ -116,7 +116,9 @@ export function isValidUrl(url: string) {
   }
 }
 
-
+/**
+ * Functions for use with SmartForm and child components such as InputArray, which generate forms based on Zod schemas and fieldConfigs
+ */
 export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>, fieldConfig?: FormFieldConfig) => {
     let primeVueComponent = null
     const vBindObject = {}
@@ -127,9 +129,6 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         zodFieldDef = _.get(zodFieldDef, 'innerType.def', null)
     }
     const zodType = zodFieldDef?.type
-
-    // get additional fieldConfig object if available
-    // const fieldConfig = _.get(props.fieldConfigs, fieldName)
 
     // determine PrimeVue component based on Zod type and fieldConfig
     if (zodType == 'string') {
