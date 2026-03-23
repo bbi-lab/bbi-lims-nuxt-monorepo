@@ -4,7 +4,15 @@ import type { z } from 'zod'
 
 const props = defineProps({
     name: { type: String, required: true },
-    itemSchema: { type: Object as () => z.ZodObject<Record<string, z.ZodTypeAny>>, required: true },
+    itemSchema: {
+        type: Object as () => z.ZodObject<Record<string, z.ZodTypeAny>>,
+        required: true
+    },
+    fieldConfigs: {
+        type: Object as () => Record<string, FormFieldConfig>,
+        required: false,
+        default: () => ({}),
+    },
     canAdd: { type: Boolean, required: false, default: true },
     canDelete: { type: Boolean, required: false, default: true },
 })
@@ -68,29 +76,15 @@ watch(
 
 // Determine sub-fields from the item schema (ZodObject)
 const subFields = computed(() => {
-    if (!props.itemSchema?.shape) return []
+    return _.keys(props.itemSchema.shape).map((fieldName) => {
+        const fieldDefinition = getFormFieldDefinition(fieldName, props.itemSchema, _.get(props.fieldConfigs, fieldName))
 
-    return Object.entries(props.itemSchema.shape).map(([key, fieldSchema]: [string, any]) => {
-        // Traverse to find base type (unwrap optional, nullable, etc.)
-        let def = fieldSchema.def ?? null
-        while (def?.innerType) {
-            def = def.innerType?.def ?? null
+        return {
+            key: fieldName,
+            component: fieldDefinition.primeVueComponent,
+            label: fieldDefinition.label || _.startCase(fieldName),
+            vBindObject: fieldDefinition.vBindObject,
         }
-        const zodType = def?.type
-
-        let component = 'InputText'
-        const vBindObject: Record<string, any> = {}
-
-        if (zodType === 'number' || zodType === 'bigint') {
-            component = 'InputNumber'
-        } else if (zodType === 'boolean') {
-            component = 'Checkbox'
-            vBindObject.binary = true
-        } else if (zodType === 'date') {
-            component = 'DatePicker'
-        }
-
-        return { key, component, label: _.startCase(key), vBindObject }
     })
 })
 

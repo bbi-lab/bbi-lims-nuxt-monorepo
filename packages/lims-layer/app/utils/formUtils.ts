@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { z } from 'zod'
 
 interface SchemaItems {
     properties?: Record<string, { default?: any }>;
@@ -112,4 +113,69 @@ export function isValidUrl(url: string) {
   } catch (err) {
     return false
   }
+}
+
+
+export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>, fieldConfig?: FormFieldConfig) => {
+    let primeVueComponent = null
+    const vBindObject = {}
+
+    // Traverse Zod schema to find the base type of the field (unwrapping any modifiers like optional, nullable, etc.)
+    let zodFieldDef = _.get(zodSchema, `shape.${fieldName}.def`, null)
+    while (_.has(zodFieldDef, 'innerType')) {
+        zodFieldDef = _.get(zodFieldDef, 'innerType.def', null)
+    }
+    const zodType = zodFieldDef?.type
+
+    // get additional fieldConfig object if available
+    // const fieldConfig = _.get(props.fieldConfigs, fieldName)
+
+    // determine PrimeVue component based on Zod type and fieldConfig
+    if (zodType == 'string') {
+        const inputType = fieldConfig?.inputType
+        if (inputType === 'password') {
+            primeVueComponent = 'Password'
+        } else if (inputType === 'textarea') {
+            primeVueComponent = 'Textarea'
+        } else {
+            primeVueComponent = 'InputText'
+        }
+    } else if (zodType == 'number' || zodType === 'bigint') {
+        primeVueComponent = 'InputNumber'
+    } else if (zodType == 'boolean') {
+        primeVueComponent = 'Checkbox'
+        _.set(vBindObject, 'binary', true) // for boolean fields, we want to use the binary mode of the Checkbox component
+    } else if (zodType == 'date') {
+        primeVueComponent = 'DatePicker'
+    } else if (zodType == 'enum') {
+        primeVueComponent = 'Dropdown'
+        // Extract enum values from Zod schema, and map them to options for the Dropdown component
+        const enumValues = _.get(zodFieldDef, 'entries', [])
+
+        // Re-format entries to pass to PrimeVue Dropdown
+        const options = _.map(enumValues, (value, key) => ({
+            name: key,
+            code: value,
+        }))
+        _.assign(vBindObject, {
+            options,
+            optionLabel: 'name',
+            optionValue: 'code',
+            placeholder: 'Select an option',
+        })
+    } else if (zodType == 'array') {
+        primeVueComponent = 'InputArray'
+        // Pass the element schema so InputArray can determine sub-fields
+        const itemSchema = _.get(zodSchema, `shape.${fieldName}.def.element`)
+        _.set(vBindObject, 'itemSchema', itemSchema)
+    } else {
+        throw new Error(`Could not determine PrimeVue component for "${fieldName}": unrecognized Zod type "${zodType}"`)
+    }
+
+    // return full field definition
+    return {
+        primeVueComponent,
+        label: fieldConfig?.label,
+        vBindObject,
+    }
 }
