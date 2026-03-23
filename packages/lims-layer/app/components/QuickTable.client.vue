@@ -32,7 +32,7 @@ const refreshFormattedValues = (ids?: string[]) => {
     // set displayValue for columns with formatting functions
     for (const [k, v] of _.entries(formattedColumnDefs)) {
         const rows = ids ? _.filter(records.value, (x: any) => ids.includes(x.id)) : records.value
-        for (const r of rows) {
+        for (const r of rows || []) {
             // setting displayValue to preserve original while also replacing primative-type values with objects to include originalValue
             _.isObject(r[k]) ? _.set(r, [k, 'displayValue'], v.format(r)) : _.set(r, k, {originalValue: r[k], displayValue: v.format(r)})
         }
@@ -176,7 +176,7 @@ type GlobalFilterField = string | ((data: any) => string)
 
 const paginator = computed(() => !_.isEmpty(props.rowsPerPageOptions))
 const rowsPerPage: ComputedRef<number> = computed(() => _.get(props.rowsPerPageOptions, 0) as number)
-const records: Ref<any[]> = ref([])
+const records: Ref<any[] | undefined> = ref([])
 const selectedRecords: Ref<any[]> = ref([])
 const tableSchema = ref()
 const columnDefinitions: Ref<ColumnDefinitions> = ref({})
@@ -246,7 +246,7 @@ watch(sortedColumnDefs, (newValue, oldValue) => {
         } else {
             return x.path ?? x.key
         }
-  })
+  }) as GlobalFilterField[]
 
     if (props.showColumnFilters) {
         const filtersEntries = newValue.reduce((acc, colDef) => {
@@ -291,7 +291,7 @@ function didClickAddRecord(event: MouseEvent) {
 function getExportRecords() {
     const recordsToExport = _.isEmpty(selectedRecords.value) ? records.value : selectedRecords.value
     const exportRecords = []
-    for (const record of recordsToExport) {
+    for (const record of recordsToExport || []) {
         const exportRecord = {}
         for (const columnDef of _.filter(sortedColumnDefs.value, (x) => x.exportable !== false)) {
             if (_.map(visibleColumns.value, (x) => x.code).includes(columnDef.key)) {
@@ -375,7 +375,7 @@ const addOrRefreshRecordIds = async (recordIds: string[]) => {
     const newRecordIds: string[] = []
     for (const recordId of recordIds) {
         const existingRecordIndex = _.findIndex(records.value, {id: recordId})
-        if (existingRecordIndex!=-1) {
+        if (records.value && existingRecordIndex!=-1) {
             records.value[existingRecordIndex] = _.find(currentRecords, {id: recordId})
         } else {
             newRecordIds.push(recordId)

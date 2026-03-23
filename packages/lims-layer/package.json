@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@nuxt/icon": "^2.2.0",
+    "@primevue/core": "^4.5.4",
     "@primevue/forms": "^4.5.4",
     "@vueuse/core": "^14.1.0",
     "argon2": "^0.44.0",
@@ -43,6 +44,7 @@
     "@types/lodash": "^4.17.21",
     "@types/ms": "^2.1.0",
     "@types/node": "^24.10.4",
+    "@types/papaparse": "^5.5.2",
     "@types/pg": "^8.16.0",
     "eslint": "^9.39.2",
     "nuxt": "^4.2.2",
