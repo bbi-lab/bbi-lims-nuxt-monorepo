@@ -119,7 +119,11 @@ function notifyForm() {
     formField.value.onChange?.({ value: [...items.value] })
 }
 
-function onSubFieldUpdate() {
+function onSubFieldUpdate(value: any, index: number, key: string) {
+    const item = items.value[index]
+    if (item && value === '') {
+        item[key] = null
+    }
     notifyForm()
 }
 
@@ -138,7 +142,7 @@ function onSubFieldBlur(index: number, key: string) {
                     :is="sub.component"
                     v-model="item[sub.key]"
                     v-bind="sub.vBindObject"
-                    @update:modelValue="onSubFieldUpdate"
+                    @update:modelValue="(val: any) => onSubFieldUpdate(val, index, sub.key)"
                     @blur="onSubFieldBlur(index, sub.key)"
                 />
                 <Message v-if="touchedSubFields.has(`${index}.${sub.key}`) && itemErrors[index]?.[sub.key]" severity="error">

@@ -38,7 +38,11 @@ const props = defineProps({
   },
 })
 
-const resolver = zodResolver(props.zodSchema)
+const baseResolver = zodResolver(props.zodSchema)
+const resolver = (args: any) => {
+    const coerced = _.mapValues(args.values, v => v === '' ? null : v)
+    return baseResolver({ ...args, values: coerced })
+}
 
 // Extract schema fields for dynamic rendering
 const formFields = computed(() => {
