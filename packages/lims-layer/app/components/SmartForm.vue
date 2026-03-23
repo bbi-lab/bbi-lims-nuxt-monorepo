@@ -31,6 +31,11 @@ const props = defineProps({
     required: false,
     default: () => ({}),
   },
+  recordIds: {
+    type: Array as () => string[],  // for edit forms where we need to know the record ID(s) to include in the API request
+    required: false,
+    default: () => [],
+  },
   formDebug: {
     type: Boolean,
     required: false,
