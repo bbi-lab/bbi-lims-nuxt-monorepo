@@ -156,9 +156,8 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
                     :id="field.id"
                     :name="field.name"
                     v-bind="field.vBindObject"
-                    :fieldState="field.component === InputArray ? $form[field.name] : undefined"
                 />
-                <Message v-if="$form[field.name]?.invalid" severity="error">
+                <Message v-if="field.component !== InputArray ? $form[field.name]?.invalid : false" severity="error">
                     {{ _.get($form, `${field.name}.error.message`) }}
                 </Message>
             </div>

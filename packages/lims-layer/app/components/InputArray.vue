@@ -5,7 +5,6 @@ import type { z } from 'zod'
 const props = defineProps({
     name: { type: String, required: true },
     itemSchema: { type: Object as () => z.ZodObject<Record<string, z.ZodTypeAny>>, required: true },
-    fieldState: { type: Object, required: false }, // Optional prop to receive state from parent form
     canAdd: { type: Boolean, required: false, default: true },
     canDelete: { type: Boolean, required: false, default: true },
 })
@@ -14,12 +13,39 @@ const props = defineProps({
 // and registering this field, mirroring how BaseEditableHolder works
 const $pcForm = inject('$pcForm') as any
 const formField = ref<Record<string, any>>({})
+const itemErrors = ref<Record<number, Record<string, string>>>({})
+const touchedSubFields = ref(new Set<string>())
 
 watch(
     () => props.name,
     (name) => {
         if ($pcForm && name) {
-            formField.value = $pcForm.register(name, { name }) || {}
+            formField.value = $pcForm.register(name, {
+                name,
+                validateOnBlur: true,
+                resolver: ({ value }: { value: any }) => {
+                    const errors: string[] = []
+                    const perItem: Record<number, Record<string, string>> = {}
+
+                    if (Array.isArray(value)) {
+                        value.forEach((item: any, index: number) => {
+                            const result = props.itemSchema.safeParse(item)
+                            if (!result.success) {
+                                const itemErrs: Record<string, string> = {}
+                                perItem[index] = itemErrs
+                                for (const issue of result.error.issues) {
+                                    const path = issue.path.join('.')
+                                    itemErrs[path] = issue.message
+                                    errors.push(issue.message)
+                                }
+                            }
+                        })
+                    }
+
+                    itemErrors.value = perItem
+                    return { errors }
+                },
+            }) || {}
         }
     },
     { immediate: true },
@@ -80,8 +106,19 @@ function addItem() {
 }
 
 function removeItem(index: number) {
+    // Update touched keys: remove entries for deleted index, shift higher indices down
+    const updated = new Set<string>()
+    for (const key of touchedSubFields.value) {
+        const [idxStr, ...rest] = key.split('.')
+        const idx = Number(idxStr)
+        if (idx < index) updated.add(key)
+        else if (idx > index) updated.add(`${idx - 1}.${rest.join('.')}`)
+    }
+    touchedSubFields.value = updated
+
     items.value.splice(index, 1)
     notifyForm()
+    $pcForm?.validate?.(props.name)
 }
 
 function notifyForm() {
@@ -90,6 +127,11 @@ function notifyForm() {
 
 function onSubFieldUpdate() {
     notifyForm()
+}
+
+function onSubFieldBlur(index: number, key: string) {
+    touchedSubFields.value.add(`${index}.${key}`)
+    formField.value.onBlur?.()
 }
 </script>
 
@@ -100,13 +142,13 @@ function onSubFieldUpdate() {
                 <label class="text-sm font-medium">{{ sub.label }}</label>
                 <component
                     :is="sub.component"
-                    :name="`${name}.${index}.${sub.key}`"
                     v-model="item[sub.key]"
                     v-bind="sub.vBindObject"
                     @update:modelValue="onSubFieldUpdate"
+                    @blur="onSubFieldBlur(index, sub.key)"
                 />
-                <Message v-if="_.get(fieldState, `${index}.${sub.key}.invalid`)" severity="error">
-                    {{ _.get(fieldState, `${index}.${sub.key}.error.message`) }}
+                <Message v-if="touchedSubFields.has(`${index}.${sub.key}`) && itemErrors[index]?.[sub.key]" severity="error">
+                    {{ itemErrors[index][sub.key] }}
                 </Message>
             </div>
             <Button v-if="canDelete" icon="pi pi-trash" severity="danger" text @click="removeItem(index)" />
