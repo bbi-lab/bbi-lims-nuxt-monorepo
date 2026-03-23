@@ -10,12 +10,15 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: [
         'uuid',
-        'lodash',
+        'lodash', // CJS
         'moment',
-        'papaparse',
+        'papaparse', // CJS
         '@vueuse/core',
         'xlsx',
         'd3',
+        '@primevue/forms',
+        '@primevue/forms/resolvers/zod',
+        'zod',
       ]
     }
   }

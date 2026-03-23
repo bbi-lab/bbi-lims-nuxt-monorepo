@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@nuxt/icon": "^2.2.0",
+    "@primevue/forms": "^4.5.4",
     "@vueuse/core": "^14.1.0",
     "argon2": "^0.44.0",
     "base-layer": "workspace:*",
