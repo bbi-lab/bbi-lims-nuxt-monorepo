@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { z } from 'zod'
+import type { $ZodTypeDef } from "zod/v4/core"
 
 interface SchemaItems {
     properties?: Record<string, { default?: any }>;
@@ -172,10 +173,28 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         throw new Error(`Could not determine PrimeVue component for "${fieldName}": unrecognized Zod type "${zodType}"`)
     }
 
+    // set other fieldConfig options as v-bind properties
+    _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue']))
+
     // return full field definition
     return {
         primeVueComponent,
         label: fieldConfig?.label,
         vBindObject,
     }
+}
+
+export const getBlankFormInitialValues = (zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>, fieldConfigs?: Record<string, FormFieldConfig>) => {
+    // set initial values to null for all fields in the schema, except for arrays which should be set to empty arrays
+    return _.mapValues(zodSchema.shape, (zodObj, fieldName) => {
+        let zodObjDef: $ZodTypeDef = zodObj.def
+        while (_.has(zodObjDef, 'innerType.def')) {
+            zodObjDef = _.get(zodObjDef, 'innerType.def') as $ZodTypeDef
+        }
+        const defaultValue = fieldConfigs?.[fieldName]?.defaultValue
+        if (defaultValue !== undefined) {
+            return defaultValue
+        }
+        return _.get(zodObjDef, 'type') === 'array' ? [] : null
+    })
 }

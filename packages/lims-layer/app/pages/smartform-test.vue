@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import type { FieldConfig } from '../components/SmartForm.vue'
-
 import {schemas} from '../../shared/db/zod/zodSchemas'
 import _ from 'lodash'
 
@@ -42,16 +40,19 @@ const testArraySchema = z.array(z.object({
 
 _.set(zodSchema, 'shape.testArray', testArraySchema)
 
-// TODO: move this to a utils function since it will be needed in multiple places
-// will also need to handle existing populating the form with existing values for context of edit forms
-const initialValues = ref({
-    ..._.mapValues(schemas.plates.insert.shape, () => null),
-})
-
-const fieldConfigs: Record<string, FieldConfig> = {
-    password: { label: 'Password', inputType: 'password' },
-    description: { label: 'Description', inputType: 'textarea' }
+const fieldConfigs: Record<string, FormFieldConfig> = {
+    name: {
+        label: 'Plate Name',
+        defaultValue: 'My Plate',
+        disabled: true,
+    },
+    testArray: {
+        disabled: true,
+    }
 }
+
+const initialValues = ref(getBlankFormInitialValues(zodSchema, fieldConfigs))
+
 
 </script>
 <template>
