@@ -71,6 +71,11 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
         console.log('Submitted values:', values)
     }
 }
+
+const getErrorMessage = (form: any, fieldName: string) => {
+    const errorMsg = _.get(form, `${fieldName}.error.message`)
+    return errorMsg.endsWith(', received null') ? 'Required' : errorMsg
+}
 </script>
 
 <template>
@@ -92,7 +97,7 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
                     v-bind="field.vBindObject"
                 />
                 <Message v-if="field.component !== InputArray ? $form[field.name]?.invalid : false" severity="error">
-                    {{ _.get($form, `${field.name}.error.message`) }}
+                    {{ getErrorMessage($form, field.name) }}
                 </Message>
             </div>
         </template>

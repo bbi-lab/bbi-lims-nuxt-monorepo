@@ -42,9 +42,10 @@ watch(
                                 const itemErrs: Record<string, string> = {}
                                 perItem[index] = itemErrs
                                 for (const issue of result.error.issues) {
+                                    const issueMsg = issue.message.endsWith(', received null') ? 'Required': issue.message
                                     const path = issue.path.join('.')
-                                    itemErrs[path] = issue.message
-                                    errors.push(issue.message)
+                                    itemErrs[path] = issueMsg
+                                    errors.push(issueMsg)
                                 }
                             }
                         })
