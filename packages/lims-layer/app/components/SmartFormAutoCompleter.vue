@@ -168,19 +168,6 @@ function handleInput() {
   isUserTyping.value = true
 }
 
-// Handle focus - prepare for typing
-function handleFocus() {
-  isUserTyping.value = true
-}
-
-// Handle keydown - catch typing immediately
-function handleKeydown(event: KeyboardEvent) {
-  // Set typing flag immediately on any key that could change the input
-  if (event.key.length === 1 || event.key === 'Backspace' || event.key === 'Delete') {
-    isUserTyping.value = true
-  }
-}
-
 // Handle option selection
 function setModelValue() {
   isUserTyping.value = false // User finished typing by making a selection
@@ -250,8 +237,6 @@ defineExpose({
                 @option-select="setModelValue"
                 @blur="lostFocus"
                 @input="handleInput"
-                @focus="handleFocus"
-                @keydown="handleKeydown"
                 :placeholder="placeholderValue"
                 :dropdown="dropdown"
                 :disabled="disabled"

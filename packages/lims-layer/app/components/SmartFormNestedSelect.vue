@@ -296,16 +296,6 @@ function handleInput() {
   isUserTyping.value = true
 }
 
-function handleFocus() {
-  isUserTyping.value = true
-}
-
-function handleKeydown(event: KeyboardEvent) {
-  if (event.key.length === 1 || event.key === 'Backspace' || event.key === 'Delete') {
-    isUserTyping.value = true
-  }
-}
-
 // Notify form of value changes and trigger validation
 function notifyFormOfChange(value: any) {
   formField.value.onChange?.({ value })
@@ -349,9 +339,7 @@ defineExpose({
                     @complete="parentAutocompleteSearch"
                     @option-select="setParentValue"
                     @blur="parentLostFocus"
-                    @focus="handleFocus"
                     @input="handleInput"
-                    @keydown="handleKeydown"
                     :dropdown="true"
                     :disabled="disabled"
                 />
@@ -370,9 +358,7 @@ defineExpose({
                 @complete="autocompleteSearch"
                 @option-select="setModelValue"
                 @blur="lostFocus"
-                @focus="handleFocus"
                 @input="handleInput"
-                @keydown="handleKeydown"
                 :dropdown="true"
                 :disabled="_.isEmpty(parentValue) || disabled"
                 :placeholder="placeholderValue"
