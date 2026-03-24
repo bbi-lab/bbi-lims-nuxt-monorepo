@@ -117,7 +117,7 @@ export function isValidUrl(url: string) {
 }
 
 /**
- * Functions for use with SmartForm and child components such as InputArray, which generate forms based on Zod schemas and fieldConfigs
+ * Functions for use with SmartForm and child components such as SmartFormInputArray, which generate forms based on Zod schemas and fieldConfigs
  */
 export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>, fieldConfig?: FormFieldConfig) => {
     let primeVueComponent = null
@@ -179,8 +179,8 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
             placeholder: 'Select an option',
         })
     } else if (zodType == 'array') {
-        primeVueComponent = 'InputArray'
-        // Pass the element schema so InputArray can determine sub-fields
+        primeVueComponent = 'SmartFormInputArray'
+        // Pass the element schema so SmartFormInputArray can determine sub-fields
         const itemSchema = _.get(zodSchema, `shape.${fieldName}.def.element`)
         _.set(vBindObject, 'itemSchema', itemSchema)
 

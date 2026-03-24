@@ -6,7 +6,7 @@ import _ from 'lodash'
 import type { z } from 'zod'
 
 const toast = useToast()
-const InputArray = resolveComponent('InputArray')
+const SmartFormInputArray = resolveComponent('SmartFormInputArray')
 const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
 
 const props = defineProps({
@@ -59,8 +59,8 @@ const formFields = computed(() => {
         return {
             id: fieldName,
             name: fieldName,
-            component: fieldDefinition.primeVueComponent === 'InputArray'
-                ? InputArray
+            component: fieldDefinition.primeVueComponent === 'SmartFormInputArray'
+                ? SmartFormInputArray
                 : fieldDefinition.primeVueComponent === 'SmartFormAutoCompleter'
                 ? SmartFormAutoCompleter
                 : fieldDefinition.primeVueComponent,
@@ -107,7 +107,7 @@ const getErrorMessage = (form: any, fieldName: string) => {
                     :name="field.name"
                     v-bind="field.vBindObject"
                 />
-                <Message v-if="field.component !== InputArray ? $form[field.name]?.invalid : false" severity="error">
+                <Message v-if="field.component !== SmartFormInputArray ? $form[field.name]?.invalid : false" severity="error">
                     {{ getErrorMessage($form, field.name) }}
                 </Message>
             </div>
