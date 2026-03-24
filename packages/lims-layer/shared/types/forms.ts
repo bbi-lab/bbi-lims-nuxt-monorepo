@@ -7,6 +7,24 @@ export interface FormFieldConfig {
     disabled?: boolean
     readonly?: boolean
 
-    canAdd?: boolean // for array fields, whether the user can add items
-    canDelete?: boolean // for array fields, whether the user can delete items
+    // inputarray configuration
+    inputarray?: {
+        canAdd?: boolean
+        canDelete?: boolean
+    }
+
+    // autocompleter configuration
+    autocompleter?: {
+        searchBaseUrl: string
+        searchFields?: string[]
+        valueField?: string
+        displayFields?: string[]
+        displayFormat?: Function
+        searchWithClause?: Object
+        searchWhereClause?: Object
+        searchMode?: 'JsonLogic' | 'simple'
+        dropdown?: boolean
+        hideClearButton?: boolean
+        placeholderValue?: string
+    }
 }

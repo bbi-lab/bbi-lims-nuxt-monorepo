@@ -3,26 +3,6 @@ import { z } from 'zod'
 import {schemas} from '../../shared/db/zod/zodSchemas'
 import _ from 'lodash'
 
-// const zodSchema = z.object({
-//     username: z.string().min(1, { message: 'Username is required.' }),
-//     password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
-//     email: z.email({ message: 'Invalid email address.' }),
-//     age: z.number().min(18, { message: 'Must be at least 18 years old.' }),
-//     isActive: z.boolean(),
-//     description: z.string().optional(),
-//     nullableField: z.string().nullable(),
-// })
-
-// const initialValues = ref({
-//     username: 'doh',
-//     password: '',
-//     email: '',
-//     age: null,
-//     isActive: false,
-//     description: '',
-//     nullableField: null,
-// })
-
 const zodSchema = schemas.plates.insert
 
 // TODO: move this to a shared/utils function since it will be needed in multiple places
@@ -39,6 +19,7 @@ const testArraySchema = z.array(z.object({
 }))
 
 _.set(zodSchema, 'shape.testArray', testArraySchema)
+_.set(zodSchema, 'shape.geneId', z.string())
 
 const fieldConfigs: Record<string, FormFieldConfig> = {
     name: {
@@ -48,6 +29,17 @@ const fieldConfigs: Record<string, FormFieldConfig> = {
     },
     testArray: {
         disabled: true,
+    },
+    geneId: {
+        label: 'Gene',
+        autocompleter: {
+            searchBaseUrl: '/api/genes',
+            searchFields: ['symbol'],
+            valueField: 'id',
+            displayFields: ['symbol'],
+            placeholderValue: 'Search for a gene...',
+            dropdown: false,
+        }
     }
 }
 

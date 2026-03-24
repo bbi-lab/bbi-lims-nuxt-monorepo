@@ -7,6 +7,7 @@ import type { z } from 'zod'
 
 const toast = useToast()
 const InputArray = resolveComponent('InputArray')
+const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
 
 const props = defineProps({
   zodSchema: {
@@ -54,10 +55,15 @@ const formFields = computed(() => {
     return _.keys(props.zodSchema.shape).map((fieldName) => {
         const fieldDefinition = getFormFieldDefinition(fieldName, props.zodSchema, _.get(props.fieldConfigs, fieldName))
 
+        // Custom components must be converted from string to actual component reference for dynamic rendering
         return {
             id: fieldName,
             name: fieldName,
-            component: fieldDefinition.primeVueComponent === 'InputArray' ? InputArray : fieldDefinition.primeVueComponent,
+            component: fieldDefinition.primeVueComponent === 'InputArray'
+                ? InputArray
+                : fieldDefinition.primeVueComponent === 'SmartFormAutoCompleter'
+                ? SmartFormAutoCompleter
+                : fieldDefinition.primeVueComponent,
             label: fieldDefinition.label || _.startCase(fieldName),
             vBindObject: fieldDefinition.vBindObject,
         }

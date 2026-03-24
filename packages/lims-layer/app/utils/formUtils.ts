@@ -123,6 +123,21 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     let primeVueComponent = null
     const vBindObject = {}
 
+    // Check if this field should use autocompleter
+    if (fieldConfig?.autocompleter) {
+        primeVueComponent = 'SmartFormAutoCompleter'
+        _.assign(vBindObject, fieldConfig.autocompleter)
+
+        // set other fieldConfig options as v-bind properties (excluding autocompleter)
+        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue', 'autocompleter']))
+
+        return {
+            primeVueComponent,
+            label: fieldConfig?.label,
+            vBindObject,
+        }
+    }
+
     // Traverse Zod schema to find the base type of the field (unwrapping any modifiers like optional, nullable, etc.)
     let zodFieldDef = _.get(zodSchema, `shape.${fieldName}.def`, null)
     while (_.has(zodFieldDef, 'innerType')) {
@@ -168,12 +183,20 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         // Pass the element schema so InputArray can determine sub-fields
         const itemSchema = _.get(zodSchema, `shape.${fieldName}.def.element`)
         _.set(vBindObject, 'itemSchema', itemSchema)
+
+        _.assign(vBindObject, fieldConfig?.inputarray)
     } else {
         throw new Error(`Could not determine PrimeVue component for "${fieldName}": unrecognized Zod type "${zodType}"`)
     }
 
     // set other fieldConfig options as v-bind properties
-    _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue']))
+    _.assign(vBindObject, _.omit(fieldConfig, [
+        'label',
+        'inputType',
+        'defaultValue',
+        'autocompleter',
+        'inputarray',
+    ]))
 
     // return full field definition
     return {
