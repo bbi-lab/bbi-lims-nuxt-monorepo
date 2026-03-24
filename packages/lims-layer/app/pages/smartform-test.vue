@@ -18,8 +18,9 @@ const testArraySchema = z.array(z.object({
     quantity: z.number(),
 }))
 
-_.set(zodSchema, 'shape.testArray', testArraySchema)
-_.set(zodSchema, 'shape.geneId', z.string())
+_.set(zodSchema, 'shape.testArray', testArraySchema) // for testing inputarray
+_.set(zodSchema, 'shape.geneId', z.string()) // for testing autocompleter
+_.set(zodSchema, 'shape.userId', z.string()) // for testing nestedselect
 
 const fieldConfigs: Record<string, FormFieldConfig> = {
     name: {
@@ -39,6 +40,23 @@ const fieldConfigs: Record<string, FormFieldConfig> = {
             displayFields: ['symbol'],
             placeholderValue: 'Search for a gene...',
             dropdown: false,
+        }
+    },
+    userId: {
+        label: 'User',
+        nestedSelect: {
+            parentSearchBaseUrl: '/api/user-groups',
+            parentValueField: 'id',
+            parentDisplayFields: ['name'],
+            parentIftaLabel: 'User Group',
+            parentSearchWithClause: {},
+            searchBaseUrl: '/api/users',
+            valueField: 'id',
+            displayFields: ['name', 'email'],
+            searchWithClause: {userGroupMemberships: {with: {userGroup: true}}},
+            parentKeyField: 'userGroupMemberships.*.userGroup.id',
+            placeholderValue: 'Select a user...',
+            hideClearButton: false,
         }
     }
 }

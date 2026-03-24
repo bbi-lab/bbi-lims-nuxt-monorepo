@@ -8,6 +8,7 @@ import type { z } from 'zod'
 const toast = useToast()
 const SmartFormInputArray = resolveComponent('SmartFormInputArray')
 const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
+const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')
 
 const props = defineProps({
   zodSchema: {
@@ -63,6 +64,8 @@ const formFields = computed(() => {
                 ? SmartFormInputArray
                 : fieldDefinition.primeVueComponent === 'SmartFormAutoCompleter'
                 ? SmartFormAutoCompleter
+                : fieldDefinition.primeVueComponent === 'SmartFormNestedSelect'
+                ? SmartFormNestedSelect
                 : fieldDefinition.primeVueComponent,
             label: fieldDefinition.label || _.startCase(fieldName),
             vBindObject: fieldDefinition.vBindObject,

@@ -27,4 +27,24 @@ export interface FormFieldConfig {
         hideClearButton?: boolean
         placeholderValue?: string
     }
+
+    // nested select configuration
+    nestedSelect?: {
+        parentSearchBaseUrl: string
+        parentValueField?: string
+        parentDisplayFields?: string[]
+        parentDisplayOptions?: Object
+        parentSearchWithClause?: Object
+        parentIftaLabel?: string
+        searchBaseUrl: string
+        valueField?: string
+        displayFields?: string[]
+        displayFormat?: Function
+        searchWithClause?: Object
+        searchWhereClause?: Object
+        parentKeyField: string
+        hideClearButton?: boolean
+        placeholderValue?: string
+        inputClass?: string
+    }
 }

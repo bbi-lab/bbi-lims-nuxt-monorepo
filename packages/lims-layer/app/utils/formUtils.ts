@@ -123,6 +123,21 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     let primeVueComponent = null
     const vBindObject = {}
 
+    // Check if this field should use nested select
+    if (fieldConfig?.nestedSelect) {
+        primeVueComponent = 'SmartFormNestedSelect'
+        _.assign(vBindObject, fieldConfig.nestedSelect)
+
+        // set other fieldConfig options as v-bind properties (excluding nestedSelect)
+        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue', 'nestedSelect']))
+
+        return {
+            primeVueComponent,
+            label: fieldConfig?.label,
+            vBindObject,
+        }
+    }
+
     // Check if this field should use autocompleter
     if (fieldConfig?.autocompleter) {
         primeVueComponent = 'SmartFormAutoCompleter'
