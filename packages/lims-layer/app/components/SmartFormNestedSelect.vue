@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { JsonLogicAll, JsonLogicFilter, RulesLogic } from 'json-logic-js'
+import type { RulesLogic } from 'json-logic-js'
 import _ from 'lodash'
 
 const props = defineProps({
