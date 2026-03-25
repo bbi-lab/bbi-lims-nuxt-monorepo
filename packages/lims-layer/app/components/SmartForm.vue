@@ -88,7 +88,8 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
 
 const getErrorMessage = (form: any, fieldName: string) => {
     const errorMsg = _.get(form, `${fieldName}.error.message`)
-    return errorMsg.endsWith(', received null') ? 'Required' : errorMsg
+    const pattern = /, received (null|undefined)$/
+    return pattern.test(errorMsg) ? 'Required' : errorMsg
 }
 </script>
 
