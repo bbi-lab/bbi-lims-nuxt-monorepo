@@ -2,6 +2,9 @@
 import _ from 'lodash'
 import type { z } from 'zod'
 
+const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
+const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')
+
 const props = defineProps({
     name: { type: String, required: true },
     itemSchema: {
@@ -42,7 +45,8 @@ watch(
                                 const itemErrs: Record<string, string> = {}
                                 perItem[index] = itemErrs
                                 for (const issue of result.error.issues) {
-                                    const issueMsg = issue.message.endsWith(', received null') ? 'Required': issue.message
+                                    const pattern = /, received (null|undefined)$/
+                                    const issueMsg = pattern.test(issue.message) ? 'Required': issue.message
                                     const path = issue.path.join('.')
                                     itemErrs[path] = issueMsg
                                     errors.push(issueMsg)
@@ -82,7 +86,11 @@ const subFields = computed(() => {
 
         return {
             key: fieldName,
-            component: fieldDefinition.primeVueComponent,
+            component: fieldDefinition.primeVueComponent === 'SmartFormAutoCompleter'
+                ? SmartFormAutoCompleter
+                : fieldDefinition.primeVueComponent === 'SmartFormNestedSelect'
+                ? SmartFormNestedSelect
+                : fieldDefinition.primeVueComponent,
             label: fieldDefinition.label || _.startCase(fieldName),
             vBindObject: fieldDefinition.vBindObject,
         }
@@ -141,6 +149,8 @@ function onSubFieldBlur(index: number, key: string) {
                 <label class="text-sm font-medium">{{ sub.label }}</label>
                 <component
                     :is="sub.component"
+                    :key="`${props.name}-${index}-${sub.key}`"
+                    :name="`${props.name}.${index}.${sub.key}`"
                     v-model="item[sub.key]"
                     v-bind="sub.vBindObject"
                     @update:modelValue="(val: any) => onSubFieldUpdate(val, index, sub.key)"

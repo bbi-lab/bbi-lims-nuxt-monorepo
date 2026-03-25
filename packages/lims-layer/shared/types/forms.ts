@@ -7,14 +7,15 @@ export interface FormFieldConfig {
     disabled?: boolean
     readonly?: boolean
 
-    // inputarray configuration
-    inputarray?: {
+    // inputArray configuration
+    inputArray?: {
         canAdd?: boolean
         canDelete?: boolean
+        fieldConfigs?: Record<string, FormFieldConfig>
     }
 
-    // autocompleter configuration
-    autocompleter?: {
+    // autoCompleter configuration
+    autoCompleter?: {
         searchBaseUrl: string
         searchFields?: string[]
         valueField?: string
@@ -28,7 +29,7 @@ export interface FormFieldConfig {
         placeholderValue?: string
     }
 
-    // nested select configuration
+    // nestedSelect configuration
     nestedSelect?: {
         parentSearchBaseUrl: string
         parentValueField?: string

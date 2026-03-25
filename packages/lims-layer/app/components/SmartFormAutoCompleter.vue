@@ -5,6 +5,9 @@ const props = defineProps({
   // Field identification for SmartForms integration
   name: { type: String, required: true },
 
+  // v-model support
+  modelValue: { type: [String, Number, Object], default: null },
+
   // AutoCompleter configuration props (same as original)
   searchBaseUrl: { type: String, required: true },
   searchFields: { type: Array, default: ['name'] },
@@ -24,6 +27,11 @@ const props = defineProps({
   placeholderValue: { type: String },
   inputClass: { type: String },
 })
+
+// Define emits for v-model support
+const emit = defineEmits<{
+  'update:modelValue': [value: any]
+}>()
 
 // Integrate with PrimeVue Forms by injecting the parent Form instance
 const $pcForm = inject('$pcForm') as any
@@ -52,6 +60,21 @@ watch(
     }
   },
   { immediate: true },
+)
+
+// Sync modelValue prop with internal currentValue
+watch(
+  () => props.modelValue,
+  async (newValue) => {
+    if (!isUserTyping.value && newValue !== getCurrentValueCode()) {
+      if (newValue && newValue !== null && newValue !== '') {
+        await setValueFromFormState(newValue)
+      } else {
+        currentValue.value = null
+      }
+    }
+  },
+  { immediate: true }
 )
 
 // Debounce form state changes to avoid clearing during rapid typing
@@ -154,13 +177,13 @@ async function autocompleteSearch(event: any) {
 function clearValue() {
   isUserTyping.value = false // Reset typing flag
   currentValue.value = null
+  emit('update:modelValue', null) // Emit v-model update
   notifyFormOfChange(null)
 }
 
 // Clear button click handler
 function clickedClearValue() {
   clearValue()
-//   emit('clearedValue')
 }
 
 // Handle user input (when they start typing)
@@ -176,11 +199,11 @@ function setModelValue() {
     const selectedValue = _.get(currentValue.value, 'code')
     const selectedRecord = _.get(currentValue.value, 'record')
 
+    // Emit v-model update first
+    emit('update:modelValue', selectedValue)
+
     // Notify form with the selected value (can be just the ID or the full record based on needs)
     notifyFormOfChange(selectedValue)
-
-    // Emit events for backward compatibility
-    // emit('changedValue', { value: selectedValue, record: selectedRecord })
   } else {
     clearValue()
   }
@@ -210,12 +233,6 @@ function notifyFormOfChange(value: any) {
     })
   })
 }
-
-// Emit definitions for backward compatibility
-// const emit = defineEmits([
-//   'clearedValue',
-//   'changedValue',
-// ])
 
 // Expose methods for external access
 defineExpose({

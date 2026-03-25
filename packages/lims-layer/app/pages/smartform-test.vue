@@ -16,11 +16,13 @@ _.set(zodSchema, 'shape.plateType', z.enum(_.invert(plateTypeOptions)))
 const testArraySchema = z.array(z.object({
     itemName: z.string(),
     quantity: z.number(),
+    geneId: z.string(), // for testing autoCompleter in array
+    userId: z.string(), // for testing nestedSelect in array
 }))
 
-_.set(zodSchema, 'shape.testArray', testArraySchema) // for testing inputarray
-_.set(zodSchema, 'shape.geneId', z.string()) // for testing autocompleter
-_.set(zodSchema, 'shape.userId', z.string()) // for testing nestedselect
+_.set(zodSchema, 'shape.testArray', testArraySchema) // for testing inputArray
+_.set(zodSchema, 'shape.geneId', z.string()) // for testing autoCompleter
+_.set(zodSchema, 'shape.userId', z.string()) // for testing nestedSelect
 
 const fieldConfigs: Record<string, FormFieldConfig> = {
     name: {
@@ -29,11 +31,42 @@ const fieldConfigs: Record<string, FormFieldConfig> = {
         disabled: true,
     },
     testArray: {
-        disabled: true,
+        inputArray: {
+            fieldConfigs: {
+                geneId: {
+                    label: 'Gene',
+                    autoCompleter: {
+                        searchBaseUrl: '/api/genes',
+                        searchFields: ['symbol'],
+                        valueField: 'id',
+                        displayFields: ['symbol'],
+                        placeholderValue: 'Search for a gene...',
+                        dropdown: false,
+                    }
+                },
+                userId: {
+                    label: 'User',
+                    nestedSelect: {
+                        parentSearchBaseUrl: '/api/user-groups',
+                        parentValueField: 'id',
+                        parentDisplayFields: ['name'],
+                        parentIftaLabel: 'User Group',
+                        parentSearchWithClause: {},
+                        searchBaseUrl: '/api/users',
+                        valueField: 'id',
+                        displayFields: ['name', 'email'],
+                        searchWithClause: {userGroupMemberships: {with: {userGroup: true}}},
+                        parentKeyField: 'userGroupMemberships.*.userGroup.id',
+                        placeholderValue: 'Select a user...',
+                        hideClearButton: false,
+                    }
+                }
+            }
+        }
     },
     geneId: {
         label: 'Gene',
-        autocompleter: {
+        autoCompleter: {
             searchBaseUrl: '/api/genes',
             searchFields: ['symbol'],
             valueField: 'id',

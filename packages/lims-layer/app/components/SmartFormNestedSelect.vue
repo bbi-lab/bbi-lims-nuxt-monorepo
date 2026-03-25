@@ -6,6 +6,9 @@ const props = defineProps({
   // Field identification for SmartForms integration
   name: { type: String, required: true },
 
+  // v-model support
+  modelValue: { type: [String, Number, Object], default: null },
+
   // Parent AutoCompleter configuration props
   parentSearchBaseUrl: { type: String, required: true },
   parentValueField: { type: String, default: 'id' },
@@ -30,6 +33,11 @@ const props = defineProps({
   inputClass: { type: String },
   disabled: { type: Boolean, default: false },
 })
+
+// Define emits for v-model support
+const emit = defineEmits<{
+  'update:modelValue': [value: any]
+}>()
 
 // Integrate with PrimeVue Forms by injecting the parent Form instance
 const $pcForm = inject('$pcForm') as any
@@ -74,6 +82,21 @@ const debouncedFormStateSync = _.debounce(async (newValue) => {
 watch(
   () => $pcForm?.getFieldState?.(props.name)?.value,
   debouncedFormStateSync,
+)
+
+// Sync modelValue prop with internal currentValue
+watch(
+  () => props.modelValue,
+  async (newValue) => {
+    if (!isUserTyping.value && newValue !== getCurrentValueCode()) {
+      if (newValue && newValue !== null && newValue !== '') {
+        await setValueFromFormState(newValue)
+      } else {
+        currentValue.value = null
+      }
+    }
+  },
+  { immediate: true }
 )
 
 // Watch parent value changes and update child filter
@@ -217,10 +240,7 @@ async function autocompleteSearch(event: any) {
     {"or": _.map(props.displayFields, (x) => { return {"startsWith": [{"var": x}, event.query] } })} :
     {"startsWith": [{"var": props.displayFields[0]}, event.query] }
 
-  let finalWhereClause = whereClause
-  if (searchWhereClauseFinal.value) {
-    finalWhereClause = {"and": [whereClause, searchWhereClauseFinal.value]}
-  }
+  const finalWhereClause = searchWhereClauseFinal.value ? {"and": [whereClause, searchWhereClauseFinal.value]} : whereClause
 
   try {
     const filtered = await RecordService.getRecords(props.searchBaseUrl, props.searchWithClause, finalWhereClause)
@@ -241,6 +261,7 @@ async function autocompleteSearch(event: any) {
 function clearValue() {
   isUserTyping.value = false
   currentValue.value = null
+  emit('update:modelValue', null) // Emit v-model update
   notifyFormOfChange(null)
 }
 
@@ -256,8 +277,11 @@ function clearAllValues() {
   // Force re-render of AutoComplete components
   componentKey.value += 1
 
-  // Notify form
-  formField.value.onChange?.({ value: null })
+  // Emit v-model update for cleared value
+  emit('update:modelValue', null)
+
+  // Properly notify form with touched and dirty states
+  notifyFormOfChange(null)
 }
 
 // Handle parent selection
@@ -273,6 +297,9 @@ function setModelValue() {
   if (_.has(currentValue.value, 'code')) {
     const selectedValue = _.get(currentValue.value, 'code')
     const selectedRecord = _.get(currentValue.value, 'record')
+
+    // Emit v-model update first
+    emit('update:modelValue', selectedValue)
 
     // Notify form with the selected value
     notifyFormOfChange(selectedValue)

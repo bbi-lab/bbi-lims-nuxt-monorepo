@@ -138,13 +138,13 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         }
     }
 
-    // Check if this field should use autocompleter
-    if (fieldConfig?.autocompleter) {
+    // Check if this field should use autoCompleter
+    if (fieldConfig?.autoCompleter) {
         primeVueComponent = 'SmartFormAutoCompleter'
-        _.assign(vBindObject, fieldConfig.autocompleter)
+        _.assign(vBindObject, fieldConfig.autoCompleter)
 
-        // set other fieldConfig options as v-bind properties (excluding autocompleter)
-        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue', 'autocompleter']))
+        // set other fieldConfig options as v-bind properties (excluding autoCompleter)
+        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue', 'autoCompleter']))
 
         return {
             primeVueComponent,
@@ -199,7 +199,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         const itemSchema = _.get(zodSchema, `shape.${fieldName}.def.element`)
         _.set(vBindObject, 'itemSchema', itemSchema)
 
-        _.assign(vBindObject, fieldConfig?.inputarray)
+        _.assign(vBindObject, fieldConfig?.inputArray)
     } else {
         throw new Error(`Could not determine PrimeVue component for "${fieldName}": unrecognized Zod type "${zodType}"`)
     }
@@ -209,8 +209,9 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         'label',
         'inputType',
         'defaultValue',
-        'autocompleter',
-        'inputarray',
+        'autoCompleter',
+        'inputArray',
+        'nestedSelect',
     ]))
 
     // return full field definition
