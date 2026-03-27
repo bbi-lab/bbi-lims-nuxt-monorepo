@@ -19,15 +19,6 @@ const props = defineProps({
     type: Object as () => Record<string, unknown>,
     required: true,
   },
-  submitUrl: {
-    type: String,
-    required: true,
-  },
-  requestType: {
-    type: String as () => 'POST' | 'PUT' | 'PATCH',
-    required: false,
-    default: 'POST',
-  },
   fieldConfigs: {
     type: Object as () => Record<string, FormFieldConfig>,
     required: false,
@@ -44,6 +35,10 @@ const props = defineProps({
     default: false,
   },
 })
+
+const emit = defineEmits([
+    'submitSuccess',
+])
 
 const baseResolver = zodResolver(props.zodSchema)
 const resolver = (args: any) => {
@@ -76,12 +71,13 @@ const formFields = computed(() => {
 const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
     const { values, valid } = event
     if (valid) {
+
         toast.add({
             severity: 'success',
             summary: 'Form Submitted',
-            detail: `Your form has been submitted to ${props.submitUrl} using ${props.requestType}.`,
             life: 3000,
         })
+        emit('submitSuccess', values)
         console.log('Submitted values:', values)
     }
 }
@@ -117,15 +113,17 @@ const getErrorMessage = (form: any, fieldName: string) => {
             </div>
         </template>
         <Button type="submit" label="Submit" :disabled="!$form.valid" />
-        <div v-if="formDebug" class="mb-4 p-4 bg-gray-100 rounded">
+        <div v-if="formDebug" class="flex flex-col my-4 p-4 bg-blue-100 rounded">
             <h3>Debug Info:</h3>
-            <pre>initialValues: {{ JSON.stringify(initialValues, null, 2) }}</pre>
-            <hr />
-            <pre>$form: {{ JSON.stringify($form, null, 2) }}</pre>
-            <hr />
-            <pre>zodSchema: {{ JSON.stringify(zodSchema, null, 2) }}</pre>
-            <hr />
-            <pre>formFields: {{ JSON.stringify(formFields, null, 2) }}</pre>
+            <div class="m-4">
+                <pre class="whitespace-pre-wrap wrap-break-word">initialValues: {{ initialValues }}</pre>
+                <hr />
+                <pre class="whitespace-pre-wrap wrap-break-word">$form: {{ $form }}</pre>
+                <hr />
+                <pre class="whitespace-pre-wrap wrap-break-word">zodSchema: {{ zodSchema }}</pre>
+                <hr />
+                <pre class="whitespace-pre-wrap wrap-break-word">formFields: {{ formFields }}</pre>
+            </div>
         </div>
     </Form>
 </template>
