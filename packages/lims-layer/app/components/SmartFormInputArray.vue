@@ -161,7 +161,7 @@ function onSubFieldBlur(index: number, key: string) {
 
 <template>
     <div class="flex flex-col gap-2">
-        <div v-for="(item, index) in items" :key="`${props.name}-${index}`" class="flex flex-col items-end gap-2 border border-surface rounded p-2">
+        <div v-for="(item, index) in items" :key="`${props.name}-${index}`" class="flex flex-row items-start gap-2 border border-surface rounded p-2">
             <div class="flex flex-wrap gap-2 border border-surface rounded p-2">
                 <div v-for="sub in subFields" :key="sub.key" class="flex flex-col gap-1">
                     <label class="text-sm font-medium">{{ sub.label }}</label>
