@@ -5,13 +5,14 @@ import { RecordService } from '../utils/record'
 import Papa from 'papaparse'
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
 import {v4 as uuidv4} from 'uuid'
+import { schemas } from '../../shared/db/zod/zodSchemas'
 
 const config = useRuntimeConfig()
 const { loggedIn } = useUserSession()
 const { showLoginModal, isLoginModalVisible } = useLayout()
 
 const apiBaseUrl = computed(() => `${config.public.apiBase}/${props.tableName}`)
-const schemasUrl = computed(() => `${config.public.apiBase}/schemas/${props.tableName}`)
+// const schemasUrl = computed(() => `${config.public.apiBase}/schemas/${props.tableName}`)
 const exportFilename = computed(() => `${props.tableName}_${new Date().toISOString().replace(/[^0-9]/g, '').slice(0, -3)}`)
 
 const route = useRoute()
@@ -39,7 +40,8 @@ const refreshFormattedValues = (ids?: string[]) => {
     }
 }
 const loadTableData = async () => {
-    tableSchema.value = props.schemaName ? await RecordService.getSchema(schemasUrl.value, props.schemaName) : null
+    // tableSchema.value = props.schemaName ? await RecordService.getSchema(schemasUrl.value, props.schemaName) : null
+    tableSchema.value = props.tableName && props.schemaName ? _.get(schemas, [props.tableName, props.schemaName]) : null
     records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where, props.expandEnums)
 
     refreshFormattedValues()
@@ -48,7 +50,7 @@ const loadTableData = async () => {
 
     // calculate column definitions from JSON Schema properties and merge with columnDefs from props
     const tableColumnDefinitions =  _.mapValues(
-        tableSchema.value?.properties, (v, k) => {
+        tableSchema.value?.toJSONSchema().properties, (v, k) => {
             // anyOf typically indicates a nullable field, but we're only concerned with the non-nullable one
             if (v.anyOf) {
                 v = _.find(v.anyOf, (x) => x.type != 'null')
