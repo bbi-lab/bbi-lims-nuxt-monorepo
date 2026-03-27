@@ -9,15 +9,20 @@ export default defineNuxtConfig({
   vite: {
     optimizeDeps: {
       include: [
-        'uuid',
+        '@primevue/core/api',
+        '@primevue/forms',
+        '@primevue/forms/resolvers/zod',
+        '@vueuse/core',
+        'd3',
+        'drizzle-zod',
+        'drizzle-orm/pg-core',
+        'drizzle-orm',
+        'drizzle-orm/sql',
         'lodash', // CJS
         'moment',
         'papaparse', // CJS
-        '@vueuse/core',
+        'uuid',
         'xlsx',
-        'd3',
-        '@primevue/forms',
-        '@primevue/forms/resolvers/zod',
         'zod',
       ]
     }
