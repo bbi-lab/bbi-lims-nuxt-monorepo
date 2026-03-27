@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
+import { z } from 'zod'
+import { schemas } from '../../shared/db/zod/zodSchemas'
 
 const router = useRouter()
 const route = useRoute()
@@ -92,6 +94,17 @@ const fieldDefs = {
         },
     },
 }
+
+const fieldConfigs: Record<string, FormFieldConfig> = {
+    name: {
+        label: 'Plate Name',
+    },
+}
+
+// Apply enum mapping for plateType field
+const plateTypeOptions = _.mapValues(appConstants.enumLookups.plates.plateType, 'label')
+_.set(schemas.plates.insert, 'shape.plateType', z.enum(_.invert(plateTypeOptions)))
+_.set(schemas.plates.update, 'shape.plateType', z.enum(_.invert(plateTypeOptions)))
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">
@@ -115,26 +128,31 @@ const fieldDefs = {
             />
         </SplitterPanel>
          <SplitterPanel v-if="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm">
-            <QuickForm
+            <RecordsSmartForm
                 v-if="crudTable.state.showAddForm"
-                table-name="plates"
-                schema-name="insert"
-                :field-defs="fieldDefs"
-                :readonly-values="readonlyValues"
+                submitUrl="/api/plates"
+                submitMethod="POST"
+                :zodSchema="schemas.plates.insert"
+                :fieldConfigs="fieldConfigs"
+                :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
                 @record-add="crudTable.didAddRecord"
             />
-            <QuickForm
+            <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                :record-id="crudTable.state.editingRecordId"
-                table-name="plates"
-                schema-name="update"
-                :field-defs="{...fieldDefs, plateType: {readOnly: true, index: 1}, sizeX: {readOnly: true}, sizeY: {readOnly: true}}"
-                :readonly-values="readonlyValues"
+                selectUrl="/api/plates"
+                :recordIds="[crudTable.state.editingRecordId]"
+                submitUrl="/api/plates"
+                submitMethod="PUT"
+                :zodSchema="schemas.plates.update"
+                :fieldConfigs="fieldConfigs"
+                :readonlyValues="readonlyValues"
+                :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
                 @record-update="crudTable.didUpdateRecord"
                 @record-delete="crudTable.didDeleteRecord"
             />
+            <!-- TODO: Multiple edit form not yet implemented with RecordsSmartForm -->
         </SplitterPanel>
     </Splitter>
 </template>
