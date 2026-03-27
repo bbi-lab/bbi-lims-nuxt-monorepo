@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import type { z } from 'zod'
+import { nextTick } from 'vue'
 
 const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
 const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')
@@ -27,9 +28,14 @@ const formField = ref<Record<string, any>>({})
 const itemErrors = ref<Record<number, Record<string, string>>>({})
 const touchedSubFields = ref(new Set<string>())
 
+// Block $pcForm from reaching child components so they don't auto-register with the parent Form.
+// SmartFormInputArray owns all form state for its children.
+provide('$pcForm', null)
+
 watch(
     () => props.name,
     (name) => {
+        console.log('Registering field with form:', $pcForm)
         if ($pcForm && name) {
             formField.value = $pcForm.register(name, {
                 name,
@@ -71,8 +77,10 @@ const items = ref<Record<string, any>[]>([])
 watch(
     () => $pcForm?.getFieldState?.(props.name)?.value,
     (newValue) => {
-        if (Array.isArray(newValue) && newValue !== items.value) {
-            items.value = newValue.map((item: any) => ({ ...item }))
+        if (Array.isArray(newValue)) {
+            if (newValue.length !== items.value.length || !_.isEqual(newValue, items.value)) {
+                items.value = newValue.map((item: any) => ({ ...item }))
+            }
         } else if (newValue === null || newValue === undefined) {
             items.value = []
         }
@@ -121,7 +129,9 @@ function removeItem(index: number) {
 
     items.value.splice(index, 1)
     notifyForm()
-    $pcForm?.validate?.(props.name)
+    nextTick(() => {
+        $pcForm?.validate?.(props.name)
+    })
 }
 
 function notifyForm() {
@@ -134,33 +144,41 @@ function onSubFieldUpdate(value: any, index: number, key: string) {
         item[key] = null
     }
     notifyForm()
+    touchedSubFields.value.add(`${index}.${key}`)
+    nextTick(() => {
+        $pcForm?.validate?.(props.name)
+    })
 }
 
 function onSubFieldBlur(index: number, key: string) {
     touchedSubFields.value.add(`${index}.${key}`)
     formField.value.onBlur?.()
+    nextTick(() => {
+        $pcForm?.validate?.(props.name)
+    })
 }
 </script>
 
 <template>
     <div class="flex flex-col gap-2">
-        <div v-for="(item, index) in items" :key="index" class="flex items-end gap-2 border border-surface rounded p-2">
-            <div v-for="sub in subFields" :key="sub.key" class="flex flex-col gap-1">
-                <label class="text-sm font-medium">{{ sub.label }}</label>
-                <component
-                    :is="sub.component"
-                    :key="`${props.name}-${index}-${sub.key}`"
-                    :name="`${props.name}.${index}.${sub.key}`"
-                    v-model="item[sub.key]"
-                    v-bind="sub.vBindObject"
-                    @update:modelValue="(val: any) => onSubFieldUpdate(val, index, sub.key)"
-                    @blur="onSubFieldBlur(index, sub.key)"
-                />
-                <Message v-if="touchedSubFields.has(`${index}.${sub.key}`) && itemErrors[index]?.[sub.key]" severity="error">
-                    {{ itemErrors[index][sub.key] }}
-                </Message>
+        <div v-for="(item, index) in items" :key="`${props.name}-${index}`" class="flex flex-col items-end gap-2 border border-surface rounded p-2">
+            <div class="flex flex-wrap gap-2 border border-surface rounded p-2">
+                <div v-for="sub in subFields" :key="sub.key" class="flex flex-col gap-1">
+                    <label class="text-sm font-medium">{{ sub.label }}</label>
+                    <component
+                        :is="sub.component"
+                        :key="`${props.name}-${index}-${sub.key}`"
+                        v-model="item[sub.key]"
+                        v-bind="sub.vBindObject"
+                        @update:modelValue="(val: any) => onSubFieldUpdate(val, index, sub.key)"
+                        @blur="onSubFieldBlur(index, sub.key)"
+                    />
+                    <Message v-if="touchedSubFields.has(`${index}.${sub.key}`) && itemErrors[index]?.[sub.key]" severity="error">
+                        {{ itemErrors[index][sub.key] }}
+                    </Message>
+                </div>
             </div>
-            <Button v-if="canDelete" icon="pi pi-trash" severity="danger" text @click="removeItem(index)" />
+            <Button v-if="canDelete" icon="pi pi-trash" severity="danger" text @click="() => removeItem(index)" />
         </div>
         <Button v-if="canAdd" icon="pi pi-plus" label="Add Item" severity="secondary" outlined @click="addItem" class="w-fit" />
     </div>

@@ -37,6 +37,7 @@ const props = defineProps({
 // Define emits for v-model support
 const emit = defineEmits<{
   'update:modelValue': [value: any]
+  'blur': []
 }>()
 
 // Integrate with PrimeVue Forms by injecting the parent Form instance
@@ -312,6 +313,7 @@ function setModelValue() {
 async function lostFocus() {
   isUserTyping.value = false
   formField.value.onBlur?.()
+  emit('blur')
 }
 
 async function parentLostFocus() {

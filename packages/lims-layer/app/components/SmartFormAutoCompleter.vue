@@ -31,6 +31,7 @@ const props = defineProps({
 // Define emits for v-model support
 const emit = defineEmits<{
   'update:modelValue': [value: any]
+  'blur': []
 }>()
 
 // Integrate with PrimeVue Forms by injecting the parent Form instance
@@ -217,6 +218,7 @@ async function lostFocus() {
     clearValue()
   }
   formField.value.onBlur?.()
+  emit('blur')
 }
 
 // Notify form of value changes and trigger validation
@@ -234,6 +236,7 @@ function notifyFormOfChange(value: any) {
   })
 }
 
+// Clean up form registration when component is destroyed (e.g. array item removal)
 // Expose methods for external access
 defineExpose({
   clearValue,
