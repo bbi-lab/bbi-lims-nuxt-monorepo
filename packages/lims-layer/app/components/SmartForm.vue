@@ -5,7 +5,6 @@ import { zodResolver } from '@primevue/forms/resolvers/zod'
 import _ from 'lodash'
 import type { z } from 'zod'
 
-const toast = useToast()
 const SmartFormInputArray = resolveComponent('SmartFormInputArray')
 const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
 const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')
@@ -71,12 +70,6 @@ const formFields = computed(() => {
 const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
     const { values, valid } = event
     if (valid) {
-
-        toast.add({
-            severity: 'success',
-            summary: 'Form Submitted',
-            life: 3000,
-        })
         emit('submitSuccess', values)
         console.log('Submitted values:', values)
     }
