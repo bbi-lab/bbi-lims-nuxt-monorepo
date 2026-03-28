@@ -37,6 +37,8 @@ const formField = ref<Record<string, any>>({})
 
 // Local state
 const localValue = ref<number | null>(props.modelValue)
+const isUserEditing = ref(false)
+const inputNumberRef = ref<any>(null)
 
 // Register with form
 watch(
@@ -54,11 +56,11 @@ watch(
     { immediate: true },
 )
 
-// Sync modelValue prop → local state
+// Sync modelValue prop → local state (for use outside PrimeVue Forms, e.g. SmartFormMultiple)
 watch(
     () => props.modelValue,
     (newValue) => {
-        if (newValue !== localValue.value) {
+        if (!isUserEditing.value && newValue !== localValue.value) {
             localValue.value = newValue
         }
     },
@@ -68,40 +70,56 @@ watch(
 watch(
     () => $pcForm?.getFieldState?.(props.name)?.value,
     (newValue) => {
-        const resolved = newValue ?? null
-        if (resolved !== localValue.value) {
-            localValue.value = resolved
+        if (!isUserEditing.value) {
+            const resolved = newValue ?? null
+            if (resolved !== localValue.value) {
+                localValue.value = resolved
+            }
         }
     },
     { immediate: true },
 )
 
 function onValueChange(newValue: number | null) {
+    isUserEditing.value = true
     localValue.value = newValue
     emit('update:modelValue', newValue)
     notifyFormOfChange(newValue)
+    nextTick(() => {
+        isUserEditing.value = false
+    })
 }
 
 function notifyFormOfChange(value: number | null) {
     if (!$pcForm) return
     formField.value?.onChange?.({ value })
-    nextTick(() => {
-        $pcForm.setFieldState?.(props.name, {
-            value,
-            touched: true,
-            dirty: true,
-        })
-    })
 }
 
 function onBlur() {
     formField.value?.onBlur?.()
     $pcForm?.validate?.(props.name)
 }
+
+// Attach native blur listener to the underlying <input> element for reliable
+// blur detection on both tab-out and click-out (InputNumber component event is inconsistent)
+onMounted(() => {
+    const inputEl = inputNumberRef.value?.$el?.querySelector('input')
+    if (inputEl) {
+        inputEl.addEventListener('blur', onBlur)
+    }
+})
+
+onBeforeUnmount(() => {
+    const inputEl = inputNumberRef.value?.$el?.querySelector('input')
+    if (inputEl) {
+        inputEl.removeEventListener('blur', onBlur)
+    }
+})
 </script>
 
 <template>
     <InputNumber
+        ref="inputNumberRef"
         :id="props.name"
         :modelValue="localValue"
         :disabled="disabled"
@@ -118,6 +136,5 @@ function onBlur() {
         :currency="currency"
         :step="step"
         @update:modelValue="onValueChange"
-        @blur="onBlur"
     />
 </template>
