@@ -8,6 +8,7 @@ import type { z } from 'zod'
 const SmartFormInputArray = resolveComponent('SmartFormInputArray')
 const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
 const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')
+const SmartFormInputNumber = resolveComponent('SmartFormInputNumber')
 
 const props = defineProps({
   zodSchema: {
@@ -24,7 +25,7 @@ const props = defineProps({
     default: () => ({}),
   },
   recordIds: {
-    type: Array as () => string[],  // for edit forms where we need to know the record ID(s) to include in the API request
+    type: Array as () => string[],
     required: false,
     default: () => [],
   },
@@ -39,11 +40,7 @@ const emit = defineEmits([
     'submitSuccess',
 ])
 
-const baseResolver = zodResolver(props.zodSchema)
-const resolver = (args: any) => {
-    const coerced = _.mapValues(args.values, v => v === '' ? null : v)
-    return baseResolver({ ...args, values: coerced })
-}
+const resolver = zodResolver(props.zodSchema)
 
 // Extract schema fields for dynamic rendering
 const formFields = computed(() => {
@@ -60,6 +57,8 @@ const formFields = computed(() => {
                 ? SmartFormAutoCompleter
                 : fieldDefinition.primeVueComponent === 'SmartFormNestedSelect'
                 ? SmartFormNestedSelect
+                : fieldDefinition.primeVueComponent === 'SmartFormInputNumber'
+                ? SmartFormInputNumber
                 : fieldDefinition.primeVueComponent,
             label: fieldDefinition.label || _.startCase(fieldName),
             vBindObject: fieldDefinition.vBindObject,
@@ -94,12 +93,14 @@ const getErrorMessage = (form: any, fieldName: string) => {
         <template v-for="field in formFields" :key="field.name">
             <div class="flex flex-col gap-2 pb-2">
                 <label class="font-semibold" :for="field.id">{{ field.label }}</label>
-                <component
-                    :is="field.component"
-                    :id="field.id"
-                    :name="field.name"
-                    v-bind="field.vBindObject"
-                />
+                <div class="flex items-center gap-2">
+                    <component
+                        :is="field.component"
+                        :id="field.id"
+                        :name="field.name"
+                        v-bind="field.vBindObject"
+                    />
+                </div>
                 <Message v-if="field.component !== SmartFormInputArray ? $form[field.name]?.invalid : false" severity="error">
                     {{ getErrorMessage($form, field.name) }}
                 </Message>

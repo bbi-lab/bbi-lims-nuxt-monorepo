@@ -171,7 +171,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
             primeVueComponent = 'InputText'
         }
     } else if (zodType == 'number' || zodType === 'bigint') {
-        primeVueComponent = 'InputNumber'
+        primeVueComponent = 'SmartFormInputNumber'
     } else if (zodType == 'boolean') {
         primeVueComponent = 'Checkbox'
         _.set(vBindObject, 'binary', true) // for boolean fields, we want to use the binary mode of the Checkbox component

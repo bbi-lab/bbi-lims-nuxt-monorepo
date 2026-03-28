@@ -5,6 +5,7 @@ import { nextTick } from 'vue'
 
 const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
 const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')
+const SmartFormInputNumber = resolveComponent('SmartFormInputNumber')
 
 const props = defineProps({
     name: { type: String, required: true },
@@ -98,6 +99,8 @@ const subFields = computed(() => {
                 ? SmartFormAutoCompleter
                 : fieldDefinition.primeVueComponent === 'SmartFormNestedSelect'
                 ? SmartFormNestedSelect
+                : fieldDefinition.primeVueComponent === 'SmartFormInputNumber'
+                ? SmartFormInputNumber
                 : fieldDefinition.primeVueComponent,
             label: fieldDefinition.label || _.startCase(fieldName),
             vBindObject: fieldDefinition.vBindObject,
