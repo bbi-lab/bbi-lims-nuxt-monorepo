@@ -172,7 +172,11 @@ onMounted(() => {
             :conflictingFields="conflictingFields"
             :formDebug="formDebug"
             @submitSuccess="onSubmitSuccess"
-        />
+        >
+            <template #form-buttons>
+                <Button label="Cancel" severity="secondary" @click="onCancel" />
+            </template>
+        </SmartFormMultiple>
         <SmartForm
             v-if="!isMultiEdit"
             :zodSchema="zodSchema"
