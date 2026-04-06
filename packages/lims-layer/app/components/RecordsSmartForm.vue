@@ -39,24 +39,47 @@ const emit = defineEmits([
     'cancel',
     'record-add',
     'record-update',
+    'records-update',
     'record-delete',
 ])
 
+const isMultiEdit = computed(() => props.recordIds.length > 1)
 const initialValues = ref<Record<string, unknown>>({})
+const conflictingFields = ref<Record<string, number>>({})
 const loading = ref(true)
 
 async function loadRecord() {
     loading.value = true
     try {
-        if (props.selectUrl && props.recordIds.length === 1) {
-            const record = await RecordService.getRecord(props.selectUrl, props.recordIds[0])
+        if (isMultiEdit.value && props.selectUrl) {
+            // Multi-edit: load all records and compute combined values
+            const records = await RecordService.getRecordsByIds(props.selectUrl, props.recordIds)
+            const schemaKeys = _.keys(props.zodSchema.shape)
+            const combined: Record<string, unknown> = {}
+            const conflicts: Record<string, number> = {}
+
+            for (const key of schemaKeys) {
+                const values = records.map((r: any) => r[key])
+                const uniqueValues = _.uniqWith(values, _.isEqual)
+                if (uniqueValues.length === 1) {
+                    combined[key] = uniqueValues[0]
+                } else {
+                    combined[key] = null
+                    conflicts[key] = uniqueValues.length
+                }
+            }
+
+            initialValues.value = combined
+            conflictingFields.value = conflicts
+        } else if (props.selectUrl && props.recordIds.length === 1) {
+            const record = await RecordService.getRecord(props.selectUrl!, props.recordIds[0]!, undefined)
             initialValues.value = _.pick(record, _.keys(props.zodSchema.shape))
         } else {
             // For new records, set empty initial values from schema keys
             const empty: Record<string, unknown> = {}
             _.keys(props.zodSchema.shape).forEach((key) => { empty[key] = null })
             // Apply readonly values
-            initialValues.value = { ...empty, ...props.readonlyValues }
+            initialValues.value = { ...empty, ...getBlankFormInitialValues(props.zodSchema, props.fieldConfigs), ...props.readonlyValues }
         }
     } catch (error: any) {
         toast.add({
@@ -73,7 +96,20 @@ async function loadRecord() {
 async function onSubmitSuccess(values: Record<string, unknown>) {
     try {
         let result
-        if (props.submitMethod === 'PUT') {
+        if (isMultiEdit.value) {
+            // SmartFormMultiple already filters to only changed values
+            if (_.isEmpty(values)) {
+                toast.add({
+                    severity: 'warn',
+                    summary: 'No changes to save',
+                    life: 3000,
+                })
+                return
+            }
+
+            result = await RecordService.updateRecords(props.submitUrl, props.recordIds, values)
+            emit('records-update', result)
+        } else if (props.submitMethod === 'PUT') {
             result = await RecordService.updateRecord(props.submitUrl, { id: props.recordIds[0], ...values })
             emit('record-update', result)
         } else {
@@ -82,7 +118,9 @@ async function onSubmitSuccess(values: Record<string, unknown>) {
         }
         toast.add({
             severity: 'success',
-            summary: 'Record saved successfully',
+            summary: isMultiEdit.value
+                ? `${props.recordIds.length} records updated successfully`
+                : 'Record saved successfully',
             life: 3000,
         })
     } catch (error: any) {
@@ -97,7 +135,7 @@ async function onSubmitSuccess(values: Record<string, unknown>) {
 
 async function onDelete() {
     try {
-        const result = await RecordService.deleteRecord(props.submitUrl, props.recordIds[0])
+        const result = await RecordService.deleteRecord(props.submitUrl, props.recordIds[0]!)
         emit('record-delete', result)
         toast.add({
             severity: 'success',
@@ -126,22 +164,34 @@ onMounted(() => {
 <template>
     <ProgressSpinner v-if="loading" />
     <div v-else class="flex flex-col gap-4 m-4">
+        <SmartFormMultiple
+            v-if="isMultiEdit"
+            :zodSchema="zodSchema"
+            :initialValues="initialValues"
+            :fieldConfigs="fieldConfigs"
+            :conflictingFields="conflictingFields"
+            :formDebug="formDebug"
+            @submitSuccess="onSubmitSuccess"
+        />
         <SmartForm
+            v-if="!isMultiEdit"
             :zodSchema="zodSchema"
             :initialValues="initialValues"
             :fieldConfigs="fieldConfigs"
             :recordIds="recordIds"
             :formDebug="formDebug"
             @submitSuccess="onSubmitSuccess"
-        />
-        <div class="flex gap-2">
-            <Button label="Cancel" severity="secondary" @click="onCancel" />
-            <Button
-                v-if="canDelete && recordIds.length > 0"
-                label="Delete"
-                severity="danger"
-                @click="onDelete"
-            />
-        </div>
+        >
+            <template #form-buttons>
+                <Button label="Cancel" severity="secondary" @click="onCancel" />
+                <Button
+                    v-if="canDelete && recordIds.length > 0"
+                    label="Delete"
+                    severity="danger"
+                    @click="onDelete"
+                />
+            </template>
+        </SmartForm>
+
     </div>
 </template>
