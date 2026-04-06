@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import _ from 'lodash'
+import _, { size } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 import { schemas } from '../../shared/db/zod/zodSchemas'
@@ -61,43 +61,15 @@ const rowActions = {
     },
 }
 
-const fieldDefs = {
-    wells: { display: false },
-    name: { index: 0 },
-    plateType: {
-        index: 1,
-        component: 'Select',
-        props: {
-            options: _.sortBy(_.map(appConstants.enumLookups.plates.plateType, (value, key) => {
-                const pattern = /^preseq-|-pcr$/
-                if (pattern.test(key)) {
-                    return { label: value.label, code: key, disabled: true }
-                } else {
-                    return { label: value.label, code: key }
-                }
-            }), 'label'),
-            optionLabel: 'label',
-            optionValue: 'code',
-            optionDisabled: 'disabled',
-        },
-        events: {
-            change: (record: any, recordOld: any) => {
-                if (record?.plateType == recordOld?.plateType) return
-                if (_.endsWith(record.plateType, '-storage')) {
-                    record.sizeX = 9
-                    record.sizeY = 9
-                } else {
-                    record.sizeX = 12
-                    record.sizeY = 8
-                }
-            }
-        },
-    },
-}
-
 const fieldConfigs: Record<string, FormFieldConfig> = {
     name: {
         label: 'Plate Name',
+    },
+    sizeX: {
+        defaultValue: 12,
+    },
+    sizeY: {
+        defaultValue: 8,
     },
 }
 
@@ -120,6 +92,7 @@ _.set(schemas.plates.update, 'shape.plateType', z.enum(_.invert(plateTypeOptions
                 :row-actions="rowActions"
                 :where="whereClauses"
                 :can-delete="false"
+                :can-edit-multiple="true"
                 :show-column-filters="true"
                 :sort-by="['plateTypeLabel', 'name']"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
@@ -152,7 +125,18 @@ _.set(schemas.plates.update, 'shape.plateType', z.enum(_.invert(plateTypeOptions
                 @record-update="crudTable.didUpdateRecord"
                 @record-delete="crudTable.didDeleteRecord"
             />
-            <!-- TODO: Multiple edit form not yet implemented with RecordsSmartForm -->
+            <RecordsSmartForm
+                v-if="crudTable.state.showMultipleEditForm && crudTable.state.editingMultipleRecordsIds.length > 0"
+                selectUrl="/api/plates"
+                :recordIds="crudTable.state.editingMultipleRecordsIds"
+                submitUrl="/api/plates"
+                submitMethod="PUT"
+                :zodSchema="schemas.plates.update"
+                :fieldConfigs="fieldConfigs"
+                :readonlyValues="readonlyValues"
+                @cancel="crudTable.didClickCancelMultipleEditForm"
+                @records-update="crudTable.didUpdateMultipleRecords"
+            />
         </SplitterPanel>
     </Splitter>
 </template>
