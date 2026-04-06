@@ -62,6 +62,7 @@ watch(
     (newValue) => {
         if (!isUserEditing.value && newValue !== localValue.value) {
             localValue.value = newValue
+            notifyFormOfChange(newValue)
         }
     },
 )

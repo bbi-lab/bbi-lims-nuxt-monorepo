@@ -72,6 +72,7 @@ watch(
         await setValueFromFormState(newValue)
       } else {
         currentValue.value = null
+        notifyFormOfChange(null)
       }
     }
   },
