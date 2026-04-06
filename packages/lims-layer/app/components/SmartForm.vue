@@ -106,7 +106,10 @@ const getErrorMessage = (form: any, fieldName: string) => {
                 </Message>
             </div>
         </template>
-        <Button type="submit" label="Submit" :disabled="!$form.valid" />
+        <div class="flex gap-2">
+            <slot name="form-buttons" />
+            <Button type="submit" label="Submit" :disabled="!$form.valid" />
+        </div>
         <div v-if="formDebug" class="flex flex-col my-4 p-4 bg-blue-100 rounded">
             <h3>Debug Info:</h3>
             <div class="m-4">
