@@ -73,10 +73,11 @@ const fieldConfigs: Record<string, FormFieldConfig> = {
     },
 }
 
-// Apply enum mapping for plateType field
+// Apply enum mapping for plateType field — use .extend() to avoid mutating the shared schema
 const plateTypeOptions = _.mapValues(appConstants.enumLookups.plates.plateType, 'label')
-_.set(schemas.plates.insert, 'shape.plateType', z.enum(_.invert(plateTypeOptions)))
-_.set(schemas.plates.update, 'shape.plateType', z.enum(_.invert(plateTypeOptions)))
+const plateTypeEnum = z.enum(_.invert(plateTypeOptions))
+const insertPlateSchema = schemas.plates.insert.extend({ plateType: plateTypeEnum })
+const updatePlateSchema = schemas.plates.update.extend({ plateType: plateTypeEnum })
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">
@@ -105,7 +106,7 @@ _.set(schemas.plates.update, 'shape.plateType', z.enum(_.invert(plateTypeOptions
                 v-if="crudTable.state.showAddForm"
                 submitUrl="/api/plates"
                 submitMethod="POST"
-                :zodSchema="schemas.plates.insert"
+                :zodSchema="insertPlateSchema"
                 :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
@@ -117,7 +118,7 @@ _.set(schemas.plates.update, 'shape.plateType', z.enum(_.invert(plateTypeOptions
                 :recordIds="[crudTable.state.editingRecordId]"
                 submitUrl="/api/plates"
                 submitMethod="PUT"
-                :zodSchema="schemas.plates.update"
+                :zodSchema="updatePlateSchema"
                 :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
@@ -131,7 +132,7 @@ _.set(schemas.plates.update, 'shape.plateType', z.enum(_.invert(plateTypeOptions
                 :recordIds="crudTable.state.editingMultipleRecordsIds"
                 submitUrl="/api/plates"
                 submitMethod="PUT"
-                :zodSchema="schemas.plates.update"
+                :zodSchema="updatePlateSchema"
                 :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelMultipleEditForm"

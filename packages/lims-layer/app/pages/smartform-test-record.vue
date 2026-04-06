@@ -3,10 +3,8 @@ import { z } from 'zod'
 import { schemas } from '../../shared/db/zod/zodSchemas'
 import _ from 'lodash'
 
-const insertPlateSchema = schemas.plates.insert
-
 const plateTypeOptions = _.mapValues(appConstants.enumLookups.plates.plateType, 'label')
-_.set(insertPlateSchema, 'shape.plateType', z.enum(_.invert(plateTypeOptions)))
+const insertPlateSchema = schemas.plates.insert.extend({ plateType: z.enum(_.invert(plateTypeOptions)) })
 
 const fieldConfigs: Record<string, FormFieldConfig> = {
     name: {
