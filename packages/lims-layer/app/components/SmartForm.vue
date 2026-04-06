@@ -2,13 +2,15 @@
 import { Form, type FormSubmitEvent } from '@primevue/forms'
 import { computed } from 'vue'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
-import _ from 'lodash'
 import type { z } from 'zod'
 
-const SmartFormInputArray = resolveComponent('SmartFormInputArray')
-const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
-const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')
-const SmartFormInputNumber = resolveComponent('SmartFormInputNumber')
+// Resolve custom components at setup time — must be in the .vue file for Nuxt's build transform
+const smartFormComponents: Record<string, Component | string> = {
+    SmartFormInputArray: resolveComponent('SmartFormInputArray'),
+    SmartFormAutoCompleter: resolveComponent('SmartFormAutoCompleter'),
+    SmartFormNestedSelect: resolveComponent('SmartFormNestedSelect'),
+    SmartFormInputNumber: resolveComponent('SmartFormInputNumber'),
+}
 
 const props = defineProps({
   zodSchema: {
@@ -40,31 +42,12 @@ const emit = defineEmits([
     'submitSuccess',
 ])
 
-const resolver = zodResolver(props.zodSchema)
+const zodResolverFn = zodResolver(props.zodSchema)
+const resolver = (opts: { values: Record<string, any>, names?: string[] }) => {
+    return zodResolverFn({ ...opts, values: sanitizeFormValues(opts.values) })
+}
 
-// Extract schema fields for dynamic rendering
-const formFields = computed(() => {
-    return _.keys(props.zodSchema.shape).map((fieldName) => {
-        const fieldDefinition = getFormFieldDefinition(fieldName, props.zodSchema, _.get(props.fieldConfigs, fieldName))
-
-        // Custom components must be converted from string to actual component reference for dynamic rendering
-        return {
-            id: fieldName,
-            name: fieldName,
-            component: fieldDefinition.primeVueComponent === 'SmartFormInputArray'
-                ? SmartFormInputArray
-                : fieldDefinition.primeVueComponent === 'SmartFormAutoCompleter'
-                ? SmartFormAutoCompleter
-                : fieldDefinition.primeVueComponent === 'SmartFormNestedSelect'
-                ? SmartFormNestedSelect
-                : fieldDefinition.primeVueComponent === 'SmartFormInputNumber'
-                ? SmartFormInputNumber
-                : fieldDefinition.primeVueComponent,
-            label: fieldDefinition.label || _.startCase(fieldName),
-            vBindObject: fieldDefinition.vBindObject,
-        }
-    })
-})
+const formFields = computed(() => buildFormFields(props.zodSchema, props.fieldConfigs, smartFormComponents))
 
 const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
     const { values, valid } = event
@@ -72,12 +55,6 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
         emit('submitSuccess', values)
         console.log('Submitted values:', values)
     }
-}
-
-const getErrorMessage = (form: any, fieldName: string) => {
-    const errorMsg = _.get(form, `${fieldName}.error.message`)
-    const pattern = /, received (null|undefined)$/
-    return pattern.test(errorMsg) ? 'Required' : errorMsg
 }
 </script>
 
@@ -101,8 +78,8 @@ const getErrorMessage = (form: any, fieldName: string) => {
                         v-bind="field.vBindObject"
                     />
                 </div>
-                <Message v-if="field.component !== SmartFormInputArray ? $form[field.name]?.invalid : false" severity="error">
-                    {{ getErrorMessage($form, field.name) }}
+                <Message v-if="field.component !== smartFormComponents.SmartFormInputArray ? $form[field.name]?.invalid : false" severity="error">
+                    {{ getFormErrorMessage($form, field.name) }}
                 </Message>
             </div>
         </template>

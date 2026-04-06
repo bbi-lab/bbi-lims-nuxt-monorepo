@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { z } from 'zod'
+import type { Component, Ref } from 'vue'
 import type { $ZodTypeDef } from "zod/v4/core"
 
 interface SchemaItems {
@@ -235,4 +236,106 @@ export const getBlankFormInitialValues = (zodSchema: z.ZodObject<Record<string, 
         }
         return _.get(zodObjDef, 'type') === 'array' ? [] : null
     })
+}
+
+// ──────────────────────────────────────────────
+// Shared SmartForm / SmartFormMultiple utilities
+// ──────────────────────────────────────────────
+
+/**
+ * Convert empty-string values to null so Zod required-field
+ * validation works correctly (empty strings would otherwise
+ * pass string-type checks).
+ */
+export const sanitizeFormValues = (values: Record<string, any>): Record<string, any> => {
+    return _.mapValues(values, (v) => (v === '' ? null : v))
+}
+
+/**
+ * Build the array of field descriptors used by both SmartForm and
+ * SmartFormMultiple for dynamic rendering.
+ *
+ * @param componentMap - A map of custom component name → resolved component,
+ *                       built via resolveComponent() in the calling .vue file's
+ *                       <script setup>. Nuxt's build transform only processes
+ *                       resolveComponent calls inside .vue files.
+ */
+export const buildFormFields = (
+    zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>,
+    fieldConfigs: Record<string, FormFieldConfig> | undefined,
+    componentMap: Record<string, Component | string>,
+) => {
+    return _.keys(zodSchema.shape).map((fieldName) => {
+        const def = getFormFieldDefinition(fieldName, zodSchema, _.get(fieldConfigs, fieldName))
+        return {
+            id: fieldName,
+            name: fieldName,
+            component: componentMap[def.primeVueComponent] ?? def.primeVueComponent,
+            label: def.label || _.startCase(fieldName),
+            vBindObject: def.vBindObject,
+        }
+    })
+}
+
+/**
+ * Standardise the error message shown beneath a form field.
+ * Replaces Zod's ", received null/undefined" suffix with a friendlier "Required".
+ */
+export const getFormErrorMessage = (form: any, fieldName: string) => {
+    const errorMsg = _.get(form, `${fieldName}.error.message`)
+    const pattern = /, received (null|undefined)$/
+    return pattern.test(errorMsg) ? 'Required' : errorMsg
+}
+
+/**
+ * Multi-edit state record used by SmartFormMultiple's combinedRecord ref.
+ */
+export interface CombinedRecordEntry {
+    val: any
+    conflictingValueCount?: number
+    valClearedByUser?: boolean
+}
+
+/**
+ * Create a PrimeVue Forms–compatible resolver that wraps the Zod schema but
+ * makes conflicting (untouched) fields optional so they don't block submission.
+ *
+ * The resolver reads `combinedRecord` reactively, so wrap the call in `computed`
+ * at the call-site so it re-evaluates as combinedRecord changes.
+ */
+export const createMultiEditResolver = (
+    zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>,
+    combinedRecord: Ref<Record<string, CombinedRecordEntry>>,
+) => {
+    // Returns the resolver function matching PrimeVue's FormResolverOptions → Record<string, any>
+    return ({ values: rawValues }: { values: Record<string, any>, names?: string[] }) => {
+        const values = sanitizeFormValues(rawValues)
+        // Build a modified shape: make conflicting+untouched fields optional
+        const shape: Record<string, z.ZodTypeAny> = {}
+        for (const [fieldName, zodField] of Object.entries(zodSchema.shape)) {
+            const entry = combinedRecord.value[fieldName]
+            const isConflictingAndUntouched = entry
+                && _.has(entry, 'conflictingValueCount')
+                && _.isNull(entry.val)
+                && !entry.valClearedByUser
+            shape[fieldName] = isConflictingAndUntouched ? zodField.nullable().optional() : zodField
+        }
+
+        const modified = z.object(shape)
+        const result = modified.safeParse(values)
+
+        if (result.success) return { errors: {} }
+
+        // Map Zod issues → PrimeVue Forms error shape: { errors: { fieldName: [issue, ...] } }
+        // Must match the format returned by zodResolver (each field maps to an array of error objects).
+        const errors: Record<string, any[]> = {}
+        for (const issue of result.error.issues) {
+            const path = issue.path.join('.')
+            if (path) {
+                errors[path] ||= []
+                errors[path].push(issue)
+            }
+        }
+        return { errors }
+    }
 }
