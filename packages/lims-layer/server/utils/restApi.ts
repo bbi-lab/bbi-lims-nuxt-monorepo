@@ -67,22 +67,30 @@ export function applySelectParamsToRecords<T>(selectParams: SelectParams, record
 export function parsePutPostError(error: any) {
     let data
 
-    const regex = /^Key \(([^)]*)\)=\(([^)]*)\) already exists[.]$/
-    const match = error?.cause?.detail ? error.cause.detail.match(regex) : null
-    if (error?.cause?.routine == '_bt_check_unique' && match) {
-        const fieldName = match[1]
-        data = fieldName ? [{
-            code: 'duplicate_key_value',
-            path: [fieldName],
-            message: 'Must be unique',
-        }] : undefined
+    if (error?.cause?.routine == '_bt_check_unique' && error.cause.detail) {
+        // Postgres wraps the field name in SQL functions in the error detail, so we need to remove those to get the actual field name
+        // This handles one such common pattern where the field is wrapped in lower(trim(both from ...)) but could be adapted if we encounter other patterns in the future
+        const sqlModifiersRegex = /^(.*)lower\(trim\(both from ([^\s]*)\)\)(.*)$/i
+        const errorCauseDetail = error.cause.detail.replace(sqlModifiersRegex, "$1$2$3")
+
+        const regex = /^Key \(([^)]*)\)=\(([^)]*)\) already exists[.]$/
+        const match = errorCauseDetail.match(regex)
+
+        if (match) {
+            const fieldName = match[1]
+            data = fieldName ? [{
+                code: 'duplicate_key_value',
+                path: [fieldName],
+                message: 'Must be unique',
+                description: `${match[2]} already exists`
+            }] : undefined
+        }
     }
 
     if (!data) {
         try {
             data = JSON.parse(error.message)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (e: unknown) {
+        } catch (err) {
             data = {}
         }
     }

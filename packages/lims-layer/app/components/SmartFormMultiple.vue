@@ -48,6 +48,11 @@ const props = defineProps({
         required: false,
         default: false,
     },
+    serverErrors: {
+        type: Object as () => Record<string, string>,
+        required: false,
+        default: () => ({}),
+    },
 })
 
 const emit = defineEmits([
@@ -221,6 +226,9 @@ function onFormSubmit({ valid }: FormSubmitEvent<Record<string, unknown>>) {
                 </div>
                 <Message v-if="field.component !== smartFormComponents.SmartFormInputArray ? $form[field.name]?.invalid : false" severity="error">
                     {{ getFormErrorMessage($form, field.name) }}
+                </Message>
+                <Message v-if="serverErrors[field.name]" severity="error">
+                    {{ serverErrors[field.name] }}
                 </Message>
             </div>
         </template>

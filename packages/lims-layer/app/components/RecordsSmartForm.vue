@@ -47,6 +47,7 @@ const isMultiEdit = computed(() => props.recordIds.length > 1)
 const initialValues = ref<Record<string, unknown>>({})
 const conflictingFields = ref<Record<string, number>>({})
 const loading = ref(true)
+const serverSideValidationErrors = ref<Record<string, string>>({})
 
 async function loadRecord() {
     loading.value = true
@@ -94,6 +95,7 @@ async function loadRecord() {
 }
 
 async function onSubmitSuccess(values: Record<string, unknown>) {
+    serverSideValidationErrors.value = {}
     try {
         let result
         if (isMultiEdit.value) {
@@ -124,12 +126,36 @@ async function onSubmitSuccess(values: Record<string, unknown>) {
             life: 3000,
         })
     } catch (error: any) {
-        toast.add({
-            severity: 'error',
-            summary: 'Failed to save record',
-            detail: error?.message || 'Unknown error',
-            life: 5000,
-        })
+        const fieldErrors = _.isArray(error.data?.data) ? error.data.data as Array<{ path: string[], message: string }> : []
+        const mapped: Record<string, string> = {}
+        const unmapped: string[] = []
+
+        for (const fe of fieldErrors) {
+            const fieldName = fe.path?.join('.')
+            if (fieldName && _.has(props.zodSchema.shape, fieldName)) {
+                mapped[fieldName] = fe.message
+            } else {
+                unmapped.push(fe.message || 'Unknown validation error')
+            }
+        }
+
+        serverSideValidationErrors.value = mapped
+
+        if (unmapped.length > 0) {
+            toast.add({
+                severity: 'error',
+                summary: 'Validation error',
+                detail: unmapped.join('; '),
+                life: 5000,
+            })
+        } else if (_.isEmpty(mapped)) {
+            toast.add({
+                severity: 'error',
+                summary: 'Failed to save record',
+                detail: error?.data?.statusMessage || error?.message || 'Unknown error',
+                life: 5000,
+            })
+        }
     }
 }
 
@@ -171,6 +197,7 @@ onMounted(() => {
             :fieldConfigs="fieldConfigs"
             :conflictingFields="conflictingFields"
             :formDebug="formDebug"
+            :serverErrors="serverSideValidationErrors"
             @submitSuccess="onSubmitSuccess"
         >
             <template #form-buttons>
@@ -184,6 +211,7 @@ onMounted(() => {
             :fieldConfigs="fieldConfigs"
             :recordIds="recordIds"
             :formDebug="formDebug"
+            :serverErrors="serverSideValidationErrors"
             @submitSuccess="onSubmitSuccess"
         >
             <template #form-buttons>
