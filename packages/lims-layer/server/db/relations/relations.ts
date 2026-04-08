@@ -3,9 +3,9 @@ import _ from 'lodash'
 import { users, userGroups, userGroupMemberships } from '../schema/user'
 import type { PgTable, TableConfig } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm/relations'
-import { genes } from '../schema/gene'
-import { plates } from '../schema/plate'
-import { wellables, wellContents, wellContentSources, wells } from '../schema/well'
+import { genes } from '../../../shared/db/schema/gene'
+import { plates } from '../../../shared/db/schema/plate'
+import { wellables, wellContents, wellContentSources, wells } from '../../../shared/db/schema/well'
 
 // relations config
 // defines M:M between users and groups

@@ -1,10 +1,8 @@
-import { schemas } from '../../../db/zod/zodSchemas'
+import { schemas } from '../../../../shared/db/zod/zodSchemas'
 import { relationsConfigs } from '../../../db/relations/relations'
 import _ from 'lodash'
 import type { ZodObject } from 'zod'
 import { refineJsonSchema, zodToSafeTypeJSONSchema } from '../../../utils/jsonSchema'
-import type { EnumLookup } from '../../../../shared/types/enumLookups'
-import { appConstants } from '../../../../shared/constants'
 
 export default defineEventHandler(async (event) => {
     const { recordType, schema } = event.context.params as {recordType: string, schema: string}

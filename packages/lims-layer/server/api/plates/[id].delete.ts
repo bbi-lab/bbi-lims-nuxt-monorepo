@@ -1,7 +1,7 @@
 import { deleteRecord } from '../../utils/record'
 import { eq } from 'drizzle-orm'
-import { plates } from '../../db/schema/plate'
-import { wellContents, wells } from '../../db/schema/well'
+import { plates } from '../../../shared/db/schema/plate'
+import { wellContents, wells } from '../../../shared/db/schema/well'
 
 export default defineEventHandler(async (event) => {
     const { id } = event.context.params as {id: string}

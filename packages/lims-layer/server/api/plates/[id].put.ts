@@ -1,6 +1,7 @@
 import { updateRecord } from '../../utils/record'
-import { schemas, plates, type UpdatePlate } from '../../db/schema/plate'
-import { wells } from '../../db/schema/well'
+import { plates } from '../../../shared/db/schema/plate'
+import { schemas } from '../../../shared/db/zod/zodSchemas'
+import { wells } from '../../../shared/db/schema/well'
 import { eq } from 'drizzle-orm'
 import _ from 'lodash'
 
@@ -9,7 +10,7 @@ export default defineEventHandler<{ body: UpdatePlate }>(async (event) => {
     try {
 
         const body = await readBody(event)
-        const values = schemas.updatePlateSchema!.parse(body)
+        const values = schemas.plates.update!.parse(body)
 
         // only allow plateType to change if wells are empty
         const existingPlate = await db.query.plates.findFirst({where: () => eq(plates.id, id)})

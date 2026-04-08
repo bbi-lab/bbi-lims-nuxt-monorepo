@@ -2,10 +2,10 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import pg from 'pg'
 
 import {users, userGroups, userGroupMemberships} from '../db/schema/user'
-import {genes} from '../db/schema/gene'
-import { plates } from '../db/schema/plate'
-import { wellables, wellContents, wellContentSources, wells } from '../db/schema/well'
-import { viewPlatesWithWellCounts } from '../db/schema/views'
+import {genes} from '../../shared/db/schema/gene'
+import { plates } from '../../shared/db/schema/plate'
+import { wellables, wellContents, wellContentSources, wells } from '../../shared/db/schema/well'
+import { viewPlatesWithWellCounts } from '../../shared/db/schema/views'
 import * as allRelations from '../db/relations/relations'
 
 // By checking whether useRuntimeConfig is defined, we support use outside the Nuxt lifecycle.

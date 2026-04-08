@@ -1,5 +1,5 @@
 import { insertPlate } from '../utils/plate'
-import { schemas, type NewPlate } from '../db/schema/plate'
+import { schemas } from '../../shared/db/zod/zodSchemas'
 import _ from 'lodash'
 
 export default defineEventHandler<{ body: NewPlate }>(async (event) => {
@@ -7,7 +7,7 @@ export default defineEventHandler<{ body: NewPlate }>(async (event) => {
         const body = await readBody(event)
         const records = _.map(body, (x) => {
             const record = _.mapValues(x, (value) => _.isString(value) && _.isEmpty(value) ? null : value)
-            return schemas.insertPlateSchema!.parse(record) as NewPlate
+            return schemas.plates.insert!.parse(record) as NewPlate
         })
 
         const newRecord = await insertPlate(records[0]!)

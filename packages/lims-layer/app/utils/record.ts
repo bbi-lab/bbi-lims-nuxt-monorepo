@@ -1,5 +1,6 @@
 import type { DBQueryConfig } from 'drizzle-orm'
 import _ from 'lodash'
+import type { TableNames } from '../../shared/types/drizzle'
 
 const { showLoginModal } = useLayout()
 

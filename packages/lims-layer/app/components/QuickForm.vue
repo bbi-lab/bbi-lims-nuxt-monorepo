@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { RecordService } from '../utils/record'
-import { formatFieldLabel, getFieldType, addNewItemToArray, addErrorsToForm } from '@/utils/formUtils'
 import moment from 'moment'
 
 const config = useRuntimeConfig()

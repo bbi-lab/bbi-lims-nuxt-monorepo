@@ -19,11 +19,11 @@ const insertPlateSchema = selectPlateSchema.omit({id: true}).partial()
 const updatePlateSchema = insertPlateSchema
 
 const selectWellsSchema = createSelectSchema(wells)
-const insertWellsSchema = selectWellsSchema.omit({id: true}).partial()
+const insertWellsSchema = selectWellsSchema.omit({id: true})
 const updateWellsSchema = insertWellsSchema.omit({plateId: true, x: true, y: true})
 
 const selectWellContentsSchema = createSelectSchema(wellContents)
-const insertWellContentsSchema = selectWellContentsSchema.omit({id: true}).partial()
+const insertWellContentsSchema = selectWellContentsSchema.omit({id: true})
 const updateWellContentsSchema = insertWellContentsSchema
 
 const selectWellContentSourcesSchema = createSelectSchema(wellContentSources, {createdAt: nullableDateSchema})
@@ -33,7 +33,20 @@ const updateWellContentSourcesSchema = insertWellContentSourcesSchema
 // views
 const selectViewPlatesWithWellCountsSchema = createSelectSchema(viewPlatesWithWellCounts)
 
-export const schemas = {
+// Freeze all schema shapes to prevent accidental mutation of shared module-level objects.
+// Zod methods like .extend(), .omit(), .partial() return new objects and are unaffected.
+function freezeSchemas<T extends Record<string, Record<string, z.ZodTypeAny>>>(obj: T): T {
+    for (const group of Object.values(obj)) {
+        for (const schema of Object.values(group)) {
+            if ('shape' in schema) Object.freeze(schema.shape)
+            Object.freeze(schema)
+        }
+        Object.freeze(group)
+    }
+    return Object.freeze(obj)
+}
+
+export const schemas = freezeSchemas({
     // tables
     genes: {
         select: selectGeneSchema,
@@ -63,4 +76,4 @@ export const schemas = {
     viewPlatesWithWellCounts: {
         select: selectViewPlatesWithWellCountsSchema,
     },
-}
+})

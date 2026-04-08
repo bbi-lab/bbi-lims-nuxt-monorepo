@@ -2,12 +2,17 @@
 
 const crudTable = useCrudTable()
 
+const columnDefs = {
+    name: { header: 'Name', index: 0 },
+}
+
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">
         <SplitterPanel :size="50">
             <QuickTable
                 :ref="crudTable.setTableRef"
+                :columnDefs="columnDefs"
                 tableName="user-groups"
                 schemaName="select-user-group-schema"
                 title="User Groups"

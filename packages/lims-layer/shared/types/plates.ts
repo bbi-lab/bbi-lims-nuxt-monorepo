@@ -1,4 +1,5 @@
-import type { plates, schemas } from '../../server/db/schema/plate'
+import type { plates } from '../db/schema/plate'
+import type { schemas } from '../db/zod/zodSchemas'
 import type { InferSelectModel } from 'drizzle-orm'
 import type { z } from 'zod'
 
@@ -9,8 +10,8 @@ type Accessor<T, Self> = (value?: T) => T | Self
 export interface CoordinatePair {x: number, y: number}
 
 export type Plate = InferSelectModel<typeof plates>
-export type NewPlate = z.infer<typeof schemas.insertPlateSchema>
-export type UpdatePlate = z.infer<typeof schemas.updatePlateSchema>
+export type NewPlate = z.infer<typeof schemas.plates.insert>
+export type UpdatePlate = z.infer<typeof schemas.plates.update>
 
 export interface PlateDiagramWell {
     id: string,

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import _ from 'lodash'
-import { appConstants } from '../../shared/constants'
-import type { PlateType } from '../../shared/types/plates'
+import _, { size } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
+import { z } from 'zod'
+import { schemas } from '../../shared/db/zod/zodSchemas'
 
 const router = useRouter()
 const route = useRoute()
@@ -61,39 +61,23 @@ const rowActions = {
     },
 }
 
-const fieldDefs = {
-    wells: { display: false },
-    name: { index: 0 },
-    plateType: {
-        index: 1,
-        component: 'Select',
-        props: {
-            options: _.sortBy(_.map(appConstants.enumLookups.plates.plateType, (value, key) => {
-                const pattern = /^preseq-|-pcr$/
-                if (pattern.test(key)) {
-                    return { label: value.label, code: key, disabled: true }
-                } else {
-                    return { label: value.label, code: key }
-                }
-            }), 'label'),
-            optionLabel: 'label',
-            optionValue: 'code',
-            optionDisabled: 'disabled',
-        },
-        events: {
-            change: (record: any, recordOld: any) => {
-                if (record?.plateType == recordOld?.plateType) return
-                if (_.endsWith(record.plateType, '-storage')) {
-                    record.sizeX = 9
-                    record.sizeY = 9
-                } else {
-                    record.sizeX = 12
-                    record.sizeY = 8
-                }
-            }
-        },
+const fieldConfigs: Record<string, FormFieldConfig> = {
+    name: {
+        label: 'Plate Name',
+    },
+    sizeX: {
+        defaultValue: 12,
+    },
+    sizeY: {
+        defaultValue: 8,
     },
 }
+
+// Apply enum mapping for plateType field — use .extend() to avoid mutating the shared schema
+const plateTypeOptions = _.mapValues(appConstants.enumLookups.plates.plateType, 'label')
+const plateTypeEnum = z.enum(_.invert(plateTypeOptions))
+const insertPlateSchema = schemas.plates.insert.extend({ plateType: plateTypeEnum })
+const updatePlateSchema = schemas.plates.update.extend({ plateType: plateTypeEnum })
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">
@@ -109,6 +93,7 @@ const fieldDefs = {
                 :row-actions="rowActions"
                 :where="whereClauses"
                 :can-delete="false"
+                :can-edit-multiple="true"
                 :show-column-filters="true"
                 :sort-by="['plateTypeLabel', 'name']"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
@@ -117,25 +102,41 @@ const fieldDefs = {
             />
         </SplitterPanel>
          <SplitterPanel v-if="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm">
-            <QuickForm
+            <RecordsSmartForm
                 v-if="crudTable.state.showAddForm"
-                table-name="plates"
-                schema-name="insert"
-                :field-defs="fieldDefs"
-                :readonly-values="readonlyValues"
+                submitUrl="/api/plates"
+                submitMethod="POST"
+                :zodSchema="insertPlateSchema"
+                :fieldConfigs="fieldConfigs"
+                :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
                 @record-add="crudTable.didAddRecord"
             />
-            <QuickForm
+            <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                :record-id="crudTable.state.editingRecordId"
-                table-name="plates"
-                schema-name="update"
-                :field-defs="{...fieldDefs, plateType: {readOnly: true, index: 1}, sizeX: {readOnly: true}, sizeY: {readOnly: true}}"
-                :readonly-values="readonlyValues"
+                selectUrl="/api/plates"
+                :recordIds="[crudTable.state.editingRecordId]"
+                submitUrl="/api/plates"
+                submitMethod="PUT"
+                :zodSchema="updatePlateSchema"
+                :fieldConfigs="fieldConfigs"
+                :readonlyValues="readonlyValues"
+                :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
                 @record-update="crudTable.didUpdateRecord"
                 @record-delete="crudTable.didDeleteRecord"
+            />
+            <RecordsSmartForm
+                v-if="crudTable.state.showMultipleEditForm && crudTable.state.editingMultipleRecordsIds.length > 0"
+                selectUrl="/api/plates"
+                :recordIds="crudTable.state.editingMultipleRecordsIds"
+                submitUrl="/api/plates"
+                submitMethod="PUT"
+                :zodSchema="updatePlateSchema"
+                :fieldConfigs="fieldConfigs"
+                :readonlyValues="readonlyValues"
+                @cancel="crudTable.didClickCancelMultipleEditForm"
+                @records-update="crudTable.didUpdateMultipleRecords"
             />
         </SplitterPanel>
     </Splitter>
