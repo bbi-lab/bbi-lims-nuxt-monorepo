@@ -7,8 +7,8 @@ const toast = useToast()
 const props = defineProps({
     selectUrl: { type: String, required: false },
     recordIds: { type: Array as () => string[], required: false, default: () => [] },
-    submitUrl: { type: String, required: true },
-    submitMethod: { type: String as () => 'POST' | 'PUT', required: true },
+    submitUrl: { type: String, required: false },
+    submitMethod: { type: String as () => 'POST' | 'PUT', required: false },
     zodSchema: {
         type: Object as () => z.ZodObject<Record<string, z.ZodTypeAny>>,
         required: true,
@@ -22,6 +22,16 @@ const props = defineProps({
         type: Object as () => Record<string, unknown>,
         required: false,
         default: () => ({}),
+    },
+    withClause: {
+        type: Object as () => Record<string, unknown>,
+        required: false,
+        default: undefined,
+    },
+    readOnly: {
+        type: Boolean,
+        required: false,
+        default: false,
     },
     canDelete: {
         type: Boolean,
@@ -44,6 +54,7 @@ const emit = defineEmits([
 ])
 
 const isMultiEdit = computed(() => props.recordIds.length > 1)
+const zodShape = computed(() => props.zodSchema.shape)
 const initialValues = ref<Record<string, unknown>>({})
 const conflictingFields = ref<Record<string, number>>({})
 const loading = ref(true)
@@ -54,8 +65,8 @@ async function loadRecord() {
     try {
         if (isMultiEdit.value && props.selectUrl) {
             // Multi-edit: load all records and compute combined values
-            const records = await RecordService.getRecordsByIds(props.selectUrl, props.recordIds)
-            const schemaKeys = _.keys(props.zodSchema.shape)
+            const records = await RecordService.getRecordsByIds(props.selectUrl, props.recordIds, props.withClause)
+            const schemaKeys = _.keys(zodShape.value)
             const combined: Record<string, unknown> = {}
             const conflicts: Record<string, number> = {}
 
@@ -73,12 +84,12 @@ async function loadRecord() {
             initialValues.value = combined
             conflictingFields.value = conflicts
         } else if (props.selectUrl && props.recordIds.length === 1) {
-            const record = await RecordService.getRecord(props.selectUrl!, props.recordIds[0]!, undefined)
-            initialValues.value = _.pick(record, _.keys(props.zodSchema.shape))
+            const record = await RecordService.getRecord(props.selectUrl!, props.recordIds[0]!, props.withClause)
+            initialValues.value = _.pick(record, _.keys(zodShape.value))
         } else {
             // For new records, set empty initial values from schema keys
             const empty: Record<string, unknown> = {}
-            _.keys(props.zodSchema.shape).forEach((key) => { empty[key] = null })
+            _.keys(zodShape.value).forEach((key) => { empty[key] = null })
             // Apply readonly values
             initialValues.value = { ...empty, ...getBlankFormInitialValues(props.zodSchema, props.fieldConfigs), ...props.readonlyValues }
         }
@@ -95,6 +106,8 @@ async function loadRecord() {
 }
 
 async function onSubmitSuccess(values: Record<string, unknown>) {
+    if (!props.submitUrl) return
+
     serverSideValidationErrors.value = {}
     try {
         let result
@@ -132,7 +145,7 @@ async function onSubmitSuccess(values: Record<string, unknown>) {
 
         for (const fe of fieldErrors) {
             const fieldName = fe.path?.join('.')
-            if (fieldName && _.has(props.zodSchema.shape, fieldName)) {
+            if (fieldName && _.has(zodShape.value, fieldName)) {
                 mapped[fieldName] = fe.message
             } else {
                 unmapped.push(fe.message || 'Unknown validation error')
@@ -182,6 +195,14 @@ function onCancel() {
     emit('cancel')
 }
 
+const effectiveFieldConfigs = computed(() => {
+    if (!props.readOnly) return props.fieldConfigs
+    return _.mapValues(_.keyBy(_.keys(zodShape.value)), (key) => ({
+        ...props.fieldConfigs[key],
+        disabled: true,
+    }))
+})
+
 onMounted(() => {
     loadRecord()
 })
@@ -194,9 +215,10 @@ onMounted(() => {
             v-if="isMultiEdit"
             :zodSchema="zodSchema"
             :initialValues="initialValues"
-            :fieldConfigs="fieldConfigs"
+            :fieldConfigs="effectiveFieldConfigs"
             :conflictingFields="conflictingFields"
             :formDebug="formDebug"
+            :readOnly="readOnly"
             :serverErrors="serverSideValidationErrors"
             @submitSuccess="onSubmitSuccess"
         >
@@ -208,16 +230,17 @@ onMounted(() => {
             v-if="!isMultiEdit"
             :zodSchema="zodSchema"
             :initialValues="initialValues"
-            :fieldConfigs="fieldConfigs"
+            :fieldConfigs="effectiveFieldConfigs"
             :recordIds="recordIds"
             :formDebug="formDebug"
+            :readOnly="readOnly"
             :serverErrors="serverSideValidationErrors"
             @submitSuccess="onSubmitSuccess"
         >
             <template #form-buttons>
                 <Button label="Cancel" severity="secondary" @click="onCancel" />
                 <Button
-                    v-if="canDelete && recordIds.length > 0"
+                    v-if="!readOnly && canDelete && recordIds.length > 0"
                     label="Delete"
                     severity="danger"
                     @click="onDelete"
