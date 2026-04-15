@@ -156,9 +156,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
 
     // Traverse Zod schema to find the base type of the field (unwrapping any modifiers like optional, nullable, etc.)
     let zodFieldDef = _.get(zodSchema, `shape.${fieldName}.def`, null)
-    while (_.has(zodFieldDef, 'innerType')) {
-        zodFieldDef = _.get(zodFieldDef, 'innerType.def', null)
-    }
+    while (_.has(zodFieldDef, 'innerType')) {    zodFieldDef = _.get(zodFieldDef, 'innerType.def', null)    }
     const zodType = zodFieldDef?.type
 
     // determine PrimeVue component based on Zod type and fieldConfig
@@ -252,6 +250,23 @@ export const sanitizeFormValues = (values: Record<string, any>): Record<string, 
 }
 
 /**
+ * Returns true if the Zod field at the given name in the schema is wrapped
+ * with z.readonly() at any level of its type definition.
+ */
+export function isZodFieldReadonly(zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>, fieldName: string): boolean {
+    let zodFieldDef: any = _.get(zodSchema, `shape.${fieldName}.def`, null)
+    while (zodFieldDef) {
+        if (zodFieldDef.type === 'readonly') return true
+        if (_.has(zodFieldDef, 'innerType')) {
+            zodFieldDef = _.get(zodFieldDef, 'innerType.def', null)
+        } else {
+            break
+        }
+    }
+    return false
+}
+
+/**
  * Build the array of field descriptors used by both SmartForm and
  * SmartFormMultiple for dynamic rendering.
  *
@@ -266,7 +281,16 @@ export const buildFormFields = (
     componentMap: Record<string, Component | string>,
 ) => {
     return _.keys(zodSchema.shape).map((fieldName) => {
-        const def = getFormFieldDefinition(fieldName, zodSchema, _.get(fieldConfigs, fieldName))
+        const fieldConfig = _.get(fieldConfigs, fieldName)
+        const schemaReadonly = isZodFieldReadonly(zodSchema, fieldName)
+        const def = getFormFieldDefinition(fieldName, zodSchema, fieldConfig)
+
+        // If the schema marks the field as readonly and no explicit disabled override is
+        // provided via fieldConfig, disable the component so it cannot be edited when shown.
+        if (schemaReadonly && fieldConfig?.disabled === undefined) {
+            _.set(def.vBindObject, 'disabled', true)
+        }
+
         return {
             id: fieldName,
             name: fieldName,
