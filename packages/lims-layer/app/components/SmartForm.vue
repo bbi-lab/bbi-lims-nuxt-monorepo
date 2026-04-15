@@ -36,6 +36,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  readOnly: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   serverErrors: {
     type: Object as () => Record<string, string>,
     required: false,
@@ -93,7 +98,7 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
         </template>
         <div class="flex gap-2">
             <slot name="form-buttons" />
-            <Button type="submit" label="Submit" :disabled="!$form.valid" />
+            <Button v-if="!readOnly" type="submit" label="Submit" :disabled="!$form.valid" />
         </div>
         <div v-if="formDebug" class="flex flex-col my-4 p-4 bg-blue-100 rounded">
             <h3>Debug Info:</h3>
