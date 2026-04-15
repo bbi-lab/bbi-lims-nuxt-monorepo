@@ -2,6 +2,7 @@
 import _ from 'lodash'
 // import Papa from 'papaparse'
 import type { ColumnDefinitions } from '../components/QuickTable.client.vue'
+import { schemas } from '../../shared/db/zod/zodSchemas'
 
 // const config = useRuntimeConfig()
 // const toast = useToast()
@@ -65,15 +66,15 @@ const columnDefs: ColumnDefinitions = {
             />
         </SplitterPanel>
         <SplitterPanel v-if="crudTable.state.showAddForm || crudTable.state.showEditForm">
-            <QuickForm
+            <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                :recordId="crudTable.state.editingRecordId"
-                tableName="genes"
-                :canDelete="false"
-                schemaName="update"
+                selectUrl="/api/genes"
+                :recordIds="[crudTable.state.editingRecordId]"
+                :zodSchema="schemas.genes.update"
                 :readOnly="true"
+                :canDelete="false"
                 @cancel="crudTable.didClickCancelEditForm"
-                @recordUpdate="crudTable.didUpdateRecord"
+                @record-update="crudTable.didUpdateRecord"
             />
         </SplitterPanel>
     </Splitter>
