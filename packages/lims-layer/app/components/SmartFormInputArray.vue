@@ -20,6 +20,7 @@ const props = defineProps({
     },
     canAdd: { type: Boolean, required: false, default: true },
     canDelete: { type: Boolean, required: false, default: true },
+    disabled: { type: Boolean, required: false, default: false },
 })
 
 // Integrate with PrimeVue Forms by injecting the parent Form instance
@@ -74,7 +75,7 @@ watch(
 // Internal array of items
 const items = ref<Record<string, any>[]>([])
 
-// Sync from form state (handles form reset)
+// Sync from form state (handles initial values and form reset)
 watch(
     () => $pcForm?.getFieldState?.(props.name)?.value,
     (newValue) => {
@@ -86,12 +87,14 @@ watch(
             items.value = []
         }
     },
+    { immediate: true },
 )
 
 // Determine sub-fields from the item schema (ZodObject)
 const subFields = computed(() => {
     return _.keys(props.itemSchema.shape).map((fieldName) => {
-        const fieldDefinition = getFormFieldDefinition(fieldName, props.itemSchema, _.get(props.fieldConfigs, fieldName))
+        const fieldConfig = _.get(props.fieldConfigs, fieldName)
+        const fieldDefinition = getFormFieldDefinition(fieldName, props.itemSchema, fieldConfig)
 
         return {
             key: fieldName,
@@ -173,6 +176,7 @@ function onSubFieldBlur(index: number, key: string) {
                         :key="`${props.name}-${index}-${sub.key}`"
                         v-model="item[sub.key]"
                         v-bind="sub.vBindObject"
+                        :disabled="disabled"
                         @update:modelValue="(val: any) => onSubFieldUpdate(val, index, sub.key)"
                         @blur="onSubFieldBlur(index, sub.key)"
                     />
@@ -181,8 +185,8 @@ function onSubFieldBlur(index: number, key: string) {
                     </Message>
                 </div>
             </div>
-            <Button v-if="canDelete" icon="pi pi-trash" severity="danger" text @click="() => removeItem(index)" />
+            <Button v-if="!disabled && canDelete" icon="pi pi-trash" severity="danger" text @click="() => removeItem(index)" />
         </div>
-        <Button v-if="canAdd" icon="pi pi-plus" label="Add Item" severity="secondary" outlined @click="addItem" class="w-fit" />
+        <Button v-if="!disabled && canAdd" icon="pi pi-plus" label="Add Item" severity="secondary" outlined @click="addItem" class="w-fit" />
     </div>
 </template>
