@@ -226,16 +226,20 @@ export async function adminUpdateUser(userId: string, values: AdminUpdateUser) {
   const relatedRecordsToDelete = _.differenceBy(existingGroupMemberships, values.userGroupMemberships, 'userGroupId')
   const relatedRecordsToAdd = _.differenceBy(values.userGroupMemberships, existingGroupMemberships, 'userGroupId')
 
-  if (relatedRecordsToAdd?.length > 0)
-    await db.insert(userGroupMemberships).values(relatedRecordsToAdd.map((m) => ({ ...m, userId })))
-  if (relatedRecordsToDelete?.length > 0)
-    await db.delete(userGroupMemberships).where(inArray(userGroupMemberships.userGroupId, _.map(relatedRecordsToDelete, (x) => x.userGroupId)))
+  const updatedUser = await db.transaction(async (tx) => {
+    if (relatedRecordsToAdd?.length > 0)
+      await tx.insert(userGroupMemberships).values(relatedRecordsToAdd.map((m) => ({ ...m, userId })))
+    if (relatedRecordsToDelete?.length > 0)
+      await tx.delete(userGroupMemberships).where(inArray(userGroupMemberships.userGroupId, _.map(relatedRecordsToDelete, (x) => x.userGroupId)))
 
-  const [updatedUser] = await db
-    .update(users)
-    .set(_.omit(values, ['userGroupMemberships']))
-    .where(eq(users.id, userId))
-    .returning()
+    const [updatedUser] = await tx
+      .update(users)
+      .set(_.omit(values, ['userGroupMemberships']))
+      .where(eq(users.id, userId))
+      .returning()
+
+    return updatedUser
+  })
 
   if (!updatedUser) {
     throw createError({
