@@ -41,7 +41,7 @@ const refreshFormattedValues = (ids?: string[]) => {
 }
 const loadTableData = async () => {
     // tableSchema.value = props.schemaName ? await RecordService.getSchema(schemasUrl.value, props.schemaName) : null
-    tableSchema.value = props.tableName && props.schemaName ? _.get(schemas, [props.tableName, props.schemaName]) : null
+    tableSchema.value = props.tableName && props.schemaName ? _.get(schemas, [_.camelCase(props.tableName), props.schemaName]) : null
     records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where, props.expandEnums)
 
     refreshFormattedValues()
@@ -541,15 +541,15 @@ function filteringComplete() {
         <template #empty> {{ props.emptyMessage }} </template>
         <template #loading> Loading </template>
 
-        <Column columnKey="selectBox" :reorderableColumn="false" :class="`w-0 !pl-6 ${selectionDisabled ? 'p-disabled' : ''}`" v-if="selectionMode=='multiple'" :selectionMode="selectionMode" :exportable="false" frozen />
-        <Column v-if="!_.isEmpty(invalidRecordMessages)" columnKey="invalidRecordIndicator" :reorderableColumn="true" class="w-0 !pl-6" :exportable="false" frozen>
+        <Column columnKey="selectBox" :reorderableColumn="false" :class="`w-0 pl-6! ${selectionDisabled ? 'p-disabled' : ''}`" v-if="selectionMode=='multiple'" :selectionMode="selectionMode" :exportable="false" frozen />
+        <Column v-if="!_.isEmpty(invalidRecordMessages)" columnKey="invalidRecordIndicator" :reorderableColumn="true" class="w-0 pl-6!" :exportable="false" frozen>
             <template #body="slotProps">
                 <span v-if="invalidRecordMessages[slotProps.data.id]" class="text-red-600">
                     <i class="pi pi-exclamation-circle" v-tooltip="invalidRecordMessages[slotProps.data.id].messages.join(', ')" />
                 </span>
             </template>
         </Column>
-        <Column columnKey="crudButtons" :reorderableColumn="false" :class="`whitespace-nowrap !pr-0 w-0 ${selectionMode=='multiple' ? '!pl-0' : ''}`" v-if="props.canEdit || props.showColumnFilters" :exportable="false" :showFilterMenu="false" frozen>
+        <Column columnKey="crudButtons" :reorderableColumn="false" :class="`whitespace-nowrap pr-0! w-0 ${selectionMode=='multiple' ? 'pl-0!' : ''}`" v-if="props.canEdit || props.showColumnFilters" :exportable="false" :showFilterMenu="false" frozen>
             <template v-if="props.showColumnFilters" #header>
                 <Button :icon="displayColumnFilters ? 'pi pi-search-minus' : 'pi pi-search-plus'" text rounded severity="info" @click="toggleColumnFilters"/>
             </template>
