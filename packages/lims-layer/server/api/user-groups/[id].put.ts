@@ -1,5 +1,6 @@
 import { updateUserGroup } from '../../utils/user'
-import { userGroupSchemas, type UpdateUserGroup } from '../../db/schema/user'
+import { schemas } from '../../../shared/db/zod/zodSchemas'
+
 import _ from 'lodash'
 
 export default defineEventHandler<{ body: UpdateUserGroup }>(async (event) => {
@@ -7,7 +8,7 @@ export default defineEventHandler<{ body: UpdateUserGroup }>(async (event) => {
     try {
         const body = await readBody(event)
         //const query = getQuery(event)
-        const values = userGroupSchemas.updateUserGroupSchema.parse(body) as UpdateUserGroup
+        const values = schemas.userGroups.update.parse(body)
         const updatedUserGroup = await updateUserGroup(_.toInteger(id), values)
         return updatedUserGroup
     } catch (e: any) {

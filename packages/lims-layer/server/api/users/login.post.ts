@@ -1,12 +1,12 @@
 import { getUserByEmail } from '../../utils/user'
-import { schemas, type LoginUser } from '../../db/schema/user'
+import { schemas } from '../../../shared/db/zod/zodSchemas'
 import argon2 from 'argon2'
 import { generateTokens } from '../../utils/jwt'
 
 export default defineEventHandler<{ body: LoginUser }>(async (event) => {
     try {
         const body = await readBody(event)
-        const values = schemas?.loginSchema?.parse(body)
+        const values = schemas.users.login.parse(body)
 
         if (!values) {
             throw createError({

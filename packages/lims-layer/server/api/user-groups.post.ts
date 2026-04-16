@@ -1,5 +1,6 @@
 import { addUserGroups } from '../utils/user'
-import { userGroupSchemas, type NewUserGroup } from '../db/schema/user'
+import { schemas } from '../../shared/db/zod/zodSchemas'
+
 import _ from 'lodash'
 
 export default defineEventHandler<{ body: NewUserGroup[] }>(async (event) => {
@@ -9,7 +10,7 @@ export default defineEventHandler<{ body: NewUserGroup[] }>(async (event) => {
             const body = await readBody(event)
 
             const records = _.map(body, (x) => {
-                return userGroupSchemas.newUserGroupSchema.parse(x) as NewUserGroup
+                return schemas.userGroups.insert.parse(x) as NewUserGroup
             })
 
             const newUserGroups = await addUserGroups(records)

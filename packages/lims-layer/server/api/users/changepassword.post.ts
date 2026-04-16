@@ -1,5 +1,5 @@
 import { changePassword } from '../../utils/user'
-import { schemas, type ChangePassword } from '../../db/schema/user'
+import { schemas } from '../../../shared/db/zod/zodSchemas'
 import argon2 from 'argon2'
 import _ from 'lodash'
 import {isValidPassword} from '../../utils/auth'
@@ -7,7 +7,7 @@ import {isValidPassword} from '../../utils/auth'
 export default defineEventHandler<{ body: ChangePassword }>(async (event) => {
     try {
         const body = await readBody(event)
-        const values = schemas?.changePasswordSchema?.parse(body)
+        const values = schemas.users.changePassword.parse(body)
 
         if (!values) {
             throw createError({
