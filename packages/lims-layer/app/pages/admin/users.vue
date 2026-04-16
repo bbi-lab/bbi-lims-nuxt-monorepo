@@ -1,10 +1,30 @@
 <script setup lang="ts">
 import _ from 'lodash'
+import { schemas } from '../../../shared/db/zod/zodSchemas'
 
 const crudTable = useCrudTable()
 
 const editWithClause = Object.freeze({userGroupMemberships:true})
 const displayWithClause = Object.freeze({userGroupMemberships:{columns: {}, with: {userGroup: {columns: {name: true}}}}})
+
+const fieldConfigs: Record<string, FormFieldConfig> = {
+    userGroupMemberships: {
+        inputArray: {
+            canAdd: true,
+            canDelete: true,
+            fieldConfigs: {
+                userGroupId: {
+                    autoCompleter: {
+                        searchBaseUrl: '/api/user-groups',
+                        valueField: 'id',
+                        displayFields: ['name'],
+                        dropdown: true,
+                    },
+                },
+            },
+        },
+    },
+}
 
 const columnDefs = {
     name: {header: 'Name'},
@@ -24,7 +44,7 @@ const columnDefs = {
             <QuickTable
                 :ref="crudTable.setTableRef"
                 tableName="users"
-                schemaName="select-user-schema"
+                schemaName="select"
                 title="Users"
                 :canAdd="false"
                 :withClause="displayWithClause"
@@ -35,24 +55,28 @@ const columnDefs = {
             />
         </SplitterPanel>
          <SplitterPanel v-if="crudTable.state.showAddForm || crudTable.state.showEditForm">
-            <QuickForm
+            <RecordsSmartForm
                 v-if="crudTable.state.showAddForm"
-                tableName="users"
-                schemaName="insert-user-schema"
+                submitUrl="/api/users"
+                submitMethod="POST"
+                :zodSchema="schemas.users.insert"
+                :formDebug="true"
                 @cancel="crudTable.didClickCancelAddForm"
-                @recordAdd="crudTable.didAddRecord"
+                @record-add="crudTable.didAddRecord"
             />
-            <QuickForm
+            <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
+                selectUrl="/api/users"
+                :recordIds="[crudTable.state.editingRecordId]"
+                submitUrl="/api/users"
+                submitMethod="PUT"
+                :zodSchema="schemas.users.adminUpdate"
                 :withClause="editWithClause"
-                :recordId="crudTable.state.editingRecordId"
-                tableName="users"
-                schemaName="admin-update-user-schema"
-                :fieldDefs="{'userGroupMemberships.*': {canUpdate: true}}"
+                :fieldConfigs="fieldConfigs"
                 :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
-                @recordUpdate="crudTable.didUpdateRecord"
-                @recordDelete="crudTable.didDeleteRecord"
+                @record-update="crudTable.didUpdateRecord"
+                @record-delete="crudTable.didDeleteRecord"
             />
         </SplitterPanel>
     </Splitter>
