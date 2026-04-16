@@ -78,6 +78,10 @@ const selectViewPlatesWithWellCountsSchema = createSelectSchema(viewPlatesWithWe
 // user groups
 const insertUserGroupSchema = z.object({ name: z.string() })
 const updateUserGroupSchema = z.object({ name: z.string() })
+const selectUserGroupSchema = z.object({
+    id: z.number().readonly(),
+    name: z.string(),
+})
 
 // Freeze all schema shapes to prevent accidental mutation of shared module-level objects.
 // Zod methods like .extend(), .omit(), .partial() return new objects and are unaffected.
@@ -111,6 +115,7 @@ export const schemas = freezeSchemas({
     userGroups: {
         insert: insertUserGroupSchema,
         update: updateUserGroupSchema,
+        select: selectUserGroupSchema,
     },
     plates: {
         select: selectPlateSchema,
