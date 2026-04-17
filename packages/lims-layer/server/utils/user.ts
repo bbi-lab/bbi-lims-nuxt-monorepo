@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { type NewUserGroup, type UpdateUserGroup, type NewUser, type UpdateUser, type AdminUpdateUser, type User, users, userGroups, userGroupMemberships, preVerifiedUsers } from '../db/schema/user'
+import { users, userGroups, userGroupMemberships, preVerifiedUsers } from '../db/schema/user'
 import { db } from './db'
 import { sha256 } from './hash'
 import argon2 from 'argon2'
@@ -191,74 +191,6 @@ export async function deleteUser(id: string) {
   return result
 }
 
-export async function updateUser(user: User, { name, email, password }: UpdateUser) {
-  let code: string | undefined
-  let hashedCode: string | undefined
-
-  if (email) {
-    const user = await getUserByEmail(email)
-
-    if (user) {
-        throw createError({
-            statusCode: 409,
-            statusMessage: 'Email already in use'
-        })
-    }
-
-    code = crypto.randomBytes(32).toString('hex')
-    hashedCode = sha256.hash(code)
-  }
-
-  const [updatedUser] = await db
-    .update(users)
-    .set({
-      name,
-      password,
-      email,
-      code: hashedCode,
-      isVerified: hashedCode ? false : user.isVerified,
-    })
-    .where(eq(users.email, user.email))
-    .returning({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      isAdmin: users.isAdmin,
-      isVerified: users.isVerified,
-      createdAt: users.createdAt,
-    })
-
-  if (!updatedUser) {
-
-    throw createError({
-        statusCode: 404,
-        statusMessage: 'USER_NOT_FOUND'
-    })
-  }
-
-  if (email && code) {
-    // const { NUXT_API_BASE } = process.env
-    // const status = await sendVerificationEmail(
-    //   API_BASE_URL,
-    //   updatedUser.name,
-    //   updatedUser.email,
-    //   code,
-    // )
-
-    // if (status !== 200) {
-    //   await db
-    //     .update(users)
-    //     .set({ email: user.email, isVerified: user.isVerified })
-    //     .where(eq(users.email, updatedUser.email))
-    //     .returning()
-    //   throw new BackendError('BAD_REQUEST', {
-    //     message: 'Email could not be updated',
-    //   })
-    // }
-  }
-
-  return updatedUser
-}
 export async function changePassword(userId: string, password: string) {
 
   const hashedPassword = await argon2.hash(password)
@@ -282,7 +214,7 @@ export async function adminUpdateUser(userId: string, values: AdminUpdateUser) {
   if (values.email) {
     const existingUser = await getUserByEmail(values.email)
 
-    if (existingUser.id != userId) {
+    if (existingUser?.id != userId) {
         throw createError({
             statusCode: 409,
             statusMessage: 'Email already in use'
@@ -294,16 +226,20 @@ export async function adminUpdateUser(userId: string, values: AdminUpdateUser) {
   const relatedRecordsToDelete = _.differenceBy(existingGroupMemberships, values.userGroupMemberships, 'userGroupId')
   const relatedRecordsToAdd = _.differenceBy(values.userGroupMemberships, existingGroupMemberships, 'userGroupId')
 
-  if (relatedRecordsToAdd?.length > 0)
-    await db.insert(userGroupMemberships).values(relatedRecordsToAdd)
-  if (relatedRecordsToDelete?.length > 0)
-    await db.delete(userGroupMemberships).where(inArray(userGroupMemberships.userGroupId, _.map(relatedRecordsToDelete, (x) => x.userGroupId)))
+  const updatedUser = await db.transaction(async (tx) => {
+    if (relatedRecordsToAdd?.length > 0)
+      await tx.insert(userGroupMemberships).values(relatedRecordsToAdd.map((m) => ({ ...m, userId })))
+    if (relatedRecordsToDelete?.length > 0)
+      await tx.delete(userGroupMemberships).where(inArray(userGroupMemberships.userGroupId, _.map(relatedRecordsToDelete, (x) => x.userGroupId)))
 
-  const [updatedUser] = await db
-    .update(users)
-    .set(values)
-    .where(eq(users.id, userId))
-    .returning()
+    const [updatedUser] = await tx
+      .update(users)
+      .set(_.omit(values, ['userGroupMemberships']))
+      .where(eq(users.id, userId))
+      .returning()
+
+    return updatedUser
+  })
 
   if (!updatedUser) {
     throw createError({

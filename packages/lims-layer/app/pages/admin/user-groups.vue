@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { schemas } from '../../../shared/db/zod/zodSchemas'
 
 const crudTable = useCrudTable()
 
@@ -10,11 +11,11 @@ const columnDefs = {
 <template>
     <Splitter class="h-full overflow-y-hidden">
         <SplitterPanel :size="50">
-            <QuickTable
+            <SmartTable
                 :ref="crudTable.setTableRef"
                 :columnDefs="columnDefs"
                 tableName="user-groups"
-                schemaName="select-user-group-schema"
+                :zodSchema="schemas.userGroups.select"
                 title="User Groups"
                 :canAdd="true"
                 :canDelete="false"
@@ -23,22 +24,25 @@ const columnDefs = {
             />
         </SplitterPanel>
          <SplitterPanel v-if="crudTable.state.showAddForm || crudTable.state.showEditForm">
-            <QuickForm
+            <RecordsSmartForm
                 v-if="crudTable.state.showAddForm"
-                tableName="user-groups"
-                schemaName="new-user-group-schema"
+                submitUrl="/api/user-groups"
+                submitMethod="POST"
+                :zodSchema="schemas.userGroups.insert"
                 @cancel="crudTable.didClickCancelAddForm"
-                @recordAdd="crudTable.didAddRecord"
+                @record-add="crudTable.didAddRecord"
             />
-            <QuickForm
+            <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                :recordId="crudTable.state.editingRecordId"
-                tableName="user-groups"
-                schemaName="update-user-group-schema"
+                selectUrl="/api/user-groups"
+                :recordIds="[crudTable.state.editingRecordId]"
+                submitUrl="/api/user-groups"
+                submitMethod="PUT"
+                :zodSchema="schemas.userGroups.update"
                 :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
-                @recordUpdate="crudTable.didUpdateRecord"
-                @recordDelete="crudTable.didDeleteRecord"
+                @record-update="crudTable.didUpdateRecord"
+                @record-delete="crudTable.didDeleteRecord"
             />
         </SplitterPanel>
     </Splitter>

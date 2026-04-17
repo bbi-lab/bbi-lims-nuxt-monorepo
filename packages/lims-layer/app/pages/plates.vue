@@ -82,11 +82,11 @@ const updatePlateSchema = schemas.plates.update.extend({ plateType: plateTypeEnu
 <template>
     <Splitter class="h-full overflow-y-hidden">
         <SplitterPanel :size="50">
-            <QuickTable
+            <SmartTable
                 :key="tableKey"
                 :ref="crudTable.setTableRef"
                 table-name="view-plates-with-well-counts"
-                schema-name="select"
+                :zodSchema="schemas.viewPlatesWithWellCounts.select"
                 title="Plates/Storage boxes"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 :column-defs="columnDefs"

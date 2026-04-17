@@ -1,11 +1,11 @@
 import { addUser, getUserByEmail } from '../../utils/user'
-import { schemas, type NewUser } from '../../db/schema/user'
+import { schemas } from '../../../shared/db/zod/zodSchemas'
 import {isValidPassword} from '../../utils/auth'
 
 export default defineEventHandler<{ body: NewUser }>(async (event) => {
     try {
         const body = await readBody(event)
-        const values = schemas?.newUserSchema?.parse(body) as NewUser | undefined
+        const values = schemas.users.insert.parse(body)
 
         if (!values) {
             throw createError({
