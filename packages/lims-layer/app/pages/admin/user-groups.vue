@@ -11,11 +11,11 @@ const columnDefs = {
 <template>
     <Splitter class="h-full overflow-y-hidden">
         <SplitterPanel :size="50">
-            <QuickTable
+            <SmartTable
                 :ref="crudTable.setTableRef"
                 :columnDefs="columnDefs"
                 tableName="user-groups"
-                schemaName="select"
+                :zodSchema="schemas.userGroups.select"
                 title="User Groups"
                 :canAdd="true"
                 :canDelete="false"

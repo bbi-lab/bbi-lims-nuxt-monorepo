@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import _ from 'lodash'
 // import Papa from 'papaparse'
-import type { ColumnDefinitions } from '../components/QuickTable.client.vue'
 import { schemas } from '../../shared/db/zod/zodSchemas'
 
 // const config = useRuntimeConfig()
@@ -50,10 +49,10 @@ const columnDefs: ColumnDefinitions = {
 <template>
     <Splitter class="h-full overflow-y-hidden">
         <SplitterPanel :size="50">
-            <QuickTable
+            <SmartTable
                 :ref="crudTable.setTableRef"
                 tableName="genes"
-                schemaName="select"
+                :zodSchema="schemas.genes.select"
                 title="Genes"
                 :canAdd="false"
                 :canDelete="false"

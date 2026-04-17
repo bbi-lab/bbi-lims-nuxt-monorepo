@@ -41,10 +41,10 @@ const columnDefs = {
 <template>
     <Splitter class="h-full overflow-y-hidden">
         <SplitterPanel :size="50">
-            <QuickTable
+            <SmartTable
                 :ref="crudTable.setTableRef"
                 tableName="users"
-                schemaName="select"
+                :zodSchema="schemas.users.select"
                 title="Users"
                 :canAdd="false"
                 :withClause="displayWithClause"
