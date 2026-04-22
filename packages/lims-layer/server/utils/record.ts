@@ -4,32 +4,31 @@ import type { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/
 import type { PgViewWithSelection, PgTable } from 'drizzle-orm/pg-core'
 import { eq, inArray, getTableName, type ColumnDataType, type ColumnBaseConfig, Column } from 'drizzle-orm'
 import { useDrizzle } from '../utils/db'
-// import { ENUM_LOOKUPS } from '../db/schema/sge/enum-lookups'
 
 export interface RecordValues {[key: string]: string | number | boolean | null | undefined }
 
 const db = useDrizzle()
 
-// function expandEnumValues(records: any, tableName: string): void {
-//     if (!ENUM_LOOKUPS[tableName]) return
+function expandEnumValues(records: any, tableName: string): void {
+    if (!_.has(appConstants.enumLookups, tableName)) return
 
-//     const enumLookup = ENUM_LOOKUPS[tableName]
-//     if (_.isArray(records)) {
-//         _.forEach(records, (record) => {
-//             _.forEach(record, (value, key) => {
-//                 if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
-//                     record[key] = {value: record[key], ...enumLookup[key][value]}
-//                 }
-//             })
-//         })
-//     } else {
-//         _.forEach(records, (value, key) => {
-//             if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
-//                 records[key] = {value: records[key], ...enumLookup[key][value]}
-//             }
-//         })
-//     }
-// }
+    const enumLookup = appConstants.enumLookups[tableName] as Record<string, any>
+    if (_.isArray(records)) {
+        _.forEach(records, (record) => {
+            _.forEach(record, (value, key) => {
+                if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
+                    record[key] = {value: record[key], ...enumLookup[key][value]}
+                }
+            })
+        })
+    } else {
+        _.forEach(records, (value, key) => {
+            if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
+                records[key] = {value: records[key], ...enumLookup[key][value]}
+            }
+        })
+    }
+}
 
 function trimObjectValues(records: RecordValues[]): RecordValues[] {
     return _.map(records, (x) => {
@@ -45,7 +44,7 @@ export async function selectRecords(queryBuilder: RelationalQueryBuilder<any, an
         with: selectParams.with
     })
     const result = applySelectParamsToRecords(selectParams, records)
-    // if (expandEnums) expandEnumValues(result, _.get(queryBuilder, 'tableConfig.dbName', ''))
+    if (expandEnums) expandEnumValues(result, _.get(queryBuilder, 'tableConfig.dbName', ''))
     return result
 }
 
