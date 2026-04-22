@@ -1,7 +1,6 @@
 import crypto from 'node:crypto'
 import { users, userGroups, userGroupMemberships, preVerifiedUsers } from '../db/schema/user'
 import { db } from './db'
-import { sha256 } from './hash'
 import argon2 from 'argon2'
 import { eq, inArray } from 'drizzle-orm'
 import _ from 'lodash'
@@ -132,7 +131,7 @@ export async function verifyUser(email: string, code: string) {
     })
   }
 
-  const isVerified = sha256.verify(code, user.code)
+  const isVerified = await argon2.verify(user.code, code)
 
   if (!isVerified) {
     throw createError({
