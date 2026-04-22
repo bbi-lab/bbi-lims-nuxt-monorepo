@@ -10,6 +10,7 @@
     "generate": "nuxt generate .playground",
     "preview": "nuxt preview .playground",
     "lint": "eslint .",
+    "typecheck": "nuxi typecheck .playground",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -56,6 +57,7 @@
     "nuxt": "^4.2.2",
     "playwright-core": "^1.59.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "vue-tsc": "^3.2.7"
   }
 }
