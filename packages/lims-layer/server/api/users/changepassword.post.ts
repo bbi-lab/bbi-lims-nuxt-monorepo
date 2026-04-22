@@ -17,8 +17,17 @@ export default defineEventHandler<{ body: ChangePassword }>(async (event) => {
         }
         const session = await getUserSession(event)
 
+        const userId = _.get(session.user, 'id', '')
+        const dbUser = await getUserById(userId)
+        if (!dbUser) {
+            throw createError({
+                statusCode: 401,
+                statusMessage: 'UNAUTHORIZED'
+            })
+        }
+
         const matchPassword = await argon2.verify(
-            _.get(session.user, 'password', ''),
+            _.get(dbUser, 'password', ''),
             values.oldPassword || ''
         )
         if (!matchPassword) {
