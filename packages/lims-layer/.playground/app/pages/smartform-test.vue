@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import {schemas} from '../../shared/db/zod/zodSchemas'
+import {schemas} from '../../../shared/db/zod/zodSchemas'
 import _ from 'lodash'
 
 // TODO: move this to a shared/utils function since it will be needed in multiple places

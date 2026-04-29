@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import { schemas } from '../../shared/db/zod/zodSchemas'
+import { schemas } from '../../../shared/db/zod/zodSchemas'
 import _ from 'lodash'
 
 const plateTypeOptions = _.mapValues(appConstants.enumLookups.plates.plateType, 'label')

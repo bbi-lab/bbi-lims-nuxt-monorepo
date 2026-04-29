@@ -111,14 +111,15 @@ function copyToClipboard() {
             >
             </Button>
         </div>
-        <div class="p-3 mb-5 rounded border surface-border surface-100 text-sm break-all">
+        <div class="relative p-3 pr-10 mb-5 rounded border surface-border surface-100 text-sm break-all">
             <span v-for="item of data" :class="item.type == selectedType ? 'text-orange-500' : ''">{{ item.sequence }}</span>
-            <Button
-                text
-                icon="pi pi-copy"
-                class="ml-2"
-                @click="copyToClipboard"
-            />
+            <div class="absolute top-1 right-1">
+                <Button
+                    text
+                    icon="pi pi-copy"
+                    @click="copyToClipboard"
+                />
+            </div>
         </div>
         <MeterGroup :value="meterItems" :pt="{meters: { style: { height: '14px' } } }">
             <template #meter="{ value, class: meterClass, size }">
