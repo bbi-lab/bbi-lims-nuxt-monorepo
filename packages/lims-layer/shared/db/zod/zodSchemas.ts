@@ -1,5 +1,5 @@
 import { dateSchema, nullableDateSchema } from '../helpers/schemas'
-import { createSelectSchema } from 'drizzle-zod'
+import { createSelectSchema } from 'drizzle-orm/zod'
 import { z } from 'zod'
 import { genes } from '../schema/gene'
 import { plates } from '../schema/plate'
