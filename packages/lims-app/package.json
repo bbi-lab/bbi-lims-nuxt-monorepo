@@ -12,5 +12,8 @@
   "dependencies": {
     "lims-layer": "workspace:*",
     "nuxt": "^4.2.2"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10"
   }
 }
