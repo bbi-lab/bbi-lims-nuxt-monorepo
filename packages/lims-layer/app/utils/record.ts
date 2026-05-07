@@ -50,20 +50,6 @@ export const RecordService = {
         }
     },
 
-    async getSchema(schemaBaseUrl: string, schemaName: string, recordId?: string) {
-        const query = recordId ? `?id=${recordId}` : ''
-        try {
-            const schema = await $fetch(`${schemaBaseUrl}/${schemaName}${query}`)
-            return schema
-        } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                showLoginModal()
-            } else {
-                throw error
-            }
-        }
-    },
-
     async updateRecord(baseUrl: string, record: any, withClause?: Object) {
         const {id, ...values} = record
         try {
