@@ -67,7 +67,10 @@ const updateGeneSchema = createSelectSchema(genes, {
 
 const selectPlateSchema = createSelectSchema(plates)
 const insertPlateSchema = selectPlateSchema.omit({id: true}).partial()
-const updatePlateSchema = insertPlateSchema
+const updatePlateSchema = createSelectSchema(plates, {
+    sizeX: z.number().int().readonly(),
+    sizeY: z.number().int().readonly(),
+}).omit({id: true}).partial()
 
 const selectWellsSchema = createSelectSchema(wells)
 const insertWellsSchema = selectWellsSchema.omit({id: true})
