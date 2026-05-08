@@ -32,7 +32,7 @@ async function onSubmit() {
       toast.add({ severity: 'success', summary: 'Password reset successfully. Please sign in.' })
       router.replace('/login')
     } else {
-      toast.add({ severity: 'error', summary: result.errorMessage || 'Password reset failed.' })
+      toast.add({ severity: 'error', summary: ('errorMessage' in result ? result.errorMessage : null) || 'Password reset failed.' })
     }
   } finally {
     submitting.value = false

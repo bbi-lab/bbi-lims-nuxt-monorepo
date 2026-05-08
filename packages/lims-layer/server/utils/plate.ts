@@ -10,7 +10,7 @@ export async function insertPlate(values: NewPlate, tx?: PgAsyncTransaction<any,
     const plate = await (tx ?? db).transaction(async (tx2: PgAsyncTransaction<any, any>) => {
         const newPlate = _.first(await tx2
             .insert(plates)
-            .values(values)
+            .values(values as any)
             .returning()
         )
 
