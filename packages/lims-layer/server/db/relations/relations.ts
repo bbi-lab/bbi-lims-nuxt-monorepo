@@ -1,5 +1,5 @@
 import { defineRelations } from 'drizzle-orm'
-import { users, userGroups, userGroupMemberships } from '../schema/user'
+import { users, userGroups, userGroupMemberships, passwordResetTokens } from '../schema/user'
 import { genes } from '../../../shared/db/schema/gene'
 import { plates } from '../../../shared/db/schema/plate'
 import { wellables, wellContents, wellContentSources, wells } from '../../../shared/db/schema/well'
@@ -8,6 +8,7 @@ export const relations = defineRelations({
   users,
   userGroups,
   userGroupMemberships,
+  passwordResetTokens,
   genes,
   plates,
   wells,

@@ -5,6 +5,16 @@ export default defineNuxtConfig({
     '../base-layer',
   ],
   modules: ['nuxt-auth-utils', '@nuxt/icon'],
+  runtimeConfig: {
+    smtpHost: '',
+    smtpPort: '587',
+    smtpUser: '',
+    smtpPass: '',
+    smtpFrom: 'noreply@bbi-lab.org',
+    public: {
+      appUrl: 'http://localhost:3000',
+    },
+  },
   // vite-specific configurations need to be defined in each layer's configuration file, not just in extended layers
   vite: {
     optimizeDeps: {

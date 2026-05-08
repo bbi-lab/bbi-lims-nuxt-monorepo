@@ -1,8 +1,8 @@
 import crypto from 'node:crypto'
-import { users, userGroups, userGroupMemberships, preVerifiedUsers } from '../db/schema/user'
+import { users, userGroups, userGroupMemberships, preVerifiedUsers, passwordResetTokens } from '../db/schema/user'
 import { db } from './db'
 import argon2 from 'argon2'
-import { eq, inArray } from 'drizzle-orm'
+import { eq, inArray, and, gt } from 'drizzle-orm'
 import _ from 'lodash'
 import { applySelectParamsToRecords, type SelectParams } from './restApi'
 
@@ -248,4 +248,34 @@ export async function adminUpdateUser(userId: string, values: AdminUpdateUser) {
   }
 
   return updatedUser
+}
+
+export async function createPasswordResetToken(userId: string): Promise<string> {
+  // Delete any existing tokens for this user before creating a new one
+  await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId))
+
+  const rawToken = crypto.randomBytes(32).toString('base64url')
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+
+  await db.insert(passwordResetTokens).values({ userId, tokenHash, expiresAt })
+
+  return rawToken
+}
+
+export async function getValidPasswordResetToken(rawToken: string) {
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+  const now = new Date()
+
+  const [tokenRow] = await db
+    .select()
+    .from(passwordResetTokens)
+    .where(and(eq(passwordResetTokens.tokenHash, tokenHash), gt(passwordResetTokens.expiresAt, now)))
+    .limit(1)
+
+  return tokenRow ?? null
+}
+
+export async function deletePasswordResetToken(id: string) {
+  await db.delete(passwordResetTokens).where(eq(passwordResetTokens.id, id))
 }

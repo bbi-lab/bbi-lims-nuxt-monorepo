@@ -37,6 +37,15 @@ const changePasswordSchema = z.object({
   newPassword: z.string(),
 })
 
+const requestPasswordResetSchema = z.object({
+  email: z.email(),
+})
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1),
+  newPassword: z.string(),
+})
+
 const loginSchema = z.object({
     email: z.email(),
     password: z.string(),
@@ -104,6 +113,8 @@ export const schemas = freezeSchemas({
         update: updateUserSchema,
         adminUpdate: adminUpdateUserSchema,
         changePassword: changePasswordSchema,
+        requestPasswordReset: requestPasswordResetSchema,
+        resetPassword: resetPasswordSchema,
         login: loginSchema,
         refreshTokens: refreshTokensSchema,
         selectGroupMemberships: selectUserGroupMemberships,

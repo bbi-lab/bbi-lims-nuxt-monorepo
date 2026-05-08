@@ -1,4 +1,4 @@
-import { boolean, pgSchema, primaryKey, integer, text, timestamp, uuid, varchar, unique } from 'drizzle-orm/pg-core'
+import { boolean, pgSchema, primaryKey, integer, text, timestamp, uuid, varchar, unique, index } from 'drizzle-orm/pg-core'
 import _ from 'lodash'
 
 export const usersSchema = pgSchema("users");
@@ -35,3 +35,14 @@ export const userGroupMemberships = usersSchema.table('user_group_memberships', 
 }, (t) => ({
   pk: primaryKey({ columns: [t.userId, t.userGroupId] }),
 }))
+
+export const passwordResetTokens = usersSchema.table('password_reset_tokens', {
+  id: uuid('id').notNull().primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  tokenHash: text('token_hash').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (t) => [
+  index('password_reset_tokens_token_hash_idx').on(t.tokenHash),
+  index('password_reset_tokens_user_id_idx').on(t.userId),
+])

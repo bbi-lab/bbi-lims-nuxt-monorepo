@@ -9,7 +9,12 @@ export default defineEventHandler(async (event) => {
     if (path.startsWith('/api/_auth/')) return
 
     // Skip public auth routes
-    if (event.method === 'POST' && ['/api/users/login', '/api/users/register'].includes(path)) return
+    if (event.method === 'POST' && [
+      '/api/users/login',
+      '/api/users/register',
+      '/api/users/request-password-reset',
+      '/api/users/reset-password',
+    ].includes(path)) return
 
     let session: Awaited<ReturnType<typeof getUserSession>> | null = null
     let accessToken: string | null = null
