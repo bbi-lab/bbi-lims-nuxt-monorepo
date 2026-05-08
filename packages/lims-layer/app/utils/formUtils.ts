@@ -78,11 +78,11 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     } else if (zodType == 'date') {
         primeVueComponent = 'DatePicker'
     } else if (zodType == 'enum') {
-        primeVueComponent = 'Dropdown'
-        // Extract enum values from Zod schema, and map them to options for the Dropdown component
+        primeVueComponent = 'Select'
+        // Extract enum values from Zod schema, and map them to options for the Select component
         const enumValues = _.get(zodFieldDef, 'entries', [])
 
-        // Re-format entries to pass to PrimeVue Dropdown
+        // Re-format entries to pass to PrimeVue Select
         const options = _.map(enumValues, (value, key) => ({
             name: key,
             code: value,

@@ -259,10 +259,10 @@ describe('getFormFieldDefinition', () => {
         expect(result.primeVueComponent).toBe('DatePicker')
     })
 
-    it('maps z.enum() to Dropdown with options', () => {
+    it('maps z.enum() to Select with options', () => {
         const schema = z.object({ status: z.enum(['active', 'inactive']) })
         const result = getFormFieldDefinition('status', schema)
-        expect(result.primeVueComponent).toBe('Dropdown')
+        expect(result.primeVueComponent).toBe('Select')
         expect(result.vBindObject).toHaveProperty('options')
         expect(result.vBindObject).toHaveProperty('optionLabel', 'name')
         expect(result.vBindObject).toHaveProperty('optionValue', 'code')
