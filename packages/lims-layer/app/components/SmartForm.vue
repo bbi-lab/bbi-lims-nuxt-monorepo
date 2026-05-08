@@ -3,6 +3,7 @@ import { Form, type FormSubmitEvent } from '@primevue/forms'
 import { computed } from 'vue'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import type { z } from 'zod'
+import _ from 'lodash'
 
 // Resolve custom components at setup time — must be in the .vue file for Nuxt's build transform
 const smartFormComponents: Record<string, Component | string> = {
@@ -59,11 +60,14 @@ const resolver = (opts: { values: Record<string, any>, names?: string[] }) => {
 
 const formFields = computed(() => buildFormFields(props.zodSchema, props.fieldConfigs, smartFormComponents))
 
+const readonlyFields = computed(() => getReadonlyFields(props.zodSchema, props.fieldConfigs))
+
 const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
     const { values, valid } = event
     if (valid) {
-        emit('submitSuccess', values)
-        console.log('Submitted values:', values)
+        const filtered = _.omit(values, [...readonlyFields.value])
+        emit('submitSuccess', filtered)
+        console.log('Submitted values:', filtered)
     }
 }
 </script>

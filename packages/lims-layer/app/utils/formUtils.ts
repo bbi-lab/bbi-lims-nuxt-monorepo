@@ -168,6 +168,24 @@ export function isZodFieldReadonly(zodSchema: z.ZodObject<Record<string, z.ZodTy
 }
 
 /**
+ * Returns the set of field names that should be excluded from submission.
+ * A field is readonly if it is wrapped with z.readonly() in the schema,
+ * or if its fieldConfig explicitly sets readonly: true.
+ */
+export function getReadonlyFields(
+    zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>,
+    fieldConfigs?: Record<string, FormFieldConfig>,
+): Set<string> {
+    const result = new Set<string>()
+    for (const fieldName of _.keys(zodSchema.shape)) {
+        if (isZodFieldReadonly(zodSchema, fieldName) || fieldConfigs?.[fieldName]?.readonly) {
+            result.add(fieldName)
+        }
+    }
+    return result
+}
+
+/**
  * Build the array of field descriptors used by both SmartForm and
  * SmartFormMultiple for dynamic rendering.
  *
