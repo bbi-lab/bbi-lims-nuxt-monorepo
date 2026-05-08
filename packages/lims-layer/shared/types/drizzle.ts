@@ -3,20 +3,18 @@ import {schema} from '../../server/utils/db'
 // import type { Exact } from 'type-fest'
 
 type Schema = typeof schema
-type TSchema = ExtractTablesWithRelations<Schema>
+type TSchema = ExtractTablesWithRelations<{}, Schema>
 
 export type TableNames = keyof TSchema
 
 export type IncludeRelation<TableName extends TableNames> = DBQueryConfig<
   'one' | 'many',
-  boolean,
   TSchema,
   TSchema[TableName]
 >['with']
 
 export type IncludeColumns<TableName extends TableNames> = DBQueryConfig<
   'one' | 'many',
-  boolean,
   TSchema,
   TSchema[TableName]
 >['columns']
@@ -36,7 +34,6 @@ export type InferResultType<
 
 type QueryConfig<TableName extends keyof TSchema> = DBQueryConfig<
   'one' | 'many',
-  boolean,
   TSchema,
   TSchema[TableName]
 >

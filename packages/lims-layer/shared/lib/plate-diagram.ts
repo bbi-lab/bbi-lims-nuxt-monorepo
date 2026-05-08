@@ -101,7 +101,7 @@ export function makePlateDiagram(plateType: PlateType, sizeX: number = 12, sizeY
                     if (d.inSelectionRange || d.selected) {
                         d3.select(this)
                             .style('opacity', 1.0)
-                        d3.select(this.parentNode).raise()
+                        d3.select(this.parentNode as Element).raise()
                     } else {
                         d3.select(this)
                             .style('opacity', 0.8)

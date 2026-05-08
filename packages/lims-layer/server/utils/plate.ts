@@ -1,13 +1,13 @@
-import type { PgTransaction } from 'drizzle-orm/pg-core/session'
+import type { PgAsyncTransaction } from 'drizzle-orm/pg-core'
 import { plates } from '../../shared/db/schema/plate'
 import { wells } from '../../shared/db/schema/well'
 
 import { db } from './db'
 import _ from 'lodash'
 
-export async function insertPlate(values: NewPlate, tx?: PgTransaction<any, any, any>) {
+export async function insertPlate(values: NewPlate, tx?: PgAsyncTransaction<any, any>) {
     // Insert plate and associated wells in a transaction (or a subtransaction if tx is provided)
-    const plate = await (tx ?? db).transaction(async (tx2) => {
+    const plate = await (tx ?? db).transaction(async (tx2: PgAsyncTransaction<any, any>) => {
         const newPlate = _.first(await tx2
             .insert(plates)
             .values(values)

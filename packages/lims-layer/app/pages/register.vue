@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { registerUser } from '@/utils/auth'
+import { registerUser } from '../utils/auth'
 
 definePageMeta({
   layout: "empty",

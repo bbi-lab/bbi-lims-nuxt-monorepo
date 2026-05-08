@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     const db = useDrizzle()
     try {
         const body = await readBody(event)
-        const insertSchema = schemas[_.camelCase(recordType)].insert as ZodObject
+        const insertSchema = (schemas as any)[_.camelCase(recordType)].insert as ZodObject
         const records = _.map(body, (x) => {
             const record = _.mapValues(x, (value) => _.isString(value) && _.isEmpty(value) ? null : value)
             return insertSchema.parse(record)

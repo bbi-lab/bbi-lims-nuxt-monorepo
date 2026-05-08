@@ -44,7 +44,7 @@ export function verifyToken(token: string) {
 
 export function refreshTokens(refreshToken: string) {
   try {
-    const tokenPayload = JWT.verify(refreshToken, config.authJwtRefreshTokenSecret, JWT_REFRESH_CONFIG)
+    const tokenPayload = JWT.verify(refreshToken, config.authJwtRefreshTokenSecret)
     const newTokenPayload = _.pick(tokenPayload, ['userId'])
 
     const accessToken = JWT.sign(newTokenPayload, config.authJwtAccessTokenSecret, JWT_ACCESS_CONFIG)

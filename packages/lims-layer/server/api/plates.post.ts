@@ -6,7 +6,7 @@ export default defineEventHandler<{ body: NewPlate }>(async (event) => {
     try {
         const body = await readBody(event)
         const records = _.map(body, (x) => {
-            const record = _.mapValues(x, (value) => _.isString(value) && _.isEmpty(value) ? null : value)
+            const record = _.mapValues(x as any, (value) => _.isString(value) && _.isEmpty(value) ? null : value)
             return schemas.plates.insert!.parse(record) as NewPlate
         })
 

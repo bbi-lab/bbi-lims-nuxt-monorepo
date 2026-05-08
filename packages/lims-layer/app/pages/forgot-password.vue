@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { requestPasswordReset } from '@/utils/auth'
+import { requestPasswordReset } from '../utils/auth'
 
 definePageMeta({
   layout: 'empty',

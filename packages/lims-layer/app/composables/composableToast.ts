@@ -1,4 +1,4 @@
-import { useToast } from "primevue/usetoast";
+import { useToast } from "primevue";
 
 export const useComposableToast = () => {
     const nuxtApp = useNuxtApp()

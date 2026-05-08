@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     try {
         const {ids, values} = await readBody(event)
 
-        const updateSchema = schemas[_.camelCase(recordType)].update as ZodObject
+        const updateSchema = (schemas as any)[_.camelCase(recordType)].update as ZodObject
         const valuesWithEmptyAsNull = _.mapValues(values, (value) => _.isString(value) && _.isEmpty(value) ? null : value)
 
         // excludes fields from schema that are not present in incoming values
