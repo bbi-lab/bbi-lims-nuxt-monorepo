@@ -186,6 +186,7 @@ function onDeleteClick() {
 }
 
 async function onDelete() {
+    if (!props.submitUrl) return
     try {
         const result = await RecordService.deleteRecord(props.submitUrl, props.recordIds[0]!)
         emit('record-delete', result)
