@@ -12,7 +12,6 @@ export default defineNuxtConfig({
         '@primevue/forms/resolvers/zod',
         '@vueuse/core',
         'd3',
-        'drizzle-zod',
         'drizzle-orm/pg-core',
         'drizzle-orm',
         'drizzle-orm/sql',
