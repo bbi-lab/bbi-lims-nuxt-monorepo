@@ -45,9 +45,12 @@ export default defineEventHandler<{ body: LoginUser }>(async (event) => {
         await setUserSession(event, {user: sessionUser, secure: tokens, loggedInAt: new Date()})
         return {success: true}
     } catch (e: unknown) {
+        // Re-throw H3 errors as-is so intentional status codes (404, 401, 400) reach the client.
+        // Wrapping all errors as 400 previously masked these codes.
+        if (isError(e)) throw e
         throw createError({
-            statusCode: 400,
-            statusMessage: (e as { message?: string }).message || 'An error occurred'
+            statusCode: 500,
+            statusMessage: 'An unexpected error occurred'
         })
     }
 })
