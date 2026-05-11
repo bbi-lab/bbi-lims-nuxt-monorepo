@@ -30,15 +30,20 @@ export const schema = {
 
 const ssl = config?.ssl != null ? config.ssl
     : (process.env.NUXT_DB_SSL != null ? process.env.NUXT_DB_SSL.toLowerCase() == 'true' : false)
+
+// SSL certificate validation must only be bypassed explicitly in development.
+// Never disable it in production as it allows silent MITM interception of DB traffic.
+const sslConfig = ssl
+  ? { rejectUnauthorized: process.env.NODE_ENV !== 'production' && process.env.NUXT_DB_SSL_REJECT_UNAUTHORIZED === 'false' ? false : true }
+  : false
+
 const pool = new pg.Pool({
   host: config?.dbHost || process.env.NUXT_DB_HOST || 'localhost',
   port: config?.dbPort || (process.env.NUXT_DB_PORT ? parseInt(process.env.NUXT_DB_PORT) : null) || 5432,
   database: config?.dbDatabaseName || process.env.NUXT_DB_DATABASE_NAME,
   user: config?.dbUsername || process.env.NUXT_DB_USERNAME || 'postgres',
-  password: config?.dbPassword || process.env.NUXT_DB_PASSWORD || 'postgres',
-  ssl: ssl ? {
-    rejectUnauthorized: false
-  } : false
+  password: config?.dbPassword || process.env.NUXT_DB_PASSWORD,
+  ssl: sslConfig,
 })
 
 // Add logger: true to options to get query logging.

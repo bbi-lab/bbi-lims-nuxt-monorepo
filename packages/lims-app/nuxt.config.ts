@@ -33,8 +33,8 @@ export default defineNuxtConfig({
     dbSsl: false,
     authJwtAccessTokenExpiresIn: '5m',
     authJwtRefreshTokenExpiresIn: '60m',
-    authJwtAccessTokenSecret: 'access-token-secret-base64',
-    authJwtRefreshTokenSecret: 'refresh-token-secret-base64',
+    authJwtAccessTokenSecret: '',
+    authJwtRefreshTokenSecret: '',
     public: {
       appName: 'LIMS app',
       apiBase: '/api',
