@@ -37,7 +37,7 @@ export default defineNuxtConfig({
     authJwtAccessTokenSecret: '',
     authJwtRefreshTokenSecret: '',
     public: {
-      appName: 'LIMS app',
+      appName: 'LABELseq LIMS',
       apiBase: '/api',
     }
   },

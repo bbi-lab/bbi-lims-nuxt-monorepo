@@ -1,0 +1,20 @@
+{
+  "name": "labelseq-lims-app",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "lims-layer": "workspace:*",
+    "nuxt": "^4.2.2"
+  },
+  "devDependencies": {
+    "drizzle-kit": "1.0.0-rc.1",
+    "drizzle-orm": "1.0.0-rc.1"
+  }
+}
