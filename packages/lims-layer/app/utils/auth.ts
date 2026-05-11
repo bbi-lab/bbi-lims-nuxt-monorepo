@@ -18,3 +18,23 @@ export async function registerUser(name: string, email: string, password: string
         return {success: false, errorMessage}
     }
 }
+
+export async function requestPasswordReset(email: string) {
+    try {
+        const response = await $fetch(`/api/users/request-password-reset`, {method: 'POST', body: { email }})
+        return response
+    } catch (err: unknown) {
+        const errorMessage = (err as { data?: { statusMessage?: string } })?.data?.statusMessage || 'Request failed. Please try again.'
+        return {success: false, errorMessage}
+    }
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+    try {
+        const response = await $fetch(`/api/users/reset-password`, {method: 'POST', body: { token, newPassword }})
+        return response as { success: boolean }
+    } catch (err: unknown) {
+        const errorMessage = (err as { data?: { statusMessage?: string } })?.data?.statusMessage || 'Password reset failed. The link may have expired.'
+        return {success: false, errorMessage}
+    }
+}

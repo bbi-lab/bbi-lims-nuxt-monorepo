@@ -176,12 +176,15 @@ const changedToNullCheck = (key: string) => {
 // ──────────────────────────────────────────────
 // Submission
 // ──────────────────────────────────────────────
+const readonlyFields = computed(() => getReadonlyFields(props.zodSchema, props.fieldConfigs))
+
 function onFormSubmit({ valid }: FormSubmitEvent<Record<string, unknown>>) {
     if (!valid) return
 
-    // Build values map: only include fields that were changed
+    // Build values map: only include fields that were changed and are not readonly
     const valuesToSubmit = _.mapValues(
-        _.pickBy(combinedRecord.value, (value) => {
+        _.pickBy(combinedRecord.value, (value, key) => {
+            if (readonlyFields.value.has(key)) return false
             // Include if: value is non-null, OR user explicitly cleared it, OR not a conflicting field
             return !_.isNull(value.val) || _.get(value, 'valClearedByUser') || !_.has(value, 'conflictingValueCount')
         }),

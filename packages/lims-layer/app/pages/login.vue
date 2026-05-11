@@ -51,7 +51,7 @@ async function onDidClickSignIn(event) {
                                 <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
                                 <label for="rememberme1">Remember me</label>
                             </div>
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
+                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" @click="() => router.push('/forgot-password')">Forgot password?</span>
                         </div>
                         <Button label="Sign In" class="w-full" @click="onDidClickSignIn" />
                         <div class="flex items-center justify-center mt-4">

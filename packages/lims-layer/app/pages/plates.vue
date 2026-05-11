@@ -77,7 +77,7 @@ const fieldConfigs: Record<string, FormFieldConfig> = {
 const plateTypeOptions = _.mapValues(appConstants.enumLookups.plates.plateType, 'label')
 const plateTypeEnum = z.enum(_.invert(plateTypeOptions))
 const insertPlateSchema = schemas.plates.insert.extend({ plateType: plateTypeEnum })
-const updatePlateSchema = schemas.plates.update.extend({ plateType: plateTypeEnum })
+const updatePlateSchema = schemas.plates.update.extend({ plateType: plateTypeEnum.readonly() })
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">

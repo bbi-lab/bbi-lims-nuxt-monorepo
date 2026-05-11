@@ -21,8 +21,8 @@ export default defineEventHandler(async (event) => {
         })
 
         const deletedRecord = await db.delete(table)
-            .where(eq(table.id, id))
-            .returning()
+            .where(eq((table as any).id, id))
+            .returning() as any[]
 
         return deletedRecord[0]
 
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
         await parseDeleteError(e)
         throw createError({
             statusCode: 400,
-            statusMessage: e.statusMessage || e.message,
+            statusMessage: (e as any).statusMessage || (e as any).message,
         })
     }
 })

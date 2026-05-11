@@ -1,9 +1,8 @@
 import crypto from 'node:crypto'
-import { users, userGroups, userGroupMemberships, preVerifiedUsers } from '../db/schema/user'
+import { users, userGroups, userGroupMemberships, preVerifiedUsers, passwordResetTokens } from '../db/schema/user'
 import { db } from './db'
-import { sha256 } from './hash'
 import argon2 from 'argon2'
-import { eq, inArray } from 'drizzle-orm'
+import { eq, inArray, and, gt } from 'drizzle-orm'
 import _ from 'lodash'
 import { applySelectParamsToRecords, type SelectParams } from './restApi'
 
@@ -49,7 +48,7 @@ export async function updateUserGroup(id: number, values: UpdateUserGroup) {
 export async function selectUserGroup(id: number) {
   const selectedUserGroup = await db.query.userGroups.findFirst(
     {
-      where: () => eq(userGroups.id, id)
+      where: { id } as any
     }
   )
   return selectedUserGroup
@@ -68,7 +67,7 @@ export async function deleteUserGroup(id: number) {
 export async function getUserById(userId: string, withClause?: any, columns?: any) {
   const [user] = await db.query.users.findMany(
     {
-      where: () => eq(users.id, userId),
+      where: { id: userId } as any,
       with: withClause,
       columns,
       limit: 1
@@ -132,7 +131,7 @@ export async function verifyUser(email: string, code: string) {
     })
   }
 
-  const isVerified = sha256.verify(code, user.code)
+  const isVerified = await argon2.verify(user.code, code)
 
   if (!isVerified) {
     throw createError({
@@ -249,4 +248,34 @@ export async function adminUpdateUser(userId: string, values: AdminUpdateUser) {
   }
 
   return updatedUser
+}
+
+export async function createPasswordResetToken(userId: string): Promise<string> {
+  // Delete any existing tokens for this user before creating a new one
+  await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId))
+
+  const rawToken = crypto.randomBytes(32).toString('base64url')
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+
+  await db.insert(passwordResetTokens).values({ userId, tokenHash, expiresAt })
+
+  return rawToken
+}
+
+export async function getValidPasswordResetToken(rawToken: string) {
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+  const now = new Date()
+
+  const [tokenRow] = await db
+    .select()
+    .from(passwordResetTokens)
+    .where(and(eq(passwordResetTokens.tokenHash, tokenHash), gt(passwordResetTokens.expiresAt, now)))
+    .limit(1)
+
+  return tokenRow ?? null
+}
+
+export async function deletePasswordResetToken(id: string) {
+  await db.delete(passwordResetTokens).where(eq(passwordResetTokens.id, id))
 }

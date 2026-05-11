@@ -17,6 +17,10 @@ logs
 .DS_Store
 .fleet
 .idea
+.github/
+.vscode/
+.planning/
+.playwright-mcp/
 
 # Local env files
 .env

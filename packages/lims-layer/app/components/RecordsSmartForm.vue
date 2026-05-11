@@ -3,6 +3,7 @@ import _ from 'lodash'
 import type { z } from 'zod'
 
 const toast = useToast()
+const confirm = useConfirm()
 
 const props = defineProps({
     selectUrl: { type: String, required: false },
@@ -172,7 +173,20 @@ async function onSubmitSuccess(values: Record<string, unknown>) {
     }
 }
 
+function onDeleteClick() {
+    confirm.require({
+        message: 'Are you sure you want to delete this record? This action cannot be undone.',
+        header: 'Confirm Delete',
+        icon: 'pi pi-exclamation-triangle',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Delete',
+        acceptProps: { severity: 'danger' },
+        accept: onDelete,
+    })
+}
+
 async function onDelete() {
+    if (!props.submitUrl) return
     try {
         const result = await RecordService.deleteRecord(props.submitUrl, props.recordIds[0]!)
         emit('record-delete', result)
@@ -209,6 +223,7 @@ onMounted(() => {
 </script>
 
 <template>
+    <ConfirmDialog />
     <ProgressSpinner v-if="loading" />
     <div v-else class="flex flex-col gap-4 m-4">
         <SmartFormMultiple
@@ -243,7 +258,7 @@ onMounted(() => {
                     v-if="!readOnly && canDelete && recordIds.length > 0"
                     label="Delete"
                     severity="danger"
-                    @click="onDelete"
+                    @click="onDeleteClick"
                 />
             </template>
         </SmartForm>

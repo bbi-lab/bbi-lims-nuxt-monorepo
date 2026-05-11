@@ -163,7 +163,7 @@ const refreshFormattedValues = (ids?: string[]) => {
     for (const [k, v] of _.entries(formattedColumnDefs)) {
         const rows = ids ? _.filter(records.value, (x: any) => ids.includes(x.id)) : records.value
         for (const r of rows || []) {
-            _.isObject(r[k]) ? _.set(r, [k, 'displayValue'], v.format(r)) : _.set(r, k, { originalValue: r[k], displayValue: v.format(r) })
+            _.isObject(r[k]) ? _.set(r, [k, 'displayValue'], (v.format as Function)(r)) : _.set(r, k, { originalValue: r[k], displayValue: (v.format as Function)(r) })
         }
     }
 }

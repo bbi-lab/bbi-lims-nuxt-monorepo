@@ -2,34 +2,33 @@ import _ from 'lodash'
 import { type SelectParams, applySelectParamsToRecords } from './restApi'
 import type { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/query'
 import type { PgViewWithSelection, PgTable } from 'drizzle-orm/pg-core'
-import { eq, inArray, getTableName, type ColumnDataType, type ColumnBaseConfig, Column } from 'drizzle-orm'
+import { eq, inArray, getTableName, type ColumnType, type ColumnBaseConfig, Column } from 'drizzle-orm'
 import { useDrizzle } from '../utils/db'
-// import { ENUM_LOOKUPS } from '../db/schema/sge/enum-lookups'
 
 export interface RecordValues {[key: string]: string | number | boolean | null | undefined }
 
 const db = useDrizzle()
 
-// function expandEnumValues(records: any, tableName: string): void {
-//     if (!ENUM_LOOKUPS[tableName]) return
+function expandEnumValues(records: any, tableName: string): void {
+    if (!_.has(appConstants.enumLookups, tableName)) return
 
-//     const enumLookup = ENUM_LOOKUPS[tableName]
-//     if (_.isArray(records)) {
-//         _.forEach(records, (record) => {
-//             _.forEach(record, (value, key) => {
-//                 if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
-//                     record[key] = {value: record[key], ...enumLookup[key][value]}
-//                 }
-//             })
-//         })
-//     } else {
-//         _.forEach(records, (value, key) => {
-//             if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
-//                 records[key] = {value: records[key], ...enumLookup[key][value]}
-//             }
-//         })
-//     }
-// }
+    const enumLookup = appConstants.enumLookups[tableName] as Record<string, any>
+    if (_.isArray(records)) {
+        _.forEach(records, (record) => {
+            _.forEach(record, (value, key) => {
+                if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
+                    record[key] = {value: record[key], ...enumLookup[key][value]}
+                }
+            })
+        })
+    } else {
+        _.forEach(records, (value, key) => {
+            if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
+                records[key] = {value: records[key], ...enumLookup[key][value]}
+            }
+        })
+    }
+}
 
 function trimObjectValues(records: RecordValues[]): RecordValues[] {
     return _.map(records, (x) => {
@@ -40,12 +39,12 @@ function trimObjectValues(records: RecordValues[]): RecordValues[] {
 }
 
 export async function selectRecords(queryBuilder: RelationalQueryBuilder<any, any>, selectParams: SelectParams, expandEnums: boolean = false) {
-    const records = await queryBuilder.findMany({
+    const records = await (queryBuilder as any).findMany({
         columns: selectParams.columns,
         with: selectParams.with
     })
     const result = applySelectParamsToRecords(selectParams, records)
-    // if (expandEnums) expandEnumValues(result, _.get(queryBuilder, 'tableConfig.dbName', ''))
+    if (expandEnums) expandEnumValues(result, _.get(queryBuilder, 'tableConfig.dbName', ''))
     return result
 }
 
@@ -62,13 +61,13 @@ export async function selectRecordFromView(view: PgViewWithSelection, id: string
             statusMessage: `View does not have an id column`
         })
     }
-    const record = await db.select().from(view).where(eq(view.id as Column<ColumnBaseConfig<ColumnDataType, string>, object, object>, id))
+    const record = await db.select().from(view).where(eq(view.id as Column<ColumnBaseConfig<ColumnType>>, id))
     return _.first(record)
 }
 
 export async function selectRecord(queryBuilder: RelationalQueryBuilder<any, any>, table: PgTable<any>, id: string | number, withClause: any, columns: any, expandEnums: boolean = false) {
-    const record = await queryBuilder.findFirst({
-        where: () => eq(table.id, id),
+    const record = await (queryBuilder as any).findFirst({
+        where: { id },
         with: withClause,
         columns
     })
@@ -106,8 +105,8 @@ export async function updateRecord(table: PgTable<any>, id: string | number, val
     const [updatedRecord] = await db
         .update(table)
         .set(trimmedValues)
-        .where(eq(table.id, id))
-        .returning()
+        .where(eq((table as any).id, id))
+        .returning() as any[]
 
     return updatedRecord
 }
@@ -120,8 +119,8 @@ export async function updateRecords(table: PgTable<any>, ids: string[] | number[
     const updatedRecords = await db
         .update(table)
         .set(trimmedValues)
-        .where(inArray(table.id, ids))
-        .returning()
+        .where(inArray((table as any).id, ids))
+        .returning() as any[]
 
     return updatedRecords
 }
@@ -129,8 +128,8 @@ export async function updateRecords(table: PgTable<any>, ids: string[] | number[
 export async function deleteRecord(table: PgTable<any>, id: string | number) {
     const [deletedRecord] = await db
         .delete(table)
-        .where(eq(table.id, id))
-        .returning()
+        .where(eq((table as any).id, id))
+        .returning() as any[]
 
     return deletedRecord
 }

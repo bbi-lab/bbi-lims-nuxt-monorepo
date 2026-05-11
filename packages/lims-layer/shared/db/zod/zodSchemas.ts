@@ -1,5 +1,5 @@
 import { dateSchema, nullableDateSchema } from '../helpers/schemas'
-import { createSelectSchema } from 'drizzle-zod'
+import { createSelectSchema } from 'drizzle-orm/zod'
 import { z } from 'zod'
 import { genes } from '../schema/gene'
 import { plates } from '../schema/plate'
@@ -37,6 +37,15 @@ const changePasswordSchema = z.object({
   newPassword: z.string(),
 })
 
+const requestPasswordResetSchema = z.object({
+  email: z.email(),
+})
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1),
+  newPassword: z.string(),
+})
+
 const loginSchema = z.object({
     email: z.email(),
     password: z.string(),
@@ -58,7 +67,10 @@ const updateGeneSchema = createSelectSchema(genes, {
 
 const selectPlateSchema = createSelectSchema(plates)
 const insertPlateSchema = selectPlateSchema.omit({id: true}).partial()
-const updatePlateSchema = insertPlateSchema
+const updatePlateSchema = createSelectSchema(plates, {
+    sizeX: z.number().int().readonly(),
+    sizeY: z.number().int().readonly(),
+}).omit({id: true}).partial()
 
 const selectWellsSchema = createSelectSchema(wells)
 const insertWellsSchema = selectWellsSchema.omit({id: true})
@@ -104,6 +116,8 @@ export const schemas = freezeSchemas({
         update: updateUserSchema,
         adminUpdate: adminUpdateUserSchema,
         changePassword: changePasswordSchema,
+        requestPasswordReset: requestPasswordResetSchema,
+        resetPassword: resetPasswordSchema,
         login: loginSchema,
         refreshTokens: refreshTokensSchema,
         selectGroupMemberships: selectUserGroupMemberships,

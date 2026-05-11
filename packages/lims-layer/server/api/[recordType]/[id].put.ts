@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         const body = await readBody(event)
-        const updateSchema = schemas[_.camelCase(recordType)].update as ZodObject
+        const updateSchema = (schemas as any)[_.camelCase(recordType)].update as ZodObject
         const values = _.mapValues(body, (value) => _.isString(value) && _.isEmpty(value) ? null : value)
         const parsedValues = updateSchema.parse(values) as RecordValues
 

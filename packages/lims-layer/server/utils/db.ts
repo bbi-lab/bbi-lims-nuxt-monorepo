@@ -6,13 +6,10 @@ import {genes} from '../../shared/db/schema/gene'
 import { plates } from '../../shared/db/schema/plate'
 import { wellables, wellContents, wellContentSources, wells } from '../../shared/db/schema/well'
 import { viewPlatesWithWellCounts } from '../../shared/db/schema/views'
-import * as allRelations from '../db/relations/relations'
+import { relations } from '../db/relations/relations'
 
 // By checking whether useRuntimeConfig is defined, we support use outside the Nuxt lifecycle.
 const config = typeof useRuntimeConfig == 'undefined' ? undefined : useRuntimeConfig()
-
-// other than relationsConfigs, all exported members of allRelations should be actual relations
-const { relationsConfigs, ...relations } = allRelations
 
 export const schema = {
   // tables
@@ -29,10 +26,6 @@ export const schema = {
 
   // views
   viewPlatesWithWellCounts,
-
-  // relations
-  ...relations
-
 }
 
 const ssl = config?.ssl != null ? config.ssl
@@ -49,7 +42,7 @@ const pool = new pg.Pool({
 })
 
 // Add logger: true to options to get query logging.
-export const db = drizzle(pool, {schema: schema})
+export const db = drizzle({ client: pool, relations })
 
 export function useDrizzle() {
   return db

@@ -3,8 +3,9 @@ import process from 'node:process'
 
 export default defineConfig({
   schema: [
-    './server/db/schema/*',
-    '../lims-layer/server/db/schema/*'
+    './shared/db/schema/*',
+    '../lims-layer/server/db/schema/*',
+    '../lims-layer/shared/db/schema/*'
   ],
   out: './server/db/migrations',
   dialect: 'postgresql',

@@ -1,5 +1,3 @@
-import { useToast } from "primevue/usetoast";
-
 export const useComposableToast = () => {
     const nuxtApp = useNuxtApp()
     const getToast: typeof useToast = () => nuxtApp.vueApp.config.globalProperties.$toast

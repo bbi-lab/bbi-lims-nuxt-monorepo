@@ -5,8 +5,8 @@ import type { $ZodTypeDef } from "zod/v4/core"
 
 export const formatFieldLabel =  (val: String) => {
     return _.startCase(val.toString())
-        .replace(/(^|\s)(Dna|Rna|Pcr)($|\s)/g, (match) => match.toUpperCase())
-        .replace(/(^|\s)Pct($|\s)/g, (match) => '% ').trim()
+        .replace(/(^|\s)(Dna|Rna|Pcr)(?=$|\s)/g, (match) => match.toUpperCase())
+        .replace(/(^|\s)Pct(?=$|\s)/g, ' %').trim()
 }
 
 export function isValidUrl(url: string) {
@@ -78,11 +78,11 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     } else if (zodType == 'date') {
         primeVueComponent = 'DatePicker'
     } else if (zodType == 'enum') {
-        primeVueComponent = 'Dropdown'
-        // Extract enum values from Zod schema, and map them to options for the Dropdown component
+        primeVueComponent = 'Select'
+        // Extract enum values from Zod schema, and map them to options for the Select component
         const enumValues = _.get(zodFieldDef, 'entries', [])
 
-        // Re-format entries to pass to PrimeVue Dropdown
+        // Re-format entries to pass to PrimeVue Select
         const options = _.map(enumValues, (value, key) => ({
             name: key,
             code: value,
@@ -165,6 +165,24 @@ export function isZodFieldReadonly(zodSchema: z.ZodObject<Record<string, z.ZodTy
         }
     }
     return false
+}
+
+/**
+ * Returns the set of field names that should be excluded from submission.
+ * A field is readonly if it is wrapped with z.readonly() in the schema,
+ * or if its fieldConfig explicitly sets readonly: true.
+ */
+export function getReadonlyFields(
+    zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>,
+    fieldConfigs?: Record<string, FormFieldConfig>,
+): Set<string> {
+    const result = new Set<string>()
+    for (const fieldName of _.keys(zodSchema.shape)) {
+        if (isZodFieldReadonly(zodSchema, fieldName) || fieldConfigs?.[fieldName]?.readonly) {
+            result.add(fieldName)
+        }
+    }
+    return result
 }
 
 /**

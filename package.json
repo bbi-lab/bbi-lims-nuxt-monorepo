@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "prepare": "pnpm run -r dev:prepare",
-    "clean-install": "rm -rf node_modules packages/*/node_modules pnpm-lock.yaml && pnpm install"
+    "clean-install": "rm -rf node_modules packages/*/node_modules pnpm-lock.yaml && pnpm install",
+    "test": "pnpm --filter lims-layer test"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +14,9 @@
   "packageManager": "pnpm@10.25.0",
   "pnpm": {
     "overrides": {
-      "vue": "3.5.26"
+      "vue": "3.5.26",
+      "abbrev": "^3.0.1",
+      "ini": "^4.1.1"
     },
     "peerDependencyRules": {
       "ignoreMissing": ["vue"]
