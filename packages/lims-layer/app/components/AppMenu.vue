@@ -25,11 +25,13 @@ const model = ref([
         ]
     },
 ])
+
+const menuItems = computed(() => model.value.filter(item => !item.hidden))
 </script>
 
 <template>
     <ul class="layout-menu">
-        <template v-for="(item, i) in model" :key="item">
+        <template v-for="(item, i) in menuItems" :key="item">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"/>
             <li v-if="item.separator" class="menu-separator"/>
         </template>
