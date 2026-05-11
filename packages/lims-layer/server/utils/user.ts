@@ -7,20 +7,50 @@ import _ from 'lodash'
 import { applySelectParamsToRecords, type SelectParams } from './restApi'
 
 export async function getAllUsers(selectParams: SelectParams) {
+  const pushToDb = !selectParams.where
   const allUsers = await db.query.users.findMany({
     columns: selectParams.columns,
     with: selectParams.with,
+    ...(pushToDb ? {
+      limit: selectParams.limit || undefined,
+      offset: selectParams.offset || undefined,
+      orderBy: selectParams.order
+        ? (fields: Record<string, any>, { asc, desc }: any) =>
+            Object.entries(selectParams.order!).flatMap(([col, dir]) => {
+              const column = fields[col]
+              return column ? [dir === 'desc' ? desc(column) : asc(column)] : []
+            })
+        : undefined,
+    } : {}),
   })
-  return applySelectParamsToRecords(selectParams, allUsers)
+  const inMemoryParams: SelectParams = pushToDb
+    ? { ...selectParams, limit: undefined as unknown as number, offset: undefined as unknown as number, order: undefined as unknown as SelectParams['order'] }
+    : selectParams
+  return applySelectParamsToRecords(inMemoryParams, allUsers)
 }
 
 export async function getUserGroups(selectParams?: SelectParams) {
   if (selectParams) {
+    const pushToDb = !selectParams.where
     const allUserGroups = await db.query.userGroups.findMany({
       columns: selectParams.columns,
       with: selectParams.with,
+      ...(pushToDb ? {
+        limit: selectParams.limit || undefined,
+        offset: selectParams.offset || undefined,
+        orderBy: selectParams.order
+          ? (fields: Record<string, any>, { asc, desc }: any) =>
+              Object.entries(selectParams.order!).flatMap(([col, dir]) => {
+                const column = fields[col]
+                return column ? [dir === 'desc' ? desc(column) : asc(column)] : []
+              })
+          : undefined,
+      } : {}),
     })
-    return applySelectParamsToRecords(selectParams, allUserGroups)
+    const inMemoryParams: SelectParams = pushToDb
+      ? { ...selectParams, limit: undefined as unknown as number, offset: undefined as unknown as number, order: undefined as unknown as SelectParams['order'] }
+      : selectParams
+    return applySelectParamsToRecords(inMemoryParams, allUserGroups)
   } else {
     return await db.select().from(userGroups)
   }

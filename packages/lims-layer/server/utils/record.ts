@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { type SelectParams, applySelectParamsToRecords } from './restApi'
 import type { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/query'
 import type { PgViewWithSelection, PgTable } from 'drizzle-orm/pg-core'
-import { eq, inArray, getTableName, type ColumnType, type ColumnBaseConfig, Column } from 'drizzle-orm'
+import { eq, inArray, getTableName, asc, desc, type ColumnType, type ColumnBaseConfig, Column } from 'drizzle-orm'
 import { useDrizzle } from '../utils/db'
 
 export interface RecordValues {[key: string]: string | number | boolean | null | undefined }
@@ -39,18 +39,60 @@ function trimObjectValues(records: RecordValues[]): RecordValues[] {
 }
 
 export async function selectRecords(queryBuilder: RelationalQueryBuilder<any, any>, selectParams: SelectParams, expandEnums: boolean = false) {
+    // Push limit/offset/orderBy to the DB when there is no JSON Logic `where` filter.
+    // When a where filter is present we must fetch all rows first and apply it in Node.js,
+    // so DB-level pagination would yield incorrect results.
+    const pushToDb = !selectParams.where
+
     const records = await (queryBuilder as any).findMany({
         columns: selectParams.columns,
-        with: selectParams.with
+        with: selectParams.with,
+        ...(pushToDb ? {
+            limit: selectParams.limit || undefined,
+            offset: selectParams.offset || undefined,
+            orderBy: selectParams.order
+                ? (fields: Record<string, any>, { asc: a, desc: d }: any) =>
+                    Object.entries(selectParams.order!).flatMap(([col, dir]) => {
+                        const column = fields[col]
+                        return column ? [dir === 'desc' ? d(column) : a(column)] : []
+                    })
+                : undefined,
+        } : {}),
     })
-    const result = applySelectParamsToRecords(selectParams, records)
+
+    // Strip DB-applied params so applySelectParamsToRecords does not re-apply them.
+    const inMemoryParams: SelectParams = pushToDb
+        ? { ...selectParams, limit: undefined as unknown as number, offset: undefined as unknown as number, order: undefined as unknown as SelectParams['order'] }
+        : selectParams
+
+    const result = applySelectParamsToRecords(inMemoryParams, records)
     if (expandEnums) expandEnumValues(result, _.get(queryBuilder, 'tableConfig.dbName', ''))
     return result
 }
 
 export async function selectRecordsFromView(view: PgViewWithSelection, selectParams: SelectParams) {
-    const records = await db.select().from(view)
-    const result = applySelectParamsToRecords(selectParams, records)
+    // Push limit/offset/orderBy to the DB when there is no JSON Logic `where` filter.
+    const pushToDb = !selectParams.where
+
+    let query = db.select().from(view) as any
+    if (pushToDb) {
+        if (selectParams.order) {
+            const orderClauses = Object.entries(selectParams.order).flatMap(([col, dir]) => {
+                const column = (view as any)[col]
+                return column ? [dir === 'desc' ? desc(column) : asc(column)] : []
+            })
+            if (orderClauses.length) query = query.orderBy(...orderClauses)
+        }
+        if (selectParams.offset) query = query.offset(selectParams.offset)
+        if (selectParams.limit) query = query.limit(selectParams.limit)
+    }
+
+    const records = await query
+    const inMemoryParams: SelectParams = pushToDb
+        ? { ...selectParams, limit: undefined as unknown as number, offset: undefined as unknown as number, order: undefined as unknown as SelectParams['order'] }
+        : selectParams
+
+    const result = applySelectParamsToRecords(inMemoryParams as SelectParams, records)
     return result
 }
 
