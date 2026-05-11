@@ -120,7 +120,6 @@ watch(parentValue, (newValue, oldValue) => {
           {"var": parentArrayField as string},
           {"==": [{"var": nestedFieldPath}, newValue.code]}
         ]}
-        console.log('Constructed filter for nested parentKeyField:', filter)
     } else {
         // Simple parentKeyField
         filter = {"==": [{"var": props.parentKeyField}, newValue.code]}

@@ -37,7 +37,6 @@ provide('$pcForm', null)
 watch(
     () => props.name,
     (name) => {
-        console.log('Registering field with form:', $pcForm)
         if ($pcForm && name) {
             formField.value = $pcForm.register(name, {
                 name,

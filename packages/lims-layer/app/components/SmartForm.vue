@@ -67,7 +67,6 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
     if (valid) {
         const filtered = _.omit(values, [...readonlyFields.value])
         emit('submitSuccess', filtered)
-        console.log('Submitted values:', filtered)
     }
 }
 </script>

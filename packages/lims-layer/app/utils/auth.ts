@@ -13,7 +13,6 @@ export async function registerUser(name: string, email: string, password: string
         const response = await $fetch(`/api/users/register`, {method: 'POST', body: { name, email, password }})
         return response
     } catch (err: unknown) {
-        console.error(JSON.stringify(err))
         const errorMessage = (err as { data?: { statusMessage?: string } })?.data?.statusMessage || 'Registration failed.'
         return {success: false, errorMessage}
     }
