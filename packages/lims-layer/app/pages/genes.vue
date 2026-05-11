@@ -2,10 +2,22 @@
 import _ from 'lodash'
 // import Papa from 'papaparse'
 import { schemas } from '../../shared/db/zod/zodSchemas'
+import { v4 as uuidv4 } from 'uuid'
 
 // const config = useRuntimeConfig()
 // const toast = useToast()
 const crudTable = useCrudTable()
+const route = useRoute()
+
+const whereClauses = ref()
+const readonlyValues = ref<Record<string, unknown>>({})
+const tableKey = ref(uuidv4())
+
+watch(() => route.query, async (newValue, oldValue) => {
+    whereClauses.value = queryParamsToJsonLogic(newValue)
+    readonlyValues.value = getSimpleQueryParams(newValue)
+    tableKey.value = uuidv4()
+}, { immediate: true })
 
 const rowActions = {
     // targets: {
@@ -51,9 +63,11 @@ const columnDefs: ColumnDefinitions = {
         <SplitterPanel :size="50">
             <SmartTable
                 :ref="crudTable.setTableRef"
+                :key="tableKey"
                 tableName="genes"
                 :zodSchema="schemas.genes.select"
                 title="Genes"
+                :where="whereClauses"
                 :canAdd="false"
                 :canDelete="false"
                 selectionMode="single"
