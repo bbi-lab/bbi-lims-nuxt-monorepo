@@ -4,6 +4,7 @@ import type { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/
 import type { PgViewWithSelection, PgTable } from 'drizzle-orm/pg-core'
 import { eq, inArray, getTableName, asc, desc, type ColumnType, type ColumnBaseConfig, Column } from 'drizzle-orm'
 import { useDrizzle } from '../utils/db'
+import { appConstants } from '../../shared/utils/constants'
 
 export interface RecordValues {[key: string]: string | number | boolean | null | undefined }
 
