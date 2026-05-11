@@ -48,7 +48,7 @@ export async function updateUserGroup(id: number, values: UpdateUserGroup) {
 export async function selectUserGroup(id: number) {
   const selectedUserGroup = await db.query.userGroups.findFirst(
     {
-      where: eq(userGroups.id, id) as any
+      where: { id } as any
     }
   )
   return selectedUserGroup
@@ -67,7 +67,7 @@ export async function deleteUserGroup(id: number) {
 export async function getUserById(userId: string, withClause?: any, columns?: any) {
   const [user] = await db.query.users.findMany(
     {
-      where: eq(users.id, userId) as any,
+      where: { id: userId } as any,
       with: withClause,
       columns,
       limit: 1
