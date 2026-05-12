@@ -76,6 +76,7 @@ function resolveZodColumnMeta(field: z.ZodTypeAny): { type: string, format: stri
     if (zodType === 'boolean') return { type: 'boolean', format: 'string' }
     if (zodType === 'number' || zodType === 'int') return { type: 'number', format: 'string' }
     if (zodType === 'array') return { type: 'array', format: 'string' }
+    if (zodType === 'date') return { type: 'date', format: 'date-time' }
     if (zodType === 'string') {
         const isDateTime = def.format === 'date-time'
             || (def.checks as any[] | undefined)?.some((c: any) => c.kind === 'datetime' || c.kind === 'iso_datetime')
@@ -265,8 +266,18 @@ function toggleColumnFilters() {
     displayColumnFilters.value = !displayColumnFilters.value
 }
 
-function formatDate(value: string) {
-    return value ? new Date(value).toLocaleDateString('fr-CA') : ''
+function formatDate(value: string | Date | null | undefined) {
+    if (!value) return ''
+    const d = value instanceof Date ? value : new Date(value)
+    return d.toLocaleDateString('fr-CA') // YYYY-MM-DD
+}
+
+function formatDateTime(value: string | Date | null | undefined) {
+    if (!value) return ''
+    const d = value instanceof Date ? value : new Date(value)
+    const date = d.toLocaleDateString('fr-CA') // YYYY-MM-DD
+    const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+    return `${date} ${time}`
 }
 
 function didClickEditRecord(event: MouseEvent) {
@@ -362,9 +373,9 @@ function getExportRecords() {
                 } else if (_.isFunction(columnDef.format)) {
                     _.set(exportRecord, [header], columnDef.format(record))
                 } else if (columnDef.format == 'date-time') {
-                    _.set(exportRecord, [header], formatDate(_.get(record, columnDef.path ?? columnDef.key)))
+                    _.set(exportRecord, [header], formatDateTime(_.get(record, columnDef.path ?? columnDef.key)))
                 } else if (columnDef.type == 'array') {
-                    _.set(exportRecord, [header], _.join(_.get(record, columnDef.path ?? columnDef.key), ', '))
+                    _.set(exportRecord, [header], _.join(_.filter(_.get(record, columnDef.path ?? columnDef.key), v => v === null || typeof v !== 'object'), ', '))
                 } else {
                     _.set(exportRecord, [header], _.get(record, columnDef.path ?? columnDef.key))
                 }
@@ -546,7 +557,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                         <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
                     </template>
                     <template #body="slotProps">
-                        {{ formatDate(slotProps.data[columnDef.key]) }}
+                        {{ formatDateTime(slotProps.data[columnDef.key]) }}
                     </template>
                 </Column>
                 <Column v-else-if="columnDef.type == 'boolean' || _.includes(columnDef.type, 'boolean')" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="_.get(columnDef, 'sortable', true)">
@@ -584,7 +595,9 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                         <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
                     </template>
                     <template v-if="columnDef.path" #body="slotProps">
-                        {{ columnDef.type == 'array' ? _.join(_.get(slotProps.data, columnDef.path), ', ') : _.get(slotProps.data, columnDef.path) }}
+                        {{ (columnDef.type == 'array' || Array.isArray(_.get(slotProps.data, columnDef.path)))
+                            ? _.join(_.filter(_.get(slotProps.data, columnDef.path), v => v === null || typeof v !== 'object'), ', ')
+                            : _.get(slotProps.data, columnDef.path) }}
                     </template>
                 </Column>
             </template>
