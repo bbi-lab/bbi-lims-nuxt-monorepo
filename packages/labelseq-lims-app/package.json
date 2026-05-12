@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "lims-layer": "workspace:*",
-    "nuxt": "^4.2.2"
+    "lodash": "^4.17.23",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.23",
     "drizzle-kit": "1.0.0-rc.1",
-    "drizzle-orm": "1.0.0-rc.1"
+    "drizzle-orm": "1.0.0-rc.1",
+    "nuxt": "^4.4.2"
   }
 }
