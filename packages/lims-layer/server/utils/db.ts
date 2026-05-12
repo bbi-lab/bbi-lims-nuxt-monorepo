@@ -37,7 +37,7 @@ const sslConfig = ssl
   ? { rejectUnauthorized: process.env.NODE_ENV !== 'production' && process.env.NUXT_DB_SSL_REJECT_UNAUTHORIZED === 'false' ? false : true }
   : false
 
-const pool = new pg.Pool({
+export const pool = new pg.Pool({
   host: config?.dbHost || process.env.NUXT_DB_HOST || 'localhost',
   port: config?.dbPort || (process.env.NUXT_DB_PORT ? parseInt(process.env.NUXT_DB_PORT) : null) || 5432,
   database: config?.dbDatabaseName || process.env.NUXT_DB_DATABASE_NAME,
