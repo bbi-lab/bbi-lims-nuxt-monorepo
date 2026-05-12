@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import _, { size } from 'lodash'
+import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 import { schemas } from '../../shared/db/zod/zodSchemas'
@@ -14,12 +14,9 @@ const readonlyValues = ref<Record<string, unknown>>({})
 
 const definedRoutes = router.getRoutes()
 
-watch(() => route.query, async (newValue) => {
-    const queryParamFilters = _.map(newValue, (val, key) => {
-        return {"==": [{"var": key}, val] }
-    })
-    whereClauses.value = _.size(queryParamFilters) > 1 ? {and: queryParamFilters} : queryParamFilters
-    readonlyValues.value = newValue
+watch(() => route.query, async (newValue, oldValue) => {
+    whereClauses.value = queryParamsToJsonLogic(newValue)
+    readonlyValues.value = getSimpleQueryParams(newValue)
     tableKey.value = uuidv4()
 }, { immediate: true })
 
