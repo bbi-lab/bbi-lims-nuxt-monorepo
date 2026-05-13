@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import {schemas} from '../../../../shared/db/zod/zodSchemas'
-import _ from 'lodash'
-
-// TODO: move this to a shared/utils function since it will be needed in multiple places
-// When using object in ZodEnum, the keys are the actual enum values, and the values are the labels
-// So we need to invert the plateTypeOptions to get the correct mapping
-const plateTypeOptions = _.mapValues(appConstants.enumLookups.plates.plateType, 'label')
 
 // testing nested array of objects with zod and smart form
 const testArraySchema = z.array(z.object({
@@ -16,9 +10,7 @@ const testArraySchema = z.array(z.object({
     userId: z.string(), // for testing nestedSelect in array
 }))
 
-// Use .extend() to create a NEW schema — never mutate the shared module-level schema
 const zodSchema = schemas.plates.insert.extend({
-    plateType: z.enum(_.invert(plateTypeOptions)),
     testArray: testArraySchema,
     geneId: z.string(),
     userId: z.string(),
@@ -29,6 +21,15 @@ const fieldConfigs: Record<string, FormFieldConfig> = {
         label: 'Plate Name',
         defaultValue: 'My Plate',
         disabled: true,
+    },
+    plateType: {
+        autoCompleter: {
+            searchBaseUrl: '/api/plate-types',
+            valueField: 'value',
+            displayFields: ['label'],
+            searchFields: ['label'],
+            dropdown: true,
+        },
     },
     testArray: {
         inputArray: {
