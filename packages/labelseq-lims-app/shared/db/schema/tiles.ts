@@ -11,6 +11,8 @@ export const superblocks = pgTable('superblocks', {
     refseqTranscriptId: uuid('refseq_transcript_id').references(() => refseqTranscripts.id),
     name: varchar('name', { length: 50 }).notNull(),
     description: varchar('description', { length: 255 }),
+    start: integer('start'),
+    end: integer('end'),
     seq: text('seq'),
 }, (t) => [
     check("seq_check", sql`${t.seq} ~* '^[actg]*$'`),
@@ -26,6 +28,6 @@ export const tiles = pgTable('tiles', {
     mutagenesisEnd: integer('mutagenesis_end'),
     retrieverPrimerForwardId: uuid('retriever_primer_forward_id').references(() => retrieverPrimers.id),
     retrieverPrimerReverseId: uuid('retriever_primer_reverse_id').references(() => retrieverPrimers.id),
-    superblockFirst: boolean('superblock_first').notNull().default(false),
-    superblockLast: boolean('last').notNull().default(false),
+    superblockFirst: boolean('superblock_first').default(false),
+    superblockLast: boolean('last').default(false),
 })

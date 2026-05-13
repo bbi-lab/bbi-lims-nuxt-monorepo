@@ -16,7 +16,7 @@ const insertRestrictionEnzymeSchema = selectRestrictionEnzymeSchema.omit({
     id: true,
     recogSeq: true,
     recogSeqRevComp: true,
-    recogSeqPlusOneRevComp: true,
+    recogSeqPlusOverhangRevComp: true,
 }).partial()
 const updateRestrictionEnzymeSchema = insertRestrictionEnzymeSchema
 

@@ -33,7 +33,7 @@ const fieldConfigs: FormFieldConfigs = {
             valueField: 'id',
             displayFields: ['name'],
             searchFields: ['name'],
-            searchWhereClause: {'in': [{'var': 'name'}, ['sap1', 'paqc1']]},
+            searchWhereClause: {'in': [{'var': 'name'}, ['SapI', 'PaqCI']]},
             dropdown: true,
         },
     },

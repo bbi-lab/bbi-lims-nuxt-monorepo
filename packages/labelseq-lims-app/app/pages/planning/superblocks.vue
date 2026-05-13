@@ -23,7 +23,10 @@ const columnDefs: ColumnDefinitions = {
     project: { header: 'Project', index: 2, path: 'project.name' },
     refseqTranscriptId: { display: false },
     refseqTranscript: { header: 'RefSeq transcript ID', index: 3, path: 'refseqTranscript.transcriptId' },
-    seq: { header: 'Sequence', index: 4, bodyClass: 'max-w-64 truncate' },
+    start: { index: 4 },
+    end: { index: 5 },
+    seq: { header: 'Sequence', index: 6, bodyClass: 'max-w-64 truncate' },
+    length: { header: 'Length', index: 7, format: (row) => row.seq.length, path: 'length.displayValue' },
 }
 
 const fieldConfigs: FormFieldConfigs = {
@@ -42,8 +45,11 @@ const fieldConfigs: FormFieldConfigs = {
         autoCompleter: {
             searchBaseUrl: '/api/refseq-transcripts',
             valueField: 'id',
-            displayFields: ['transcriptId'],
-            searchFields: ['transcriptId'],
+            displayFields: ['transcriptId', 'gene.symbol'],
+            searchFields: ['transcriptId', 'gene.symbol'],
+            searchWithClause: {
+                gene: true,
+            },
             dropdown: true,
         },
     },
@@ -55,7 +61,11 @@ const fieldConfigs: FormFieldConfigs = {
 
 const withClause = {
     project: true,
-    refseqTranscript: true,
+    refseqTranscript: {
+        with: {
+            gene: true,
+        },
+    },
 }
 </script>
 <template>

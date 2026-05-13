@@ -17,10 +17,11 @@ watch(() => route.query, async (newValue, oldValue) => {
 
 const columnDefs: ColumnDefinitions = {
     name: { index: 0 },
-    recogSeqPlusOne: { header: 'Recognition Seq +1', index: 1 },
-    recogSeq: { header: 'Recognition Seq', index: 2 },
-    recogSeqRevComp: { header: 'Rev Comp', index: 3 },
-    recogSeqPlusOneRevComp: { display: false },
+    recogSeq: { header: 'Recognition Sequence', index: 1 },
+    overhangLength: { header: 'Overhang Length', index: 2 },
+    recogSeqPlusOverhang: { header: 'Sequence (+ overhang)', index: 3 },
+    recogSeqRevComp: { header: 'Rev. comp (seq)', index: 4 },
+    recogSeqPlusOverhangRevComp: { header: 'Rev. comp (seq + overhang)', index: 5 },
 }
 </script>
 <template>

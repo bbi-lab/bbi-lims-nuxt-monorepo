@@ -20,6 +20,7 @@ const columnDefs: ColumnDefinitions = {
     geneId: { display: false },
     gene: { header: 'Gene', index: 1, path: 'gene.symbol' },
     seq: { header: 'Sequence', index: 2, bodyClass: 'max-w-64 truncate' },
+    length: { header: 'Length', index: 3, format: (row) => row.seq.length, path: 'length.displayValue' },
 }
 
 const fieldConfigs: FormFieldConfigs = {

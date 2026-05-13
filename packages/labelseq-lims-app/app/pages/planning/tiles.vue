@@ -17,18 +17,30 @@ watch(() => route.query, async (newValue, oldValue) => {
 
 const columnDefs: ColumnDefinitions = {
     tileName: { header: 'Tile Name', index: 0 },
-    tileStart: { header: 'Start', index: 1 },
-    tileEnd: { header: 'End', index: 2 },
-    mutagenesisStart: { header: 'Mutagenesis Start', index: 3 },
-    mutagenesisEnd: { header: 'Mutagenesis End', index: 4 },
-    superblockFirst: { header: 'First in Superblock', index: 5 },
-    superblockLast: { header: 'Last in Superblock', index: 6 },
+    tileStart: { display: false },
+    tileEnd: { display: false },
     superblockId: { display: false },
-    superblock: { header: 'Superblock', index: 7, path: 'superblock.name' },
+    superblock: { header: 'Superblock', index: 1, path: 'superblock.name' },
+    tileStartEnd: {
+        header: 'Start/end',
+        index: 2,
+        format: (row) => `${row.tileStart}-${row.tileEnd}`,
+        path: 'tileStartEnd.displayValue',
+    },
+    mutagenesisStart: { display: false },
+    mutagenesisEnd: { display: false },
+    mutagenesisStartEnd: {
+        header: 'Mutagenesis',
+        index: 3,
+        format: (row) => `${row.mutagenesisStart}-${row.mutagenesisEnd}`,
+        path: 'mutagenesisStartEnd.displayValue',
+    },
+    superblockFirst: { header: 'First tile', index: 4 },
+    superblockLast: { header: 'Last tile', index: 5 },
     retrieverPrimerForwardId: { display: false },
     retrieverPrimerReverseId: { display: false },
-    retrieverPrimerForward: { header: 'Forward Primer', index: 8, path: 'retrieverPrimerForward.name' },
-    retrieverPrimerReverse: { header: 'Reverse Primer', index: 9, path: 'retrieverPrimerReverse.name' },
+    retrieverPrimerForward: { header: 'Forward Primer', index: 6, path: 'retrieverPrimerForward.name' },
+    retrieverPrimerReverse: { header: 'Reverse Primer', index: 7, path: 'retrieverPrimerReverse.name' },
 }
 
 const fieldConfigs: FormFieldConfigs = {
@@ -64,6 +76,8 @@ const fieldConfigs: FormFieldConfigs = {
             dropdown: true,
         },
     },
+    superblockFirst: { label: 'First tile' },
+    superblockLast: { label: 'Last tile' },
 }
 
 const withClause = {
