@@ -13,8 +13,14 @@ const model = ref([
         items: [
             { label: 'Home', icon: 'pi pi-fw pi-home', to: '/' },
             { label: 'Projects', icon: 'pi pi-fw pi-briefcase', to: '/projects' },
-            { label: 'Genes', iconComponent: DnaIcon, to: '/genes' },
             { label: 'Plates', iconComponent: PhGridNineFill, to: '/plates' },
+            {
+                label: 'Reference',
+                items: [
+                    { label: 'Genes', to: '/genes' },
+                    { label: 'Transcripts', to: '/transcripts' },
+                ]
+            },
             {
                 label: 'Planning',
                 items: [

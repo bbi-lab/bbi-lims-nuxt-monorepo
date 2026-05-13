@@ -5,6 +5,7 @@ import { projects } from '../schema/project'
 import { restrictionEnzymes } from '../schema/reagents'
 import { retrieverPrimers } from '../schema/primers'
 import { superblocks, tiles } from '../schema/tiles'
+import { refseqTranscripts } from '../schema/transcripts'
 
 const selectProjectSchema = createSelectSchema(projects)
 const insertProjectSchema = selectProjectSchema.omit({id: true, createdAt: true, updatedAt: true}).partial()
@@ -31,6 +32,9 @@ const selectTilesSchema = createSelectSchema(tiles)
 const insertTilesSchema = selectTilesSchema.omit({ id: true }).partial()
 const updateTilesSchema = insertTilesSchema
 
+const selectRefseqTranscriptsSchema = createSelectSchema(refseqTranscripts)
+const insertRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.omit({ id: true }).partial()
+const updateRefseqTranscriptsSchema = insertRefseqTranscriptsSchema
 
 // Freeze all schema shapes to prevent accidental mutation of shared module-level objects.
 // Zod methods like .extend(), .omit(), .partial() return new objects and are unaffected.
@@ -71,5 +75,10 @@ export const schemas = freezeSchemas({
         select: selectTilesSchema,
         insert: insertTilesSchema,
         update: updateTilesSchema,
+    },
+    refseqTranscripts: {
+        select: selectRefseqTranscriptsSchema,
+        insert: insertRefseqTranscriptsSchema,
+        update: updateRefseqTranscriptsSchema,
     },
 })

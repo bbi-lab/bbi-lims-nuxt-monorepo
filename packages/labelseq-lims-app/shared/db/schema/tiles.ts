@@ -3,10 +3,12 @@ import { pgTable, uuid, varchar, text, integer, boolean, check } from 'drizzle-o
 import { projects } from './project'
 import { retrieverPrimers } from './primers'
 import { sql } from 'drizzle-orm/sql'
+import { refseqTranscripts } from './transcripts'
 
 export const superblocks = pgTable('superblocks', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     projectId: uuid('project_id').notNull().references(() => projects.id),
+    refseqTranscriptId: uuid('refseq_transcript_id').references(() => refseqTranscripts.id),
     name: varchar('name', { length: 50 }).notNull(),
     description: varchar('description', { length: 255 }),
     seq: text('seq'),

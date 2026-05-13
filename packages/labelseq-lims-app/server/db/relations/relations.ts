@@ -12,7 +12,7 @@ import { projects } from '../../../shared/db/schema/project'
 import { superblocks, tiles } from '../../../shared/db/schema/tiles'
 import { retrieverPrimers } from '../../../shared/db/schema/primers'
 import { restrictionEnzymes } from '../../../shared/db/schema/reagents'
-
+import { refseqTranscripts } from '../../../shared/db/schema/transcripts'
 
 export const relations = defineRelations({
   // lims-layer tables
@@ -34,6 +34,7 @@ export const relations = defineRelations({
   tiles,
   retrieverPrimers,
   restrictionEnzymes,
+  refseqTranscripts,
 }, (r) => ({
   // ── lims-layer relations ──────────────────────────────────────────────────
   users: {
@@ -108,10 +109,24 @@ export const relations = defineRelations({
   restrictionEnzymes: {
     projects: r.many.projects(),
   },
+  genes: {
+    refseqTranscripts: r.many.refseqTranscripts(),
+  },
+  refseqTranscripts: {
+    superblocks: r.many.superblocks(),
+    gene: r.one.genes({
+      from: r.refseqTranscripts.geneId,
+      to: r.genes.id,
+    }),
+  },
   superblocks: {
     project: r.one.projects({
       from: r.superblocks.projectId,
       to: r.projects.id,
+    }),
+    refseqTranscript: r.one.refseqTranscripts({
+      from: r.superblocks.refseqTranscriptId,
+      to: r.refseqTranscripts.id,
     }),
     tiles: r.many.tiles(),
   },

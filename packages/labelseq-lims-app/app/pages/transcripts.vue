@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { PgSequence } from 'drizzle-orm/pg-core'
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '~~/shared/db/zod/zodSchemas'
 
@@ -17,34 +16,23 @@ watch(() => route.query, async (newValue, oldValue) => {
 }, { immediate: true })
 
 const columnDefs: ColumnDefinitions = {
-    name: { index: 0 },
-    description: { index: 1 },
-    projectId: { display: false },
-    project: { header: 'Project', index: 2, path: 'project.name' },
-    refseqTranscriptId: { display: false },
-    refseqTranscript: { header: 'RefSeq transcript ID', index: 3, path: 'refseqTranscript.transcriptId' },
-    seq: { header: 'Sequence', index: 4, bodyClass: 'max-w-64 truncate' },
+    transcriptId: { header: 'RefSeq Transcript ID', index: 0 },
+    geneId: { display: false },
+    gene: { header: 'Gene', index: 1, path: 'gene.symbol' },
+    seq: { header: 'Sequence', index: 2, bodyClass: 'max-w-64 truncate' },
 }
 
 const fieldConfigs: FormFieldConfigs = {
-    projectId: {
-        label: 'Project',
-        autoCompleter: {
-            searchBaseUrl: '/api/projects',
-            valueField: 'id',
-            displayFields: ['name'],
-            searchFields: ['name'],
-            dropdown: true,
-        },
+    transcriptId: {
+        label: 'RefSeq transcript ID',
     },
-    refseqTranscriptId: {
-        label: 'RefSeq Transcript',
+    geneId: {
+        label: 'Gene',
         autoCompleter: {
-            searchBaseUrl: '/api/refseq-transcripts',
+            searchBaseUrl: '/api/genes',
             valueField: 'id',
-            displayFields: ['transcriptId'],
-            searchFields: ['transcriptId'],
-            dropdown: true,
+            displayFields: ['symbol'],
+            searchFields: ['symbol'],
         },
     },
     seq: {
@@ -52,26 +40,23 @@ const fieldConfigs: FormFieldConfigs = {
         label: 'Sequence',
     },
 }
-
 const withClause = {
-    project: true,
-    refseqTranscript: true,
+    gene: true,
 }
 </script>
 <template>
-    <Splitter class="h-full overflow-y-hidden">
+<Splitter class="h-full overflow-y-hidden">
         <SplitterPanel :size="50">
             <SmartTable
                 :key="tableKey"
                 :ref="crudTable.setTableRef"
-                table-name="superblocks"
-                :zodSchema="schemas.superblocks.select"
-                title="Superblocks"
+                table-name="refseq-transcripts"
+                :zodSchema="schemas.refseqTranscripts.select"
+                title="RefSeq Transcripts"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 :column-defs="columnDefs"
                 :where="whereClauses"
-                :withClause="withClause"
-                :can-edit-multiple="true"
+                :with-clause="withClause"
                 :show-column-filters="true"
                 :sort-by="['name']"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
@@ -82,39 +67,27 @@ const withClause = {
         <SplitterPanel v-if="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm">
             <RecordsSmartForm
                 v-if="crudTable.state.showAddForm"
-                submitUrl="/api/superblocks"
+                submitUrl="/api/refseq-transcripts"
                 submitMethod="POST"
-                :zodSchema="schemas.superblocks.insert"
-                :fieldConfigs="fieldConfigs"
+                :zodSchema="schemas.refseqTranscripts.insert"
                 :readonlyValues="readonlyValues"
+                :fieldConfigs="fieldConfigs"
                 @cancel="crudTable.didClickCancelAddForm"
                 @record-add="crudTable.didAddRecord"
             />
             <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                selectUrl="/api/superblocks"
+                selectUrl="/api/refseq-transcripts"
                 :recordIds="[crudTable.state.editingRecordId]"
-                submitUrl="/api/superblocks"
+                submitUrl="/api/refseq-transcripts"
                 submitMethod="PUT"
-                :zodSchema="schemas.superblocks.update"
-                :fieldConfigs="fieldConfigs"
+                :zodSchema="schemas.refseqTranscripts.update"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
+                :fieldConfigs="fieldConfigs"
                 @cancel="crudTable.didClickCancelEditForm"
                 @record-update="crudTable.didUpdateRecord"
                 @record-delete="crudTable.didDeleteRecord"
-            />
-            <RecordsSmartForm
-                v-if="crudTable.state.showMultipleEditForm && crudTable.state.editingMultipleRecordsIds.length > 0"
-                selectUrl="/api/superblocks"
-                :recordIds="crudTable.state.editingMultipleRecordsIds"
-                submitUrl="/api/superblocks"
-                submitMethod="PUT"
-                :zodSchema="schemas.superblocks.update"
-                :fieldConfigs="fieldConfigs"
-                :readonlyValues="readonlyValues"
-                @cancel="crudTable.didClickCancelMultipleEditForm"
-                @records-update="crudTable.didUpdateMultipleRecords"
             />
         </SplitterPanel>
     </Splitter>
