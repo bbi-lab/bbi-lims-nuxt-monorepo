@@ -117,3 +117,10 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
         </div>
     </Form>
 </template>
+<style scoped>
+/* Add any component-specific styles here */
+textarea {
+    width: 100%;
+    min-height: 8rem;
+}
+</style>
