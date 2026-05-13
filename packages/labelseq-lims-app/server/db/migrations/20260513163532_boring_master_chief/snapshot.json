@@ -1,9 +1,9 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "31897c3c-103c-41fb-bac3-b0a1ad710a6b",
+  "id": "7e68463b-96d3-459f-945e-572eb23a0883",
   "prevIds": [
-    "8e62acac-7efc-4082-a74c-fe0bbd6f42e1"
+    "00000000-0000-0000-0000-000000000000"
   ],
   "ddl": [
     {
@@ -97,6 +97,12 @@
     {
       "isRlsEnabled": false,
       "name": "plates",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "plate_types",
       "entityType": "tables",
       "schema": "public"
     },
@@ -232,14 +238,14 @@
       "table": "projects"
     },
     {
-      "type": "varchar(10)",
+      "type": "uuid",
       "typeSchema": null,
       "notNull": false,
       "dimensions": 0,
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "restriction_enzyme",
+      "name": "restriction_enzyme_id",
       "entityType": "columns",
       "schema": "public",
       "table": "projects"
@@ -1082,7 +1088,7 @@
       "table": "plates"
     },
     {
-      "type": "varchar",
+      "type": "varchar(100)",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -1119,6 +1125,45 @@
       "entityType": "columns",
       "schema": "public",
       "table": "plates"
+    },
+    {
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plate_types"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "label",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plate_types"
+    },
+    {
+      "type": "varchar(500)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "desc",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plate_types"
     },
     {
       "type": "uuid",
@@ -1410,6 +1455,23 @@
     {
       "nameExplicit": false,
       "columns": [
+        "restriction_enzyme_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "restriction_enzymes",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "projects_restriction_enzyme_id_restriction_enzymes_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "projects"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
         "project_id"
       ],
       "schemaTo": "public",
@@ -1504,7 +1566,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "user_group_memberships_user_id_users_id_fk",
+      "name": "user_group_memberships_user_id_users_id_fkey",
       "entityType": "fks",
       "schema": "users",
       "table": "user_group_memberships"
@@ -1521,10 +1583,27 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "user_group_memberships_user_group_id_user_groups_id_fk",
+      "name": "user_group_memberships_user_group_id_user_groups_id_fkey",
       "entityType": "fks",
       "schema": "users",
       "table": "user_group_memberships"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "plate_type"
+      ],
+      "schemaTo": "public",
+      "tableTo": "plate_types",
+      "columnsTo": [
+        "value"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "plates_plate_type_plate_types_value_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "plates"
     },
     {
       "nameExplicit": false,
@@ -1538,7 +1617,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "well_content_sources_well_content_id_well_contents_id_fk",
+      "name": "well_content_sources_well_content_id_well_contents_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "well_content_sources"
@@ -1555,7 +1634,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "well_content_sources_source_well_id_wells_id_fk",
+      "name": "well_content_sources_source_well_id_wells_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "well_content_sources"
@@ -1572,7 +1651,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "well_content_sources_created_by_users_id_fk",
+      "name": "well_content_sources_created_by_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "well_content_sources"
@@ -1589,7 +1668,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "well_contents_well_id_wells_id_fk",
+      "name": "well_contents_well_id_wells_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "well_contents"
@@ -1606,7 +1685,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "well_contents_wellable_id_wellables_id_fk",
+      "name": "well_contents_wellable_id_wellables_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "well_contents"
@@ -1623,7 +1702,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "wells_plate_id_plates_id_fk",
+      "name": "wells_plate_id_plates_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "wells"
@@ -1634,7 +1713,7 @@
         "user_group_id"
       ],
       "nameExplicit": false,
-      "name": "user_group_memberships_user_id_user_group_id_pk",
+      "name": "user_group_memberships_pkey",
       "entityType": "pks",
       "schema": "users",
       "table": "user_group_memberships"
@@ -1741,6 +1820,16 @@
     },
     {
       "columns": [
+        "value"
+      ],
+      "nameExplicit": false,
+      "name": "plate_types_pkey",
+      "schema": "public",
+      "table": "plate_types",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
         "id"
       ],
       "nameExplicit": false,
@@ -1838,6 +1927,17 @@
       "table": "wells"
     },
     {
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "restriction_enzymes_name_key",
+      "schema": "public",
+      "table": "restriction_enzymes",
+      "entityType": "uniques"
+    },
+    {
       "value": "\"seq\" ~* '^[actg]*$'",
       "name": "seq_check",
       "entityType": "checks",
@@ -1866,7 +1966,7 @@
       "table": "wellables"
     },
     {
-      "definition": "with plate_types(plate_type_value, plate_type_label, plate_type_desc) AS (VALUES ('mock-plate-type-1', 'Mock Plate Type 1', 'Mock Plate Type 1'), ('mock-plate-type-2', 'Mock Plate Type 2', 'Mock Plate Type 2')) select\n    \"plates\".\"id\",\n    \"plates\".\"name\",\n    \"plates\".\"size_x\",\n    \"plates\".\"size_y\",\n    \"plates\".\"plate_type\",\n    \"plates\".\"discarded\",\n    \"plates\".\"processed\",\n    (select distinct on (plate_type_value) plate_type_label from plate_types where plate_type_value = \"plates\".\"plate_type\") as plate_type_label,\n    count(distinct(\"wells\".\"id\")) as wells_count,\n    count(distinct(\"well_contents\".\"well_id\")) as wells_with_content_count,\n    count(distinct(\"well_content_sources\".\"source_well_id\")) as wells_processed_count\n    from \"plates\"\n    join \"wells\" on \"plates\".\"id\" = \"wells\".\"plate_id\"\n    left join \"well_content_sources\" on \"wells\".\"id\" = \"well_content_sources\".\"source_well_id\"\n    left join \"well_contents\" on \"wells\".\"id\" = \"well_contents\".\"well_id\"\n    group by \"plates\".\"id\"",
+      "definition": "select\n    \"plates\".\"id\",\n    \"plates\".\"name\",\n    \"plates\".\"size_x\",\n    \"plates\".\"size_y\",\n    \"plates\".\"plate_type\",\n    \"plates\".\"discarded\",\n    \"plates\".\"processed\",\n    \"plate_types\".\"label\" as plate_type_label,\n    count(distinct(\"wells\".\"id\")) as wells_count,\n    count(distinct(\"well_contents\".\"well_id\")) as wells_with_content_count,\n    count(distinct(\"well_content_sources\".\"source_well_id\")) as wells_processed_count\n    from \"plates\"\n    join \"wells\" on \"plates\".\"id\" = \"wells\".\"plate_id\"\n    left join \"plate_types\" on \"plate_types\".\"value\" = \"plates\".\"plate_type\"\n    left join \"well_content_sources\" on \"wells\".\"id\" = \"well_content_sources\".\"source_well_id\"\n    left join \"well_contents\" on \"wells\".\"id\" = \"well_contents\".\"well_id\"\n    group by \"plates\".\"id\", \"plate_types\".\"label\"",
       "with": null,
       "withNoData": null,
       "using": null,
