@@ -1,8 +1,10 @@
 import { dateSchema, nullableDateSchema } from '../helpers/schemas'
 import { createSelectSchema } from 'drizzle-orm/zod'
-import { nullable, z } from 'zod'
+import { z } from 'zod'
 import { projects } from '../schema/project'
 import { restrictionEnzymes } from '../schema/reagents'
+import { retrieverPrimers } from '../schema/primers'
+import { superblocks, tiles } from '../schema/tiles'
 
 const selectProjectSchema = createSelectSchema(projects)
 const insertProjectSchema = selectProjectSchema.omit({id: true, createdAt: true, updatedAt: true}).partial()
@@ -17,10 +19,22 @@ const insertRestrictionEnzymeSchema = selectRestrictionEnzymeSchema.omit({
 }).partial()
 const updateRestrictionEnzymeSchema = insertRestrictionEnzymeSchema
 
+const selectRetrieverPrimerSchema = createSelectSchema(retrieverPrimers)
+const insertRetrieverPrimerSchema = selectRetrieverPrimerSchema.omit({ id: true, seqRevComp: true }).partial()
+const updateRetrieverPrimerSchema = insertRetrieverPrimerSchema
+
+const selectSuperblocksSchema = createSelectSchema(superblocks)
+const insertSuperblocksSchema = selectSuperblocksSchema.omit({ id: true }).partial()
+const updateSuperblocksSchema = insertSuperblocksSchema
+
+const selectTilesSchema = createSelectSchema(tiles)
+const insertTilesSchema = selectTilesSchema.omit({ id: true }).partial()
+const updateTilesSchema = insertTilesSchema
+
 
 // Freeze all schema shapes to prevent accidental mutation of shared module-level objects.
 // Zod methods like .extend(), .omit(), .partial() return new objects and are unaffected.
-function freezeSchemas<T extends Record<string, Record<string, z.ZodTypeAny>>>(obj: T): T {
+function freezeSchemas<T extends Record<string, Record<string, z.ZodType>>>(obj: T): T {
     for (const group of Object.values(obj)) {
         for (const schema of Object.values(group)) {
             if ('shape' in schema) Object.freeze(schema.shape)
@@ -42,5 +56,20 @@ export const schemas = freezeSchemas({
         select: selectRestrictionEnzymeSchema,
         insert: insertRestrictionEnzymeSchema,
         update: updateRestrictionEnzymeSchema,
+    },
+    retrieverPrimers: {
+        select: selectRetrieverPrimerSchema,
+        insert: insertRetrieverPrimerSchema,
+        update: updateRetrieverPrimerSchema,
+    },
+    superblocks: {
+        select: selectSuperblocksSchema,
+        insert: insertSuperblocksSchema,
+        update: updateSuperblocksSchema,
+    },
+    tiles: {
+        select: selectTilesSchema,
+        insert: insertTilesSchema,
+        update: updateTilesSchema,
     },
 })

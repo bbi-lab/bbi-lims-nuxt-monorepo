@@ -15,6 +15,29 @@ const model = ref([
             { label: 'Projects', icon: 'pi pi-fw pi-briefcase', to: '/projects' },
             { label: 'Genes', iconComponent: DnaIcon, to: '/genes' },
             { label: 'Plates', iconComponent: PhGridNineFill, to: '/plates' },
+            {
+                label: 'Planning',
+                items: [
+                    { label: 'Superblocks', to: '/planning/superblocks' },
+                    { label: 'Tiles', to: '/planning/tiles' },
+                ]
+            },
+            {
+                label: 'Oligos',
+                items: [
+                    { label: 'Primers',
+                        items: [
+                            { label: 'Retriever Primers', to: '/oligos/primers/retriever-primers' },
+                        ]
+                    },
+                ]
+            },
+            {
+                label: 'Reagents',
+                items: [
+                    { label: 'Restriction Enzymes', to: '/reagents/restriction-enzymes' },
+                ]
+            }
         ]
     },
     {
