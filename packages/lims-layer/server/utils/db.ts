@@ -4,6 +4,7 @@ import pg from 'pg'
 import {users, userGroups, userGroupMemberships} from '../db/schema/user'
 import {genes} from '../../shared/db/schema/gene'
 import { plates } from '../../shared/db/schema/plate'
+import { plateTypes } from '../../shared/db/schema/plateTypes'
 import { wellables, wellContents, wellContentSources, wells } from '../../shared/db/schema/well'
 import { viewPlatesWithWellCounts } from '../../shared/db/schema/views'
 import { relations } from '../db/relations/relations'
@@ -19,6 +20,7 @@ export const schema = {
 
   genes,
   plates,
+  plateTypes,
   wells,
   wellContents,
   wellables,

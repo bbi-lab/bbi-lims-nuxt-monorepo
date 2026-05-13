@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import _ from 'lodash'
+import _, { eq } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '../../shared/db/zod/zodSchemas'
+import { restrictionEnzymes } from '~~/shared/db/schema/reagents'
 
 const route = useRoute()
 const crudTable = useCrudTable()
@@ -17,13 +18,30 @@ watch(() => route.query, async (newValue, oldValue) => {
 }, { immediate: true })
 
 const columnDefs = {
+    name: { index: 0},
+    restrictionEnzymeId: { display: false },
+    restrictionEnzyme: { header: 'Restriction Enzyme', index: 1, path: 'restrictionEnzyme.name' },
 }
 const rowActions = {
 }
 
 const fieldConfigs: Record<string, FormFieldConfig> = {
+    restrictionEnzymeId: {
+        label: 'Restriction Enzyme',
+        autoCompleter: {
+            searchBaseUrl: '/api/restriction-enzymes',
+            valueField: 'id',
+            displayFields: ['name'],
+            searchFields: ['name'],
+            searchWhereClause: {'in': [{'var': 'name'}, ['sap1', 'paqc1']]},
+            dropdown: true,
+        },
+    },
 }
 
+const withClause = {
+    restrictionEnzyme: true,
+}
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">
@@ -38,6 +56,7 @@ const fieldConfigs: Record<string, FormFieldConfig> = {
                 :column-defs="columnDefs"
                 :row-actions="rowActions"
                 :where="whereClauses"
+                :withClause="withClause"
                 :can-delete="false"
                 :can-edit-multiple="true"
                 :show-column-filters="true"

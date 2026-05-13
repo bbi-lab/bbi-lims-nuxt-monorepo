@@ -2,10 +2,20 @@ import { dateSchema, nullableDateSchema } from '../helpers/schemas'
 import { createSelectSchema } from 'drizzle-orm/zod'
 import { nullable, z } from 'zod'
 import { projects } from '../schema/project'
+import { restrictionEnzymes } from '../schema/reagents'
 
 const selectProjectSchema = createSelectSchema(projects)
 const insertProjectSchema = selectProjectSchema.omit({id: true, createdAt: true, updatedAt: true}).partial()
 const updateProjectSchema = insertProjectSchema
+
+const selectRestrictionEnzymeSchema = createSelectSchema(restrictionEnzymes)
+const insertRestrictionEnzymeSchema = selectRestrictionEnzymeSchema.omit({
+    id: true,
+    recogSeq: true,
+    recogSeqRevComp: true,
+    recogSeqPlusOneRevComp: true,
+}).partial()
+const updateRestrictionEnzymeSchema = insertRestrictionEnzymeSchema
 
 
 // Freeze all schema shapes to prevent accidental mutation of shared module-level objects.
@@ -27,5 +37,10 @@ export const schemas = freezeSchemas({
         select: selectProjectSchema,
         insert: insertProjectSchema,
         update: updateProjectSchema,
-    }
+    },
+    restrictionEnzymes: {
+        select: selectRestrictionEnzymeSchema,
+        insert: insertRestrictionEnzymeSchema,
+        update: updateRestrictionEnzymeSchema,
+    },
 })

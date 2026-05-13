@@ -237,7 +237,14 @@ function notifyFormOfChange(value: any) {
   })
 }
 
-// Clean up form registration when component is destroyed (e.g. array item removal)
+// Initialize component on mount — reads form state set by RecordsSmartForm's initialValues
+onMounted(async () => {
+  const currentFormValue = $pcForm?.getFieldState?.(props.name)?.value
+  if (currentFormValue) {
+    await setValueFromFormState(currentFormValue)
+  }
+})
+
 // Expose methods for external access
 defineExpose({
   clearValue,

@@ -2,6 +2,7 @@ import { defineRelations } from 'drizzle-orm'
 import { users, userGroups, userGroupMemberships, passwordResetTokens } from '../schema/user'
 import { genes } from '../../../shared/db/schema/gene'
 import { plates } from '../../../shared/db/schema/plate'
+import { plateTypes } from '../../../shared/db/schema/plateTypes'
 import { wellables, wellContents, wellContentSources, wells } from '../../../shared/db/schema/well'
 
 export const relations = defineRelations({
@@ -11,6 +12,7 @@ export const relations = defineRelations({
   passwordResetTokens,
   genes,
   plates,
+  plateTypes,
   wells,
   wellContents,
   wellables,
@@ -34,6 +36,13 @@ export const relations = defineRelations({
   },
   plates: {
     wells: r.many.wells(),
+    plateTypeRef: r.one.plateTypes({
+      from: r.plates.plateType,
+      to: r.plateTypes.value,
+    }),
+  },
+  plateTypes: {
+    plates: r.many.plates(),
   },
   wells: {
     plate: r.one.plates({

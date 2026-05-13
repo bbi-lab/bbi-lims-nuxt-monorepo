@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
         const selectParams = queryToSelectParams(queryParams) as SelectParams
 
         const queryBuilder = _.get(db.query, 'plates')
-        return await selectRecords(queryBuilder, selectParams, queryParams.expandEnums == 'true' ? true : false)
+        return await selectRecords(queryBuilder, selectParams)
     } catch (e: any) {
         throw createError({
             statusCode: 400,

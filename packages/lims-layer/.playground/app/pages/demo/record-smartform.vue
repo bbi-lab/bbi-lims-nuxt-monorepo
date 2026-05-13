@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { z } from 'zod'
 import { schemas } from '../../../../shared/db/zod/zodSchemas'
-import _ from 'lodash'
 
-const plateTypeOptions = _.mapValues(appConstants.enumLookups.plates.plateType, 'label')
-const insertPlateSchema = schemas.plates.insert.extend({ plateType: z.enum(_.invert(plateTypeOptions)) })
+const insertPlateSchema = schemas.plates.insert
 
 const fieldConfigs: Record<string, FormFieldConfig> = {
     name: {
         label: 'Plate Name',
+    },
+    plateType: {
+        autoCompleter: {
+            searchBaseUrl: '/api/plate-types',
+            valueField: 'value',
+            displayFields: ['label'],
+            dropdown: true,
+        },
     },
 }
 

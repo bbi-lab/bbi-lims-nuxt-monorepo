@@ -1,8 +1,9 @@
 import { dateSchema, nullableDateSchema } from '../helpers/schemas'
-import { createSelectSchema } from 'drizzle-orm/zod'
+import { createInsertSchema, createSelectSchema } from 'drizzle-orm/zod'
 import { z } from 'zod'
 import { genes } from '../schema/gene'
 import { plates } from '../schema/plate'
+import { plateTypes } from '../schema/plateTypes'
 import { wellContents, wellContentSources, wells } from '../schema/well'
 import { viewPlatesWithWellCounts } from '../schema/views'
 
@@ -64,6 +65,10 @@ const updateGeneSchema = createSelectSchema(genes, {
     ncbiGeneId: z.bigint({ coerce: true }),
     proteinLength: z.bigint({ coerce: true }),
 }).omit({id: true}).partial()
+
+const selectPlateTypeSchema = createSelectSchema(plateTypes)
+const insertPlateTypeSchema = createInsertSchema(plateTypes)
+const updatePlateTypeSchema = insertPlateTypeSchema.partial()
 
 const selectPlateSchema = createSelectSchema(plates)
 const insertPlateSchema = selectPlateSchema.omit({id: true}).partial()
@@ -130,6 +135,11 @@ export const schemas = freezeSchemas({
         insert: insertUserGroupSchema,
         update: updateUserGroupSchema,
         select: selectUserGroupSchema,
+    },
+    plateTypes: {
+        select: selectPlateTypeSchema,
+        insert: insertPlateTypeSchema,
+        update: updatePlateTypeSchema,
     },
     plates: {
         select: selectPlateSchema,

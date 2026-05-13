@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
         let selectedRecord
         if (queryBuilder) {
             const table = _.get(queryBuilder, 'table')
-            selectedRecord = await selectRecord(queryBuilder, table, id, selectParams.with, selectParams.columns, queryParams.expandEnums == 'true' ? true : false)
+            selectedRecord = await selectRecord(queryBuilder, table, id, selectParams.with, selectParams.columns)
         } else {
             const view = _.get(appSchema, _.camelCase(recordType))
             if (!view) {

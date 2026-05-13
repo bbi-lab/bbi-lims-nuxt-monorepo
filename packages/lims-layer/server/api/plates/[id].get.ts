@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
         const queryBuilder = _.get(db.query, 'plates')
 
         // ignoring any order, limit, or offset params
-        const selectedPlate = await selectRecord(queryBuilder, plates, id, selectParams.with, selectParams.columns, queryParams.expandEnums == 'true' ? true : false)
+        const selectedPlate = await selectRecord(queryBuilder, plates, id, selectParams.with, selectParams.columns)
 
         return selectedPlate
     } catch (e: any) {

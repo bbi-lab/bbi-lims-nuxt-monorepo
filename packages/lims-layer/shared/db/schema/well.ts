@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm/sql'
 import { pgTable, uuid, smallint, varchar, unique, check, timestamp} from 'drizzle-orm/pg-core'
 import { plates } from './plate'
 import { users } from '../../../server/db/schema/user'
-import { appConstants } from '../../utils/constants'
+import { wellableTableNames } from '../../utils/constants'
 import _ from 'lodash'
 
 export const wells = pgTable('wells', {
@@ -47,7 +47,7 @@ export const wellables = pgTable('wellables', {
   tableName: varchar('table_name').notNull()
 }, (t) => [
    check('wellable_table_name',
-    sql`${t.tableName} IN (${appConstants.wellableTableNames?.length > 0 ? sql.raw(_.map(appConstants.wellableTableNames, (val) => `'${val}'`).join(', ')) : sql.raw('NULL')})`)
+    sql`${t.tableName} IN (${wellableTableNames?.length > 0 ? sql.raw(_.map(wellableTableNames, (val) => `'${val}'`).join(', ')) : sql.raw('NULL')})`)
 ])
 
 export const wellContentSources = pgTable('well_content_sources', {

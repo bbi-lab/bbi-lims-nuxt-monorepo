@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
         const selectParams = queryToSelectParams(queryParams) as SelectParams
         const queryBuilder = _.get(db.query, _.camelCase(recordType))
         if (queryBuilder) {
-            return await selectRecords(queryBuilder, selectParams, queryParams.expandEnums == 'true' ? true : false)
+            return await selectRecords(queryBuilder, selectParams)
         } else {
             const view = _.get(appSchema, _.camelCase(recordType))
             if (!view) {

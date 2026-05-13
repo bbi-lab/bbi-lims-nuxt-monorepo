@@ -2,34 +2,12 @@ import _ from 'lodash'
 import { type SelectParams, applySelectParamsToRecords, jsonLogicToSql, jsonLogicToFilter } from './restApi'
 import type { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/query'
 import type { PgViewWithSelection, PgTable } from 'drizzle-orm/pg-core'
-import { eq, inArray, getTableName, asc, desc, type ColumnType, type ColumnBaseConfig, Column } from 'drizzle-orm'
+import { eq, inArray, asc, desc, type ColumnType, type ColumnBaseConfig, Column } from 'drizzle-orm'
 import { useDrizzle } from '../utils/db'
-import { appConstants } from '../../shared/utils/constants'
 
 export interface RecordValues {[key: string]: string | number | boolean | null | undefined }
 
 const db = useDrizzle()
-
-function expandEnumValues(records: any, tableName: string): void {
-    if (!_.has(appConstants.enumLookups, tableName)) return
-
-    const enumLookup = appConstants.enumLookups[tableName] as Record<string, any>
-    if (_.isArray(records)) {
-        _.forEach(records, (record) => {
-            _.forEach(record, (value, key) => {
-                if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
-                    record[key] = {value: record[key], ...enumLookup[key][value]}
-                }
-            })
-        })
-    } else {
-        _.forEach(records, (value, key) => {
-            if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
-                records[key] = {value: records[key], ...enumLookup[key][value]}
-            }
-        })
-    }
-}
 
 function trimObjectValues(records: RecordValues[]): RecordValues[] {
     return _.map(records, (x) => {
@@ -39,7 +17,7 @@ function trimObjectValues(records: RecordValues[]): RecordValues[] {
     })
 }
 
-export async function selectRecords(queryBuilder: RelationalQueryBuilder<any, any>, selectParams: SelectParams, expandEnums: boolean = false) {
+export async function selectRecords(queryBuilder: RelationalQueryBuilder<any, any>, selectParams: SelectParams) {
     // Translate the JSON Logic `where` filter into Drizzle RQB v2's native object filter
     // format. This natively handles relation/with filters via dot-notation vars
     // (e.g. {"var": "sample.name"} → { sample: { name: ... } }) without requiring column
@@ -60,7 +38,6 @@ export async function selectRecords(queryBuilder: RelationalQueryBuilder<any, an
     })
 
     const result = canPushWhere ? records : applySelectParamsToRecords(selectParams, records)
-    if (expandEnums) expandEnumValues(result, _.get(queryBuilder, 'tableConfig.dbName', ''))
     return result
 }
 
@@ -103,13 +80,12 @@ export async function selectRecordFromView(view: PgViewWithSelection, id: string
     return _.first(record)
 }
 
-export async function selectRecord(queryBuilder: RelationalQueryBuilder<any, any>, table: PgTable<any>, id: string | number, withClause: any, columns: any, expandEnums: boolean = false) {
+export async function selectRecord(queryBuilder: RelationalQueryBuilder<any, any>, table: PgTable<any>, id: string | number, withClause: any, columns: any) {
     const record = await (queryBuilder as any).findFirst({
         where: { id },
         with: withClause,
         columns
     })
-    if (expandEnums) expandEnumValues(record, getTableName(table))
     return record
 }
 

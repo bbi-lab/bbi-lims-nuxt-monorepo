@@ -4,6 +4,7 @@ import { defineRelations } from 'drizzle-orm'
 import { users, userGroups, userGroupMemberships, passwordResetTokens } from 'lims-layer/server/db/schema/user'
 import { genes } from 'lims-layer/shared/db/schema/gene'
 import { plates } from 'lims-layer/shared/db/schema/plate'
+import { plateTypes } from 'lims-layer/shared/db/schema/plateTypes'
 import { wellables, wellContents, wellContentSources, wells } from 'lims-layer/shared/db/schema/well'
 
 // labelseq-lims-app tables
@@ -21,6 +22,7 @@ export const relations = defineRelations({
   passwordResetTokens,
   genes,
   plates,
+  plateTypes,
   wells,
   wellContents,
   wellables,
@@ -52,6 +54,13 @@ export const relations = defineRelations({
   },
   plates: {
     wells: r.many.wells(),
+    plateTypeRef: r.one.plateTypes({
+      from: r.plates.plateType,
+      to: r.plateTypes.value,
+    }),
+  },
+  plateTypes: {
+    plates: r.many.plates(),
   },
   wells: {
     plate: r.one.plates({
@@ -91,6 +100,13 @@ export const relations = defineRelations({
   // ── labelseq relations ────────────────────────────────────────────────────
   projects: {
     superblocks: r.many.superblocks(),
+    restrictionEnzyme: r.one.restrictionEnzymes({
+      from: r.projects.restrictionEnzymeId,
+      to: r.restrictionEnzymes.id,
+    }),
+  },
+  restrictionEnzymes: {
+    projects: r.many.projects(),
   },
   superblocks: {
     project: r.one.projects({

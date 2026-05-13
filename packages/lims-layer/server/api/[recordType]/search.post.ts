@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
         // requires relevant schema to have been passed on drizzle db init
         const queryBuilder = _.get(db.query, _.camelCase(recordType))
         if (queryBuilder) {
-            return await selectRecords(queryBuilder, selectParams, queryParams.expandEnums == 'true' ? true : false)
+            return await selectRecords(queryBuilder, selectParams)
         } else {
             // if the recordType is not found in the queryBuilder, then assume it's a view
             const view = _.get(schema, _.camelCase(recordType))

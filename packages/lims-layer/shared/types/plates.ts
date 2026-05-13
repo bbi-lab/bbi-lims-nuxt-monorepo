@@ -3,7 +3,7 @@ import type { schemas } from '../db/zod/zodSchemas'
 import type { InferSelectModel } from 'drizzle-orm'
 import type { z } from 'zod'
 
-export type PlateType = 'mock-plate-type-1' | 'mock-plate-type-2'
+export type PlateType = string
 
 type Accessor<T, Self> = (value?: T) => T | Self
 
