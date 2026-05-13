@@ -30,7 +30,7 @@ const props = defineProps({
         required: true,
     },
     fieldConfigs: {
-        type: Object as () => Record<string, FormFieldConfig>,
+        type: Object as () => FormFieldConfigs,
         required: false,
         default: () => ({}),
     },

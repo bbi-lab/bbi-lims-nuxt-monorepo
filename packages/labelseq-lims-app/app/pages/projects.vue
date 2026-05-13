@@ -17,7 +17,7 @@ watch(() => route.query, async (newValue, oldValue) => {
     tableKey.value = uuidv4()
 }, { immediate: true })
 
-const columnDefs = {
+const columnDefs: ColumnDefinitions = {
     name: { index: 0},
     restrictionEnzymeId: { display: false },
     restrictionEnzyme: { header: 'Restriction Enzyme', index: 1, path: 'restrictionEnzyme.name' },
@@ -25,7 +25,7 @@ const columnDefs = {
 const rowActions = {
 }
 
-const fieldConfigs: Record<string, FormFieldConfig> = {
+const fieldConfigs: FormFieldConfigs = {
     restrictionEnzymeId: {
         label: 'Restriction Enzyme',
         autoCompleter: {

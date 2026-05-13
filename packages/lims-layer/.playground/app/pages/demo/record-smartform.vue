@@ -3,7 +3,7 @@ import { schemas } from '../../../../shared/db/zod/zodSchemas'
 
 const insertPlateSchema = schemas.plates.insert
 
-const fieldConfigs: Record<string, FormFieldConfig> = {
+const fieldConfigs: FormFieldConfigs = {
     name: {
         label: 'Plate Name',
     },

@@ -19,7 +19,7 @@ watch(() => route.query, async (newValue, oldValue) => {
     tableKey.value = uuidv4()
 }, { immediate: true })
 
-const columnDefs = {
+const columnDefs: ColumnDefinitions = {
     name: { index: 0},
     plateType: { display: false },
     plateTypeLabel: { header: 'Type', index: 1 },
@@ -57,7 +57,7 @@ const rowActions = {
     },
 }
 
-const fieldConfigs: Record<string, FormFieldConfig> = {
+const fieldConfigs: FormFieldConfigs = {
     name: {
         label: 'Plate Name',
     },

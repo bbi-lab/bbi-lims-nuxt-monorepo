@@ -16,7 +16,7 @@ const zodSchema = schemas.plates.insert.extend({
     userId: z.string(),
 })
 
-const fieldConfigs: Record<string, FormFieldConfig> = {
+const fieldConfigs: FormFieldConfigs = {
     name: {
         label: 'Plate Name',
         defaultValue: 'My Plate',

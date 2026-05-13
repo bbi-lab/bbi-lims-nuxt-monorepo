@@ -15,7 +15,7 @@ watch(() => route.query, async (newValue, oldValue) => {
     tableKey.value = uuidv4()
 }, { immediate: true })
 
-const columnDefs = {
+const columnDefs: ColumnDefinitions = {
     name: { index: 0 },
     description: { index: 1 },
     seq: { index: 2 },
@@ -23,7 +23,7 @@ const columnDefs = {
     project: { header: 'Project', index: 3, path: 'project.name' },
 }
 
-const fieldConfigs: Record<string, FormFieldConfig> = {
+const fieldConfigs: FormFieldConfigs = {
     projectId: {
         label: 'Project',
         autoCompleter: {

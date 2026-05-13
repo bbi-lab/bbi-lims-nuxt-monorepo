@@ -15,7 +15,7 @@ watch(() => route.query, async (newValue, oldValue) => {
     tableKey.value = uuidv4()
 }, { immediate: true })
 
-const columnDefs = {
+const columnDefs: ColumnDefinitions = {
     tileName: { header: 'Tile Name', index: 0 },
     tileStart: { header: 'Start', index: 1 },
     tileEnd: { header: 'End', index: 2 },
@@ -31,7 +31,7 @@ const columnDefs = {
     retrieverPrimerReverse: { header: 'Reverse Primer', index: 9, path: 'retrieverPrimerReverse.name' },
 }
 
-const fieldConfigs: Record<string, FormFieldConfig> = {
+const fieldConfigs: FormFieldConfigs = {
     superblockId: {
         label: 'Superblock',
         autoCompleter: {

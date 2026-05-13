@@ -7,7 +7,7 @@ const crudTable = useCrudTable()
 const editWithClause = Object.freeze({userGroupMemberships:true})
 const displayWithClause = Object.freeze({userGroupMemberships:{columns: {}, with: {userGroup: {columns: {name: true}}}}})
 
-const fieldConfigs: Record<string, FormFieldConfig> = {
+const fieldConfigs: FormFieldConfigs = {
     userGroupMemberships: {
         inputArray: {
             canAdd: true,
@@ -26,7 +26,7 @@ const fieldConfigs: Record<string, FormFieldConfig> = {
     },
 }
 
-const columnDefs = {
+const columnDefs: ColumnDefinitions = {
     name: {header: 'Name'},
     email: {header: 'Email'},
     isAdmin: {header: 'Admin'},

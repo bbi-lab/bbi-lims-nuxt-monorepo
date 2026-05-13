@@ -15,7 +15,7 @@ watch(() => route.query, async (newValue, oldValue) => {
     tableKey.value = uuidv4()
 }, { immediate: true })
 
-const columnDefs = {
+const columnDefs: ColumnDefinitions = {
     name: { index: 0 },
     recogSeqPlusOne: { header: 'Recognition Seq +1', index: 1 },
     recogSeq: { header: 'Recognition Seq', index: 2 },
