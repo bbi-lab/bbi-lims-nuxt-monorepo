@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
+import { z } from 'zod'
 import { schemas } from '~~/shared/db/zod/zodSchemas'
 
 const route = useRoute()
@@ -42,7 +43,7 @@ const columnDefs: ColumnDefinitions = {
     retrieverPrimerReverseId: { display: false },
     retrieverPrimerForward: { header: 'Forward Primer', index: 6, path: 'retrieverPrimerForward.name' },
     retrieverPrimerReverse: { header: 'Reverse Primer', index: 7, path: 'retrieverPrimerReverse.name' },
-    fullSequence: { header: 'Full sequence', index: 8 },
+    fullSequence: { header: 'Full sequence', index: 8, bodyClass: 'max-w-64 truncate' },
     fullSequenceLength: {
         header: 'Full sequence length',
         index: 9,
@@ -93,6 +94,20 @@ const withClause = {
     retrieverPrimerForward: true,
     retrieverPrimerReverse: true,
 }
+
+// Extend the update schema with the view-computed fullSequence field so the form renders it.
+// Use z.object spread instead of .extend() because schemas are frozen.
+// z.readonly() ensures getReadonlyFields() excludes it from submission automatically.
+const editFormZodSchema = z.object({
+    ...schemas.tiles.update.shape,
+    fullSequence: z.string().readonly(),
+})
+
+const editFormFieldConfigs: FormFieldConfigs = {
+    ...fieldConfigs,
+    "fullSequence": { label: 'Full sequence', inputType: 'textarea' },
+}
+
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">
@@ -128,12 +143,12 @@ const withClause = {
             />
             <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                selectUrl="/api/tiles"
+                selectUrl="/api/view-tiles-with-sequences"
                 :recordIds="[crudTable.state.editingRecordId]"
                 submitUrl="/api/tiles"
                 submitMethod="PUT"
-                :zodSchema="schemas.tiles.update"
-                :fieldConfigs="fieldConfigs"
+                :zodSchema="editFormZodSchema"
+                :fieldConfigs="editFormFieldConfigs"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"

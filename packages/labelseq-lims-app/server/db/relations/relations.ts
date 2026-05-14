@@ -149,6 +149,10 @@ export const relations = defineRelations({
       to: r.retrieverPrimers.id,
       alias: 'retrieverPrimerReverse',
     }),
+    viewTileWithSequences: r.one.viewTilesWithSequences({
+      from: r.tiles.id,
+      to: r.viewTilesWithSequences.id,
+    }),
   },
   retrieverPrimers: {
     tilesForward: r.many.tiles({ alias: 'retrieverPrimerForward' }),
@@ -168,6 +172,10 @@ export const relations = defineRelations({
       from: r.viewTilesWithSequences.retrieverPrimerReverseId,
       to: r.retrieverPrimers.id,
       alias: 'retrieverPrimerReverse',
+    }),
+    tile: r.one.tiles({
+      from: r.viewTilesWithSequences.id,
+      to: r.tiles.id,
     }),
   },
 }))
