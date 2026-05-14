@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '~~/shared/db/zod/zodSchemas'
 
@@ -41,6 +42,13 @@ const columnDefs: ColumnDefinitions = {
     retrieverPrimerReverseId: { display: false },
     retrieverPrimerForward: { header: 'Forward Primer', index: 6, path: 'retrieverPrimerForward.name' },
     retrieverPrimerReverse: { header: 'Reverse Primer', index: 7, path: 'retrieverPrimerReverse.name' },
+    fullSequence: { header: 'Full sequence', index: 8 },
+    fullSequenceLength: {
+        header: 'Full sequence length',
+        index: 9,
+        format: (row) => row.fullSequence?.length || 0,
+        path: 'fullSequenceLength.displayValue',
+    },
 }
 
 const fieldConfigs: FormFieldConfigs = {
@@ -92,7 +100,7 @@ const withClause = {
             <SmartTable
                 :key="tableKey"
                 :ref="crudTable.setTableRef"
-                table-name="tiles"
+                table-name="view-tiles-with-sequences"
                 :zodSchema="schemas.tiles.select"
                 title="Tiles"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"

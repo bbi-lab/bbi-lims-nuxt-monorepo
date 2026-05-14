@@ -29,5 +29,5 @@ export const tiles = pgTable('tiles', {
     retrieverPrimerForwardId: uuid('retriever_primer_forward_id').references(() => retrieverPrimers.id),
     retrieverPrimerReverseId: uuid('retriever_primer_reverse_id').references(() => retrieverPrimers.id),
     superblockFirst: boolean('superblock_first').default(false),
-    superblockLast: boolean('last').default(false),
+    superblockLast: boolean('superblock_last').default(false),
 })

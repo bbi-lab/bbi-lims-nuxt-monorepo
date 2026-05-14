@@ -34,7 +34,11 @@ const updateTilesSchema = insertTilesSchema
 
 const selectRefseqTranscriptsSchema = createSelectSchema(refseqTranscripts)
 const insertRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.omit({ id: true }).partial()
-const updateRefseqTranscriptsSchema = insertRefseqTranscriptsSchema
+// make seq readonly for update schema since we don't want it to be updated directly (it should only be set on insert or via refseq update process)
+const updateRefseqTranscriptsSchema = insertRefseqTranscriptsSchema.extend({
+    geneId: insertRefseqTranscriptsSchema.shape.geneId.readonly(),
+    seq: insertRefseqTranscriptsSchema.shape.seq.readonly(),
+})
 
 // Freeze all schema shapes to prevent accidental mutation of shared module-level objects.
 // Zod methods like .extend(), .omit(), .partial() return new objects and are unaffected.

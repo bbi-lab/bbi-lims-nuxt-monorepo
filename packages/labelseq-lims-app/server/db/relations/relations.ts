@@ -13,6 +13,7 @@ import { superblocks, tiles } from '../../../shared/db/schema/tiles'
 import { retrieverPrimers } from '../../../shared/db/schema/primers'
 import { restrictionEnzymes } from '../../../shared/db/schema/reagents'
 import { refseqTranscripts } from '../../../shared/db/schema/transcripts'
+import { viewTilesWithSequences } from '~~/shared/db/schema/views'
 
 export const relations = defineRelations({
   // lims-layer tables
@@ -35,6 +36,9 @@ export const relations = defineRelations({
   retrieverPrimers,
   restrictionEnzymes,
   refseqTranscripts,
+
+  // labelseq views
+  viewTilesWithSequences,
 }, (r) => ({
   // ── lims-layer relations ──────────────────────────────────────────────────
   users: {
@@ -149,5 +153,21 @@ export const relations = defineRelations({
   retrieverPrimers: {
     tilesForward: r.many.tiles({ alias: 'retrieverPrimerForward' }),
     tilesReverse: r.many.tiles({ alias: 'retrieverPrimerReverse' }),
+  },
+  viewTilesWithSequences: {
+    superblock: r.one.superblocks({
+      from: r.viewTilesWithSequences.superblockId,
+      to: r.superblocks.id,
+    }),
+    retrieverPrimerForward: r.one.retrieverPrimers({
+      from: r.viewTilesWithSequences.retrieverPrimerForwardId,
+      to: r.retrieverPrimers.id,
+      alias: 'retrieverPrimerForward',
+    }),
+    retrieverPrimerReverse: r.one.retrieverPrimers({
+      from: r.viewTilesWithSequences.retrieverPrimerReverseId,
+      to: r.retrieverPrimers.id,
+      alias: 'retrieverPrimerReverse',
+    }),
   },
 }))
