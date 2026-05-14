@@ -30,7 +30,6 @@ const props = defineProps({
     rowActions: { type: Object },
     showColumnFilters: { type: Boolean, default: false },
     selectionDisabled: { type: Boolean, default: false },
-    expandEnums: { type: Boolean, default: false },
     emptyMessage: { type: String, default: 'No data' },
     invalidRecords: { type: Object },
     /** Override the localStorage key used to persist column settings. Defaults
@@ -170,7 +169,7 @@ const refreshFormattedValues = (ids?: string[]) => {
 }
 
 const loadTableData = async () => {
-    records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where, props.expandEnums)
+    records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where)
     refreshFormattedValues()
     if (props.sortBy) records.value = _.sortBy(records.value, props.sortBy)
 
@@ -423,10 +422,10 @@ const exportOptions = [
 const addOrRefreshRecordIds = async (recordIds: string[]) => {
     let currentRecords
     if (recordIds.length == 1) {
-        const record = await RecordService.getRecord(apiBaseUrl.value, recordIds[0]!, props.withClause, props.expandEnums)
+        const record = await RecordService.getRecord(apiBaseUrl.value, recordIds[0]!, props.withClause)
         currentRecords = record ? [record] : []
     } else {
-        currentRecords = await RecordService.getRecordsByIds(apiBaseUrl.value, recordIds, props.withClause, props.expandEnums)
+        currentRecords = await RecordService.getRecordsByIds(apiBaseUrl.value, recordIds, props.withClause)
     }
 
     const newRecordIds: string[] = []
