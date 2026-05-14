@@ -10,7 +10,8 @@ const testArraySchema = z.array(z.object({
     userId: z.string(), // for testing nestedSelect in array
 }))
 
-const zodSchema = schemas.plates.insert.extend({
+const zodSchema = z.object({
+    ...schemas.plates.insert.shape,
     testArray: testArraySchema,
     geneId: z.string(),
     userId: z.string(),

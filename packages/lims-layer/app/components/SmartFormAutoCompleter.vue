@@ -255,7 +255,6 @@ defineExpose({
     <div class="flex flex-row gap-2">
         <component :is="_.isEmpty(iftaLabel) ? 'span' : 'IftaLabel'">
             <AutoComplete
-                :name="name"
                 v-model="currentValue"
                 :inputClass="inputClass"
                 :id="inputId"
