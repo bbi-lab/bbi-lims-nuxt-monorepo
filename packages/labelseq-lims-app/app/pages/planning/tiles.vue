@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 import { schemas } from '~~/shared/db/zod/zodSchemas'
+import type { OligoItem } from '~~/app/utils/oligo-items'
 
 const route = useRoute()
 const crudTable = useCrudTable()
@@ -108,6 +109,25 @@ const editFormFieldConfigs: FormFieldConfigs = {
     "fullSequence": { label: 'Full sequence', inputType: 'textarea' },
 }
 
+const showOligoViewerDialog = ref(false)
+const selectedTile = ref<Record<string, any> | null>(null)
+
+const selectedTileOligoItems = computed<OligoItem[]>(() =>
+    selectedTile.value ? buildOligoItems(selectedTile.value) : []
+)
+
+const rowActions = {
+    viewSequences: {
+        action: (data: Record<string, any>) => {
+            selectedTile.value = data
+            showOligoViewerDialog.value = true
+        },
+        icon: 'pi pi-eye',
+        tooltip: 'View sequences',
+        label: '',
+    },
+}
+
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">
@@ -125,6 +145,7 @@ const editFormFieldConfigs: FormFieldConfigs = {
                 :can-edit-multiple="true"
                 :show-column-filters="true"
                 :sort-by="['tileName']"
+                :row-actions="rowActions"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-multiple-record-edit="crudTable.didClickMultipleRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"
@@ -169,4 +190,17 @@ const editFormFieldConfigs: FormFieldConfigs = {
             />
         </SplitterPanel>
     </Splitter>
+    <Dialog
+        v-model:visible="showOligoViewerDialog"
+        :header="selectedTile?.tileName ?? 'Tile Sequences'"
+        modal
+        :style="{ width: '60rem', maxWidth: '95vw' }"
+        :dismissable-mask="true"
+    >
+        <OligoViewer
+            v-if="selectedTile"
+            :data="selectedTileOligoItems"
+            :name="selectedTile.tileName"
+        />
+    </Dialog>
 </template>

@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { PgSequence } from 'drizzle-orm/pg-core'
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '~~/shared/db/zod/zodSchemas'
+import { Icon } from '#components'
+
+const TilesIcon = h(Icon, { name: 'fluent-mdl2:tiles', class: 'm-1' })
 
 const route = useRoute()
+const router = useRouter()
 const crudTable = useCrudTable()
 
 const tableKey = ref<string>(uuidv4())
@@ -25,7 +28,7 @@ const columnDefs: ColumnDefinitions = {
     refseqTranscript: { header: 'RefSeq transcript ID', index: 3, path: 'refseqTranscript.transcriptId' },
     start: { index: 4 },
     end: { index: 5 },
-    seq: { header: 'Sequence', index: 6, bodyClass: 'max-w-64 truncate' },
+    seq: { header: 'Sequence (optimized)', index: 6, bodyClass: 'max-w-64 truncate' },
     length: { header: 'Length', index: 7, format: (row) => row.seq.length, path: 'length.displayValue' },
 }
 
@@ -55,7 +58,7 @@ const fieldConfigs: FormFieldConfigs = {
     },
     seq: {
         inputType: 'textarea',
-        label: 'Sequence',
+        label: 'Sequence (optimized)',
     },
 }
 
@@ -65,6 +68,25 @@ const withClause = {
         with: {
             gene: true,
         },
+    },
+}
+
+const rowActions = {
+    viewTiles: {
+        action: (data: Record<string, any>) => {
+            router.push(`/planning/tiles?superblockId=${data.id}`)
+        },
+        iconComponent: TilesIcon,
+        tooltip: 'View tiles',
+        label: '',
+    },
+    viewTileOligos: {
+        action: (data: Record<string, any>) => {
+            router.push(`/planning/superblocks/${data.id}/tiles`)
+        },
+        icon: 'pi pi-eye',
+        tooltip: 'View tile oligos',
+        label: '',
     },
 }
 </script>
@@ -84,6 +106,7 @@ const withClause = {
                 :can-edit-multiple="true"
                 :show-column-filters="true"
                 :sort-by="['name']"
+                :row-actions="rowActions"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-multiple-record-edit="crudTable.didClickMultipleRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"

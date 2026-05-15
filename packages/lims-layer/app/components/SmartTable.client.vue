@@ -536,7 +536,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                 <Button :icon="displayColumnFilters ? 'pi pi-search-minus' : 'pi pi-search-plus'" text rounded severity="info" @click="toggleColumnFilters" />
             </template>
             <template #body="slotProps">
-                <div class="group">
+                <div class="group flex items-center">
                     <Button v-if="props.canEdit" icon="pi pi-pencil" text rounded @click="didClickEditRecord(slotProps.data)" :disabled="!_.isEmpty(selectedRecords)" />
                     <Button
                         :class="v.class"
@@ -603,7 +603,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
         </template>
         <Column class="whitespace-nowrap" v-if="rowActionsEnd" columnKey="rowActions" :reorderableColumn="false" frozen alignFrozen="right">
             <template #body="{ data }">
-                <div class="flex items-start">
+                <div class="flex items-center">
                     <template v-for="(v, k) in rowActionsEnd">
                         <Button
                             v-if="!v.iconComponent"
@@ -664,5 +664,13 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
 }
 .p-datatable-table tr {
     box-shadow: 0 0 1px var(--p-text-color);
+}
+
+/* Row action buttons: consistent height, icon centred when label is absent */
+.p-datatable-tbody .p-button {
+    height: 2.25rem;
+    min-width: 2.25rem;
+    align-items: center;
+    justify-content: center;
 }
 </style>

@@ -1,11 +1,13 @@
 <script setup>
 import _ from 'lodash'
 import { Icon } from '#components'
-
 const { user } = useUserSession()
 
 const DnaIcon = h(Icon, { name: 'mdi:dna', class: 'm-1' })
 const PhGridNineFill = h(Icon, { name: 'ph:grid-nine-fill', class: 'm-1' })
+const TilesIcon = h(Icon, { name: 'fluent-mdl2:tiles', class: 'm-1' })
+const OligosIcon = h(Icon, { name: 'icon-park:comb', class: 'm-1' })
+const BeakerOutlineIcon = h(Icon, { name: 'mdi:beaker-outline', class: 'm-1' })
 
 const model = ref([
     {
@@ -16,13 +18,15 @@ const model = ref([
             { label: 'Plates', iconComponent: PhGridNineFill, to: '/plates' },
             {
                 label: 'Reference',
+                iconComponent: DnaIcon,
                 items: [
                     { label: 'Genes', to: '/genes' },
                     { label: 'Transcripts', to: '/transcripts' },
                 ]
             },
             {
-                label: 'Planning',
+                label: 'Planning/Design',
+                iconComponent: TilesIcon,
                 items: [
                     { label: 'Superblocks', to: '/planning/superblocks' },
                     { label: 'Tiles', to: '/planning/tiles' },
@@ -30,6 +34,7 @@ const model = ref([
             },
             {
                 label: 'Oligos',
+                iconComponent: OligosIcon,
                 items: [
                     { label: 'Primers',
                         items: [
@@ -40,6 +45,7 @@ const model = ref([
             },
             {
                 label: 'Reagents',
+                iconComponent: BeakerOutlineIcon,
                 items: [
                     { label: 'Restriction Enzymes', to: '/reagents/restriction-enzymes' },
                 ]
