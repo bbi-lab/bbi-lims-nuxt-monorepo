@@ -76,7 +76,7 @@ const rowActions = {
         action: (data: Record<string, any>) => {
             router.push(`/planning/tiles?superblockId=${data.id}`)
         },
-        iconComponent: TilesIcon,
+        icon: 'pi pi-objects-column',
         tooltip: 'View tiles',
         label: '',
     },

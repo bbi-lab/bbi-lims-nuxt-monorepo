@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import _, { eq } from 'lodash'
+import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '../../shared/db/zod/zodSchemas'
-import { restrictionEnzymes } from '~~/shared/db/schema/reagents'
 
 const route = useRoute()
 const crudTable = useCrudTable()

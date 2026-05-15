@@ -10,6 +10,7 @@ import { retrieverPrimers } from '../../shared/db/schema/primers'
 import { restrictionEnzymes } from '../../shared/db/schema/reagents'
 import { viewTilesWithSequences } from '../../shared/db/schema/views'
 import { plateTypes } from 'lims-layer/shared/db/schema/plateTypes'
+import { refseqTranscripts } from '../../shared/db/schema/transcripts'
 
 import { relations } from '../db/relations/relations'
 
@@ -24,6 +25,7 @@ export const appSchema = {
   restrictionEnzymes,
   viewTilesWithSequences,
   plateTypes,
+  refseqTranscripts,
 }
 
 // Named `appDb` / `useAppDrizzle` to avoid auto-import collision with
