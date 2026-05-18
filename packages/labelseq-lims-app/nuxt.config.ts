@@ -32,6 +32,8 @@ export default defineNuxtConfig({
     dbUsername: '',
     dbPassword: '',
     dbSsl: false,
+    dbSslCa: '',
+    dbSslCaPath: '',
     authJwtAccessTokenExpiresIn: '5m',
     authJwtRefreshTokenExpiresIn: '60m',
     authJwtAccessTokenSecret: '',
