@@ -5,7 +5,7 @@ import { pool, schema as baseSchema } from '../../../lims-layer/server/utils/db'
 
 // labelseq-lims-app tables
 import { projects } from '../../shared/db/schema/project'
-import { superblocks, tiles } from '../../shared/db/schema/tiles'
+import { superblocks, tiles, tileVariants } from '../../shared/db/schema/tiles'
 import { retrieverPrimers } from '../../shared/db/schema/primers'
 import { restrictionEnzymes } from '../../shared/db/schema/reagents'
 import { viewTilesWithSequences } from '../../shared/db/schema/views'
@@ -21,6 +21,7 @@ export const appSchema = {
   projects,
   superblocks,
   tiles,
+  tileVariants,
   retrieverPrimers,
   restrictionEnzymes,
   viewTilesWithSequences,

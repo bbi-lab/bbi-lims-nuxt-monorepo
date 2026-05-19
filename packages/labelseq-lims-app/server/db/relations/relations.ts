@@ -9,7 +9,7 @@ import { wellables, wellContents, wellContentSources, wells } from 'lims-layer/s
 
 // labelseq-lims-app tables
 import { projects } from '../../../shared/db/schema/project'
-import { superblocks, tiles } from '../../../shared/db/schema/tiles'
+import { superblocks, tiles, tileVariants } from '../../../shared/db/schema/tiles'
 import { retrieverPrimers } from '../../../shared/db/schema/primers'
 import { restrictionEnzymes } from '../../../shared/db/schema/reagents'
 import { refseqTranscripts } from '../../../shared/db/schema/transcripts'
@@ -33,6 +33,7 @@ export const relations = defineRelations({
   projects,
   superblocks,
   tiles,
+  tileVariants,
   retrieverPrimers,
   restrictionEnzymes,
   refseqTranscripts,
@@ -152,6 +153,13 @@ export const relations = defineRelations({
     viewTileWithSequences: r.one.viewTilesWithSequences({
       from: r.tiles.id,
       to: r.viewTilesWithSequences.id,
+    }),
+    tileVariants: r.many.tileVariants(),
+  },
+  tileVariants: {
+    tile: r.one.tiles({
+      from: r.tileVariants.tileId,
+      to: r.tiles.id,
     }),
   },
   retrieverPrimers: {

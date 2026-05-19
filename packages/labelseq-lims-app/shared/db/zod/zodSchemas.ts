@@ -1,10 +1,10 @@
-import { dateSchema, nullableDateSchema } from '../helpers/schemas'
+// import { dateSchema, nullableDateSchema } from '../helpers/schemas'
 import { createSelectSchema } from 'drizzle-orm/zod'
 import { z } from 'zod'
 import { projects } from '../schema/project'
 import { restrictionEnzymes } from '../schema/reagents'
 import { retrieverPrimers } from '../schema/primers'
-import { superblocks, tiles } from '../schema/tiles'
+import { superblocks, tiles, tileVariants } from '../schema/tiles'
 import { refseqTranscripts } from '../schema/transcripts'
 
 const selectProjectSchema = createSelectSchema(projects)
@@ -31,6 +31,10 @@ const updateSuperblocksSchema = insertSuperblocksSchema
 const selectTilesSchema = createSelectSchema(tiles)
 const insertTilesSchema = selectTilesSchema.omit({ id: true }).partial()
 const updateTilesSchema = insertTilesSchema
+
+const selectTileVariantsSchema = createSelectSchema(tileVariants)
+const insertTileVariantsSchema = selectTileVariantsSchema.omit({ id: true }).partial()
+const updateTileVariantsSchema = insertTileVariantsSchema
 
 const selectRefseqTranscriptsSchema = createSelectSchema(refseqTranscripts)
 const insertRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.omit({ id: true }).partial()
@@ -79,6 +83,11 @@ export const schemas = freezeSchemas({
         select: selectTilesSchema,
         insert: insertTilesSchema,
         update: updateTilesSchema,
+    },
+    tileVariants: {
+        select: selectTileVariantsSchema,
+        insert: insertTileVariantsSchema,
+        update: updateTileVariantsSchema,
     },
     refseqTranscripts: {
         select: selectRefseqTranscriptsSchema,
