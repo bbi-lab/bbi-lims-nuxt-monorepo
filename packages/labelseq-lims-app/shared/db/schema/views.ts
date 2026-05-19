@@ -28,6 +28,7 @@ export const viewTilesWithSequences = pgView('view_tiles_with_sequences', {
     bsa1PlusOneCtermOverhangSeq: varchar('bsa1_plusone_cterm_overhang_seq'),
     bsa1PlusOneSeqRevComp: varchar('bsa1_plusone_seq_rev_comp'),
     retrieverPrimerRSeqRevComp: varchar('retriever_primer_r_seq_rev_comp'),
+    restrictionEnzymeName: varchar('restriction_enzyme_name'),
     fullSequence: varchar('full_sequence'),
 }).as(sql`select *,
     concat(retriever_primer_f_seq, bsa1_plusone_seq, bsa1_plusone_nterm_overhang_seq, superblock_nterm_restriction_enzyme_seq, tile_seq, superblock_cterm_restriction_enzyme_seq_rev_comp, bsa1_plusone_cterm_overhang_seq, bsa1_plusone_seq_rev_comp, retriever_primer_r_seq_rev_comp) as full_sequence
@@ -54,7 +55,8 @@ export const viewTilesWithSequences = pgView('view_tiles_with_sequences', {
         case when ${tiles.superblockLast} then ${restrictionEnzymes.recogSeqPlusOverhangRevComp} end as superblock_cterm_restriction_enzyme_seq_rev_comp,
         case when ${tiles.superblockLast} then 'GCAT' end as bsa1_plusone_cterm_overhang_seq,
         'AGAGACC' as bsa1_plusone_seq_rev_comp,
-        "retriever_primer_r"."seq_rev_comp" as retriever_primer_r_seq_rev_comp
+        "retriever_primer_r"."seq_rev_comp" as retriever_primer_r_seq_rev_comp,
+        ${restrictionEnzymes.name} as restriction_enzyme_name
         from ${tiles}
         join ${superblocks} on ${eq(tiles.superblockId, superblocks.id)}
         join ${projects} on ${eq(superblocks.projectId, projects.id)}

@@ -1,5 +1,5 @@
 // Colors mirrored from lims-layer/shared/lib/plate-diagram.ts
-const VALID_WELL_COLORS = [
+const VALID_COLORS = [
     '#0075DC', '#F0A3FF', '#993F00', '#4C005C', '#005C31',
     '#2BCE48', '#FFCC99', '#94FFB5', '#8F7C00', '#9DCC00',
     '#C20088', '#003380', '#FFA405', '#FFA8BB', '#426600',
@@ -19,6 +19,8 @@ export interface OligoItem {
  * Entries with null/empty sequences (conditional columns) are omitted.
  */
 export function buildOligoItems(tile: Record<string, any>): OligoItem[] {
+    const superblockRestrictionEnzymeName = tile.restrictionEnzymeName ?? 'RE Site'
+
     const items: OligoItem[] = []
     if (tile.retrieverPrimerFSeq) {
         items.push({ label: 'Forward Primer', type: 'Forward Primer', sequence: tile.retrieverPrimerFSeq })
@@ -27,19 +29,19 @@ export function buildOligoItems(tile: Record<string, any>): OligoItem[] {
         items.push({ label: 'BsaI+1', type: 'BsaI', sequence: tile.bsa1PlusOneSeq })
     }
     if (tile.bsa1PlusOneNtermOverhangSeq) {
-        items.push({ label: 'N-term Overhang', type: 'N-term Overhang', sequence: tile.bsa1PlusOneNtermOverhangSeq })
+        items.push({ label: 'BsaI Overhang', type: 'BsaI Overhang', sequence: tile.bsa1PlusOneNtermOverhangSeq })
     }
     if (tile.superblockNtermRestrictionEnzymeSeq) {
-        items.push({ label: 'N-term RE Site', type: 'RE Site', sequence: tile.superblockNtermRestrictionEnzymeSeq })
+        items.push({ label: superblockRestrictionEnzymeName, type: superblockRestrictionEnzymeName, sequence: tile.superblockNtermRestrictionEnzymeSeq })
     }
     if (tile.tileSeq) {
         items.push({ label: 'Tile Sequence', type: 'Tile Sequence', sequence: tile.tileSeq })
     }
     if (tile.superblockCtermRestrictionEnzymeSeqRevComp) {
-        items.push({ label: 'C-term RE Site (RC)', type: 'RE Site', sequence: tile.superblockCtermRestrictionEnzymeSeqRevComp })
+        items.push({ label:  `${superblockRestrictionEnzymeName} (RC)`, type: superblockRestrictionEnzymeName, sequence: tile.superblockCtermRestrictionEnzymeSeqRevComp })
     }
     if (tile.bsa1PlusOneCtermOverhangSeq) {
-        items.push({ label: 'C-term Overhang', type: 'C-term Overhang', sequence: tile.bsa1PlusOneCtermOverhangSeq })
+        items.push({ label: 'BsaI Overhang', type: 'BsaI Overhang', sequence: tile.bsa1PlusOneCtermOverhangSeq })
     }
     if (tile.bsa1PlusOneSeqRevComp) {
         items.push({ label: 'BsaI+1 (RC)', type: 'BsaI', sequence: tile.bsa1PlusOneSeqRevComp })
@@ -63,7 +65,7 @@ export function buildSharedOligoColorMap(allTilesItems: OligoItem[][]): Record<s
     for (const items of allTilesItems) {
         for (const item of items) {
             if (!(item.type in map)) {
-                map[item.type] = VALID_WELL_COLORS[colorIndex % VALID_WELL_COLORS.length]!
+                map[item.type] = VALID_COLORS[colorIndex % VALID_COLORS.length]!
                 colorIndex++
             }
         }
