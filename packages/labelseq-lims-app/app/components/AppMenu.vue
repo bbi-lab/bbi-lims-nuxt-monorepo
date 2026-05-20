@@ -6,6 +6,7 @@ const { user } = useUserSession()
 const DnaIcon = h(Icon, { name: 'mdi:dna', class: 'm-1' })
 const PhGridNineFill = h(Icon, { name: 'ph:grid-nine-fill', class: 'm-1' })
 const TilesIcon = h(Icon, { name: 'fluent-mdl2:tiles', class: 'm-1' })
+const TileVariantsIcon = h(Icon, { name: 'mdi:compare-horizontal', class: 'm-1' })
 const OligosIcon = h(Icon, { name: 'icon-park-outline:comb', class: 'm-1' })
 const BeakerOutlineIcon = h(Icon, { name: 'mdi:beaker-outline', class: 'm-1' })
 
@@ -30,6 +31,7 @@ const model = ref([
                 items: [
                     { label: 'Superblocks', to: '/planning/superblocks' },
                     { label: 'Tiles', to: '/planning/tiles' },
+                    { label: 'Tile Variants', to: '/planning/tile-variants' },
                 ]
             },
             {

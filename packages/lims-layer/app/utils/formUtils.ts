@@ -91,8 +91,13 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
             options,
             optionLabel: 'name',
             optionValue: 'code',
-            placeholder: 'Select an option',
         })
+
+        // Automatically show a clear button for nullable enum fields (null parses successfully)
+        const fieldSchema = _.get(zodSchema, `shape.${fieldName}`)
+        if (fieldSchema?.safeParse(null)?.success === true) {
+            _.assign(vBindObject, { showClear: true })
+        }
     } else if (zodType == 'array') {
         primeVueComponent = 'SmartFormInputArray'
         // Pass the element schema so SmartFormInputArray can determine sub-fields
@@ -215,6 +220,7 @@ export const buildFormFields = (
             name: fieldName,
             component: componentMap[def.primeVueComponent] ?? def.primeVueComponent,
             label: def.label || _.startCase(fieldName),
+            helpText: fieldConfig?.helpText,
             vBindObject: def.vBindObject,
         }
     })
@@ -227,7 +233,9 @@ export const buildFormFields = (
 export const getFormErrorMessage = (form: any, fieldName: string) => {
     const errorMsg = _.get(form, `${fieldName}.error.message`)
     const pattern = /, received (null|undefined)$/
-    return pattern.test(errorMsg) ? 'Required' : errorMsg
+    if (pattern.test(errorMsg)) return 'Required'
+    if (/^Invalid option: expected one of /.test(errorMsg)) return 'Required'
+    return errorMsg
 }
 
 /**

@@ -5,7 +5,11 @@ import { z } from 'zod'
 import { schemas } from '~~/shared/db/zod/zodSchemas'
 import type { OligoItem } from '~~/app/utils/oligo-items'
 
+import { Icon } from '#components'
+const CompareHorizontalIcon = h(Icon, { name: 'mdi:compare-horizontal' })
+
 const route = useRoute()
+const router = useRouter()
 const crudTable = useCrudTable()
 
 const tableKey = ref<string>(uuidv4())
@@ -126,6 +130,15 @@ const rowActions = {
         tooltip: 'View sequences',
         label: '',
     },
+    viewVariants: {
+        action: (data: Record<string, any>) => {
+            router.push(`/planning/tile-variants?tileId=${data.id}`)
+        },
+        iconComponent: CompareHorizontalIcon,
+        tooltip: 'View tile variants',
+        label: '',
+    },
+
 }
 
 </script>

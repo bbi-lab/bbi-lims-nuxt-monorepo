@@ -9,6 +9,7 @@ const groups = [
             { label: 'Projects',    icon: 'pi pi-briefcase',      path: '/projects',                              api: '/api/projects' },
             { label: 'Superblocks', iconName: 'fluent-mdl2:tiles', path: '/planning/superblocks',                 api: '/api/superblocks' },
             { label: 'Tiles',       icon: 'pi pi-objects-column',  path: '/planning/tiles',                       api: '/api/view-tiles-with-sequences' },
+            { label: 'Tile Variants', iconName: 'mdi:compare-horizontal', path: '/planning/tile-variants',           api: '/api/tile-variants' },
             ],
     },
     {

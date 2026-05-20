@@ -1,5 +1,6 @@
 export interface FormFieldConfig {
     label?: string
+    helpText?: string
     inputType?: string
     defaultValue?: string | number | boolean | any[]
 
