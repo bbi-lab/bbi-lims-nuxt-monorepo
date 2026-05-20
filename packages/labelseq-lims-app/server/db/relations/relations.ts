@@ -13,7 +13,8 @@ import { superblocks, tiles, tileVariants } from '../../../shared/db/schema/tile
 import { retrieverPrimers } from '../../../shared/db/schema/primers'
 import { restrictionEnzymes } from '../../../shared/db/schema/reagents'
 import { refseqTranscripts } from '../../../shared/db/schema/transcripts'
-import { viewTilesWithSequences } from '~~/shared/db/schema/views'
+import { viewTilesWithSequences, viewTileVariantsWithSequences } from '~~/shared/db/schema/views'
+import { view } from 'drizzle-orm/sqlite-core/view'
 
 export const relations = defineRelations({
   // lims-layer tables
@@ -40,6 +41,7 @@ export const relations = defineRelations({
 
   // labelseq views
   viewTilesWithSequences,
+  viewTileVariantsWithSequences,
 }, (r) => ({
   // ── lims-layer relations ──────────────────────────────────────────────────
   users: {
@@ -161,6 +163,10 @@ export const relations = defineRelations({
       from: r.tileVariants.tileId,
       to: r.tiles.id,
     }),
+    viewTileVariantsWithSequences: r.one.viewTileVariantsWithSequences({
+      from: r.tileVariants.id,
+      to: r.viewTileVariantsWithSequences.id,
+    }),
   },
   retrieverPrimers: {
     tilesForward: r.many.tiles({ alias: 'retrieverPrimerForward' }),
@@ -184,6 +190,12 @@ export const relations = defineRelations({
     tile: r.one.tiles({
       from: r.viewTilesWithSequences.id,
       to: r.tiles.id,
+    }),
+  },
+  viewTileVariantsWithSequences: {
+    tileVariant: r.one.tileVariants({
+      from: r.viewTileVariantsWithSequences.id,
+      to: r.tileVariants.id,
     }),
   },
 }))

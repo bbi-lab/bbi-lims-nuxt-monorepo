@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '~~/shared/db/zod/zodSchemas'
+import { z } from 'zod'
 
 const route = useRoute()
 const crudTable = useCrudTable()
@@ -18,13 +19,14 @@ watch(() => route.query, async (newValue, _oldValue) => {
 const columnDefs: ColumnDefinitions = {
     id: { display: false },
     tileId: { display: false },
-    tile: { header: 'Tile', index: 0, path: 'tile.tileName' },
+    tile: { header: 'Tile', index: 0, path: 'tileVariant.tile.tileName' },
     aaPosition: { header: 'AA Position', index: 1 },
     aaRef: { header: 'AA Ref', index: 2 },
     aaAlt: { header: 'AA Alt', index: 3 },
     ntPosition: { header: 'NT Position', index: 4 },
     ntRef: { header: 'NT Ref', index: 5 },
     ntAlt: { header: 'NT Alt', index: 6 },
+    fullSequence: { header: 'Full sequence', index: 7, bodyClass: 'max-w-64 truncate' },
 }
 
 const fieldConfigs: FormFieldConfigs = {
@@ -45,9 +47,20 @@ const fieldConfigs: FormFieldConfigs = {
     ntRef: { label: 'NT Ref' },
     ntAlt: { label: 'NT Alt', helpText: 'Leave blank for deletion' },
 }
-
+const editFormFieldConfigs: FormFieldConfigs = {
+    ...fieldConfigs,
+    fullSequence: { label: 'Full sequence', inputType: 'textarea' },
+}
+const editFormZodSchema = z.object({
+    ...schemas.tileVariants.update.shape,
+    fullSequence: z.string().readonly(),
+})
 const withClause = {
-    tile: true,
+    tileVariant: {
+        with: {
+            tile: true,
+        }
+    }
 }
 </script>
 
@@ -57,13 +70,13 @@ const withClause = {
             <SmartTable
                 :key="tableKey"
                 :ref="crudTable.setTableRef"
-                table-name="tile-variants"
+                table-name="view-tile-variants-with-sequences"
                 :zodSchema="schemas.tileVariants.select"
                 title="Tile Variants"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 :column-defs="columnDefs"
                 :where="whereClauses"
-                :withClause="withClause"
+                :with-clause="withClause"
                 :can-edit-multiple="true"
                 :show-column-filters="true"
                 :sort-by="['aaPosition']"
@@ -85,12 +98,12 @@ const withClause = {
             />
             <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                selectUrl="/api/tile-variants"
+                selectUrl="/api/view-tile-variants-with-sequences"
                 :recordIds="[crudTable.state.editingRecordId]"
                 submitUrl="/api/tile-variants"
                 submitMethod="PUT"
-                :zodSchema="schemas.tileVariants.update"
-                :fieldConfigs="fieldConfigs"
+                :zodSchema="editFormZodSchema"
+                :fieldConfigs="editFormFieldConfigs"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
