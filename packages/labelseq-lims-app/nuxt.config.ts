@@ -41,6 +41,12 @@ export default defineNuxtConfig({
     public: {
       appName: 'LABELseq LIMS',
       apiBase: '/api',
-    }
+      appUrl: 'http://localhost:3000',
+    },
+    smtpHost: '',
+    smtpPort: '587',
+    smtpUser: '',
+    smtpPass: '',
+    smtpFrom: '',
   },
 })
