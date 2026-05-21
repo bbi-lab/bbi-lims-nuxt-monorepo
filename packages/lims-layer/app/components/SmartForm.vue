@@ -102,7 +102,7 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
                 </Message>
             </div>
         </template>
-        <div class="flex gap-2">
+        <div class="flex gap-2 pb-8">
             <slot name="form-buttons" />
             <Button v-if="!readOnly" type="submit" label="Submit" :disabled="!$form.valid" />
         </div>
