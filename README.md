@@ -36,3 +36,23 @@ pnpm run drizzle-kit push
 ```
 pnpm run drizzle-kit generate
 ```
+
+
+### Docker
+
+Build docker container for a specific layer (`labelseq-lims-app` in the following examples):
+```
+docker build -f packages/labelseq-lims-app/Dockerfile --tag labelseq-lims .
+```
+
+Or for a specific architecture (e.g. linux/arm64):
+```
+docker build --platform linux/arm64 -f packages/labelseq-lims-app/Dockerfile --tag labelseq-lims .
+```
+
+Copy `.env.example` to `.env.docker` and change the database URL's host from `localhost` to `host.docker.internal`. Set other environment variables as needed.
+
+Start the docker container:
+```
+docker run -p 3000:3000 --env-file /packages/labelseq-lims/.env.docker labelseq-lims
+```

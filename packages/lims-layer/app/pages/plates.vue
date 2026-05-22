@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import _, { size } from 'lodash'
+import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
-import { z } from 'zod'
 import { schemas } from '../../shared/db/zod/zodSchemas'
 
 const router = useRouter()
@@ -14,16 +13,13 @@ const readonlyValues = ref<Record<string, unknown>>({})
 
 const definedRoutes = router.getRoutes()
 
-watch(() => route.query, async (newValue) => {
-    const queryParamFilters = _.map(newValue, (val, key) => {
-        return {"==": [{"var": key}, val] }
-    })
-    whereClauses.value = _.size(queryParamFilters) > 1 ? {and: queryParamFilters} : queryParamFilters
-    readonlyValues.value = newValue
+watch(() => route.query, async (newValue, oldValue) => {
+    whereClauses.value = queryParamsToJsonLogic(newValue)
+    readonlyValues.value = getSimpleQueryParams(newValue)
     tableKey.value = uuidv4()
 }, { immediate: true })
 
-const columnDefs = {
+const columnDefs: ColumnDefinitions = {
     name: { index: 0},
     plateType: { display: false },
     plateTypeLabel: { header: 'Type', index: 1 },
@@ -61,7 +57,7 @@ const rowActions = {
     },
 }
 
-const fieldConfigs: Record<string, FormFieldConfig> = {
+const fieldConfigs: FormFieldConfigs = {
     name: {
         label: 'Plate Name',
     },
@@ -71,13 +67,23 @@ const fieldConfigs: Record<string, FormFieldConfig> = {
     sizeY: {
         defaultValue: 8,
     },
+    plateType: {
+        autoCompleter: {
+            searchBaseUrl: '/api/plate-types',
+            valueField: 'value',
+            displayFields: ['label'],
+            searchFields: ['label'],
+            dropdown: true,
+        },
+    },
 }
 
-// Apply enum mapping for plateType field — use .extend() to avoid mutating the shared schema
-const plateTypeOptions = _.mapValues(appConstants.enumLookups.plates.plateType, 'label')
-const plateTypeEnum = z.enum(_.invert(plateTypeOptions))
-const insertPlateSchema = schemas.plates.insert.extend({ plateType: plateTypeEnum })
-const updatePlateSchema = schemas.plates.update.extend({ plateType: plateTypeEnum.readonly() })
+const withClause = {
+    plateTypeRef: true,
+}
+// plateType is now a FK to plate_types.value — use z.string() since valid values are enforced by the DB
+const insertPlateSchema = schemas.plates.insert
+const updatePlateSchema = schemas.plates.update
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">

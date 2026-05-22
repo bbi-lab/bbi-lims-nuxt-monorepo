@@ -19,7 +19,7 @@ export function zodToSafeTypeJSONSchema(zodSchema: z.ZodObject<z.core.$ZodLooseS
   })
 }
 
-export async function refineJsonSchema(jsonSchema: z.core.ZodStandardJSONSchemaPayload<z.ZodObject<z.core.$ZodLooseShape, z.core.$strip>>, relationsConfig: RelationsConfig, defaultId?: string, enumLookup?: EnumLookup) {
+export async function refineJsonSchema(jsonSchema: z.core.ZodStandardJSONSchemaPayload<z.ZodObject<z.core.$ZodLooseShape, z.core.$strip>>, relationsConfig: RelationsConfig, defaultId?: string) {
     // define JSON schema property as coded list of users, to be applied to JSON schema
     const usersInfo = await getAllVerifiedUsersInfo()
     const usersJsonSchemaProperty = {
@@ -34,14 +34,6 @@ export async function refineJsonSchema(jsonSchema: z.core.ZodStandardJSONSchemaP
         if (_.get(relationsConfig.one, [property, 'referenceTable']) === users) {
           _.set(jsonSchema, ['properties', property], usersJsonSchemaProperty)
         }
-      }
-      if (enumLookup && Object.keys(enumLookup).includes(property)) {
-        const enumLookupProperty = enumLookup[property]
-        const enumLookupJsonSchemaProperty = {
-          type: 'string',
-          oneOf: _.map(enumLookupProperty, (val, key) => { return { const: key, title: val.label } }),
-        }
-        _.set(jsonSchema, ['properties', property], enumLookupJsonSchemaProperty)
       }
     }
 

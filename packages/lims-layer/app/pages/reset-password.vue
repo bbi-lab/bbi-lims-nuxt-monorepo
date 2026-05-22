@@ -61,6 +61,7 @@ async function onSubmit() {
               class="mb-6"
               fluid
               :feedback="false"
+              @keyup.enter="onSubmit"
             />
 
             <label for="confirm-password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Confirm Password</label>
@@ -72,6 +73,7 @@ async function onSubmit() {
               class="mb-2"
               fluid
               :feedback="false"
+              @keyup.enter="onSubmit"
             />
 
             <Message

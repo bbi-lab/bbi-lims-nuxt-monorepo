@@ -7,9 +7,8 @@ const _fetch = $fetch as any
 const { showLoginModal } = useLayout()
 
 export const RecordService = {
-    async getRecord(baseUrl: string, id: string, withClause: Object | undefined, expandEnums: boolean = false) {
-        const fetchOptions = {query: {expandEnums}}
-        if (withClause) _.set(fetchOptions, ['query', 'with'], withClause)
+    async getRecord(baseUrl: string, id: string, withClause: Object | undefined) {
+        const fetchOptions = withClause ? {query: {with: withClause}} : undefined
         try {
             const record = await _fetch(`${baseUrl}/${id}`, fetchOptions)
             return record
@@ -28,18 +27,16 @@ export const RecordService = {
         return record.data as FetchType
     },
 
-    async getRecordsByIds(baseUrl: string, ids: string[], withClause?: Object, expandEnums: boolean = false) {
-        const fetchOptions = {query: {expandEnums, where: {"in": [{"var": "id"}, ids]}}}
+    async getRecordsByIds(baseUrl: string, ids: string[], withClause?: Object) {
+        const fetchOptions = {query: {where: {"in": [{"var": "id"}, ids]}}}
         if (withClause) _.set(fetchOptions, ['query', 'with'], withClause)
         // use search POST endpoint with request body to avoid URL length issues with large ids array
         const records = await _fetch(`${baseUrl}/search`, {method: 'POST', body: fetchOptions}) as any[]
         return records
     },
 
-    async getRecords(baseUrl: string, withClause?: Object, where?: Object, expandEnums: boolean = false) {
-        const fetchOptions = {query: {expandEnums}}
-        if (withClause) _.set(fetchOptions, ['query', 'with'], withClause)
-        if (where) _.set(fetchOptions, ['query', 'where'], where)
+    async getRecords(baseUrl: string, withClause?: Object, where?: Object) {
+        const fetchOptions = {query: {with: withClause, where}}
         try {
             const records =  await _fetch(`${baseUrl}`, fetchOptions) as any[]
             return records

@@ -91,8 +91,13 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
             options,
             optionLabel: 'name',
             optionValue: 'code',
-            placeholder: 'Select an option',
         })
+
+        // Automatically show a clear button for nullable enum fields (null parses successfully)
+        const fieldSchema = _.get(zodSchema, `shape.${fieldName}`)
+        if (fieldSchema?.safeParse(null)?.success === true) {
+            _.assign(vBindObject, { showClear: true })
+        }
     } else if (zodType == 'array') {
         primeVueComponent = 'SmartFormInputArray'
         // Pass the element schema so SmartFormInputArray can determine sub-fields
@@ -122,7 +127,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     }
 }
 
-export const getBlankFormInitialValues = (zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>, fieldConfigs?: Record<string, FormFieldConfig>) => {
+export const getBlankFormInitialValues = (zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>, fieldConfigs?: FormFieldConfigs) => {
     // set initial values to null for all fields in the schema, except for arrays which should be set to empty arrays
     return _.mapValues(zodSchema.shape, (zodObj, fieldName) => {
         let zodObjDef: $ZodTypeDef = zodObj.def
@@ -174,7 +179,7 @@ export function isZodFieldReadonly(zodSchema: z.ZodObject<Record<string, z.ZodTy
  */
 export function getReadonlyFields(
     zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>,
-    fieldConfigs?: Record<string, FormFieldConfig>,
+    fieldConfigs?: FormFieldConfigs,
 ): Set<string> {
     const result = new Set<string>()
     for (const fieldName of _.keys(zodSchema.shape)) {
@@ -196,7 +201,7 @@ export function getReadonlyFields(
  */
 export const buildFormFields = (
     zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>,
-    fieldConfigs: Record<string, FormFieldConfig> | undefined,
+    fieldConfigs: FormFieldConfigs | undefined,
     componentMap: Record<string, Component | string>,
 ) => {
     return _.keys(zodSchema.shape).map((fieldName) => {
@@ -215,6 +220,7 @@ export const buildFormFields = (
             name: fieldName,
             component: componentMap[def.primeVueComponent] ?? def.primeVueComponent,
             label: def.label || _.startCase(fieldName),
+            helpText: fieldConfig?.helpText,
             vBindObject: def.vBindObject,
         }
     })
@@ -227,7 +233,9 @@ export const buildFormFields = (
 export const getFormErrorMessage = (form: any, fieldName: string) => {
     const errorMsg = _.get(form, `${fieldName}.error.message`)
     const pattern = /, received (null|undefined)$/
-    return pattern.test(errorMsg) ? 'Required' : errorMsg
+    if (pattern.test(errorMsg)) return 'Required'
+    if (/^Invalid option: expected one of /.test(errorMsg)) return 'Required'
+    return errorMsg
 }
 
 /**

@@ -1,34 +1,13 @@
 import _ from 'lodash'
-import { type SelectParams, applySelectParamsToRecords } from './restApi'
+import { type SelectParams, applySelectParamsToRecords, jsonLogicToSql, jsonLogicToFilter } from './restApi'
 import type { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/query'
 import type { PgViewWithSelection, PgTable } from 'drizzle-orm/pg-core'
-import { eq, inArray, getTableName, type ColumnType, type ColumnBaseConfig, Column } from 'drizzle-orm'
+import { eq, inArray, asc, desc, type ColumnType, type ColumnBaseConfig, Column } from 'drizzle-orm'
 import { useDrizzle } from '../utils/db'
 
 export interface RecordValues {[key: string]: string | number | boolean | null | undefined }
 
 const db = useDrizzle()
-
-function expandEnumValues(records: any, tableName: string): void {
-    if (!_.has(appConstants.enumLookups, tableName)) return
-
-    const enumLookup = appConstants.enumLookups[tableName] as Record<string, any>
-    if (_.isArray(records)) {
-        _.forEach(records, (record) => {
-            _.forEach(record, (value, key) => {
-                if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
-                    record[key] = {value: record[key], ...enumLookup[key][value]}
-                }
-            })
-        })
-    } else {
-        _.forEach(records, (value, key) => {
-            if (_.isString(value) && enumLookup[key] && enumLookup[key][value]) {
-                records[key] = {value: records[key], ...enumLookup[key][value]}
-            }
-        })
-    }
-}
 
 function trimObjectValues(records: RecordValues[]): RecordValues[] {
     return _.map(records, (x) => {
@@ -38,20 +17,56 @@ function trimObjectValues(records: RecordValues[]): RecordValues[] {
     })
 }
 
-export async function selectRecords(queryBuilder: RelationalQueryBuilder<any, any>, selectParams: SelectParams, expandEnums: boolean = false) {
+export async function selectRecords(queryBuilder: RelationalQueryBuilder<any, any>, selectParams: SelectParams) {
+    // Translate the JSON Logic `where` filter into Drizzle RQB v2's native object filter
+    // format. This natively handles relation/with filters via dot-notation vars
+    // (e.g. {"var": "sample.name"} → { sample: { name: ... } }) without requiring column
+    // object resolution. Returns null for unsupported operators, in which case we fall back
+    // to fetching all rows and applying params in Node.js.
+    const dbFilter = selectParams.where ? jsonLogicToFilter(selectParams.where) : undefined
+    const canPushWhere = !selectParams.where || dbFilter != null
+
     const records = await (queryBuilder as any).findMany({
         columns: selectParams.columns,
-        with: selectParams.with
+        with: selectParams.with,
+        ...(canPushWhere ? {
+            where: dbFilter,
+            limit: selectParams.limit || undefined,
+            offset: selectParams.offset || undefined,
+            orderBy: selectParams.order || undefined,
+        } : {}),
     })
-    const result = applySelectParamsToRecords(selectParams, records)
-    if (expandEnums) expandEnumValues(result, _.get(queryBuilder, 'tableConfig.dbName', ''))
+
+    const result = canPushWhere ? records : applySelectParamsToRecords(selectParams, records)
     return result
 }
 
 export async function selectRecordsFromView(view: PgViewWithSelection, selectParams: SelectParams) {
-    const records = await db.select().from(view)
-    const result = applySelectParamsToRecords(selectParams, records)
-    return result
+    // Views use the standard query builder (db.select().from(view)) rather than the
+    // relational query builder, so the where filter must be translated to a SQL expression
+    // via jsonLogicToSql rather than the RQB object format used by selectRecords.
+    // Falls back to full-fetch + in-memory filtering when translation fails.
+    const dbFilter = selectParams.where
+        ? jsonLogicToSql(selectParams.where, (name) => (view as any)[name])
+        : undefined
+    const canPushWhere = !selectParams.where || dbFilter != null
+
+    let query = db.select().from(view) as any
+    if (canPushWhere) {
+        if (dbFilter) query = query.where(dbFilter)
+        if (selectParams.order) {
+            const orderClauses = Object.entries(selectParams.order).flatMap(([col, dir]) => {
+                const column = (view as any)[col]
+                return column ? [dir === 'desc' ? desc(column) : asc(column)] : []
+            })
+            if (orderClauses.length) query = query.orderBy(...orderClauses)
+        }
+        if (selectParams.offset) query = query.offset(selectParams.offset)
+        if (selectParams.limit) query = query.limit(selectParams.limit)
+    }
+
+    const records = await query
+    return canPushWhere ? records : applySelectParamsToRecords(selectParams, records)
 }
 
 export async function selectRecordFromView(view: PgViewWithSelection, id: string | number) {
@@ -65,13 +80,12 @@ export async function selectRecordFromView(view: PgViewWithSelection, id: string
     return _.first(record)
 }
 
-export async function selectRecord(queryBuilder: RelationalQueryBuilder<any, any>, table: PgTable<any>, id: string | number, withClause: any, columns: any, expandEnums: boolean = false) {
+export async function selectRecord(queryBuilder: RelationalQueryBuilder<any, any>, table: PgTable<any>, id: string | number, withClause: any, columns: any) {
     const record = await (queryBuilder as any).findFirst({
         where: { id },
         with: withClause,
         columns
     })
-    if (expandEnums) expandEnumValues(record, getTableName(table))
     return record
 }
 

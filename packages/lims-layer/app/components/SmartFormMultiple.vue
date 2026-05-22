@@ -30,7 +30,7 @@ const props = defineProps({
         required: true,
     },
     fieldConfigs: {
-        type: Object as () => Record<string, FormFieldConfig>,
+        type: Object as () => FormFieldConfigs,
         required: false,
         default: () => ({}),
     },
@@ -206,7 +206,7 @@ function onFormSubmit({ valid }: FormSubmitEvent<Record<string, unknown>>) {
         @submit="onFormSubmit"
     >
         <template v-for="field in formFields" :key="field.name">
-            <div v-if="combinedRecord[field.name]" class="flex flex-col gap-2 pb-2">
+            <div v-if="combinedRecord[field.name]" class="flex flex-col gap-2 pb-3">
                 <label class="font-semibold" :for="field.id">{{ field.label }}</label>
                 <div class="flex items-center gap-2">
                     <component
@@ -237,6 +237,9 @@ function onFormSubmit({ valid }: FormSubmitEvent<Record<string, unknown>>) {
                 </Message>
                 <Message v-if="serverErrors[field.name]" severity="error">
                     {{ serverErrors[field.name] }}
+                </Message>
+                <Message v-if="field.helpText && !(field.component !== smartFormComponents.SmartFormInputArray ? $form[field.name]?.invalid : false) && !serverErrors[field.name]" severity="secondary" size="small" variant="simple">
+                    {{ field.helpText }}
                 </Message>
             </div>
         </template>

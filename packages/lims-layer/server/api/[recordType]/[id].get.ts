@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
         if (queryBuilder) {
             const table = _.get(queryBuilder, 'table')
             // ignoring any order, limit, or offset params
-            selectedRecord = await selectRecord(queryBuilder, table, id, selectParams.with, selectParams.columns, queryParams.expandEnums == 'true' ? true : false)
+            selectedRecord = await selectRecord(queryBuilder, table, id, selectParams.with, selectParams.columns)
         } else {
             // if the recordType is not found in the queryBuilder, then assume it's a view
             const view = _.get(schema, _.camelCase(recordType))

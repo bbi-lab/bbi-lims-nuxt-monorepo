@@ -23,7 +23,7 @@ const props = defineProps({
     required: true,
   },
   fieldConfigs: {
-    type: Object as () => Record<string, FormFieldConfig>,
+    type: Object as () => FormFieldConfigs,
     required: false,
     default: () => ({}),
   },
@@ -67,7 +67,6 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
     if (valid) {
         const filtered = _.omit(values, [...readonlyFields.value])
         emit('submitSuccess', filtered)
-        console.log('Submitted values:', filtered)
     }
 }
 </script>
@@ -82,7 +81,7 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
         @submit="onFormSubmit"
         >
         <template v-for="field in formFields" :key="field.name">
-            <div class="flex flex-col gap-2 pb-2">
+            <div class="flex flex-col gap-2 pb-3">
                 <label class="font-semibold" :for="field.id">{{ field.label }}</label>
                 <div class="flex items-center gap-2">
                     <component
@@ -98,9 +97,12 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
                 <Message v-if="serverErrors[field.name]" severity="error">
                     {{ serverErrors[field.name] }}
                 </Message>
+                <Message v-if="field.helpText && !(field.component !== smartFormComponents.SmartFormInputArray ? $form[field.name]?.invalid : false) && !serverErrors[field.name]" severity="secondary" size="small" variant="simple">
+                    {{ field.helpText }}
+                </Message>
             </div>
         </template>
-        <div class="flex gap-2">
+        <div class="flex gap-2 pb-8">
             <slot name="form-buttons" />
             <Button v-if="!readOnly" type="submit" label="Submit" :disabled="!$form.valid" />
         </div>
@@ -118,3 +120,10 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
         </div>
     </Form>
 </template>
+<style scoped>
+/* Add any component-specific styles here */
+textarea {
+    width: 100%;
+    min-height: 8rem;
+}
+</style>

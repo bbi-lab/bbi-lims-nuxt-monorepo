@@ -14,7 +14,7 @@ const props = defineProps({
         required: true
     },
     fieldConfigs: {
-        type: Object as () => Record<string, FormFieldConfig>,
+        type: Object as () => FormFieldConfigs,
         required: false,
         default: () => ({}),
     },
@@ -37,7 +37,6 @@ provide('$pcForm', null)
 watch(
     () => props.name,
     (name) => {
-        console.log('Registering field with form:', $pcForm)
         if ($pcForm && name) {
             formField.value = $pcForm.register(name, {
                 name,

@@ -1,5 +1,6 @@
 export interface FormFieldConfig {
     label?: string
+    helpText?: string
     inputType?: string
     defaultValue?: string | number | boolean | any[]
 
@@ -11,7 +12,7 @@ export interface FormFieldConfig {
     inputArray?: {
         canAdd?: boolean
         canDelete?: boolean
-        fieldConfigs?: Record<string, FormFieldConfig>
+        fieldConfigs?: FormFieldConfigs
     }
 
     // autoCompleter configuration
@@ -49,3 +50,5 @@ export interface FormFieldConfig {
         inputClass?: string
     }
 }
+
+export type FormFieldConfigs = { [key: string]: FormFieldConfig }

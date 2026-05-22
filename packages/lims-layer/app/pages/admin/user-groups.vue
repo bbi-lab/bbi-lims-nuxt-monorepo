@@ -3,7 +3,7 @@ import { schemas } from '../../../shared/db/zod/zodSchemas'
 
 const crudTable = useCrudTable()
 
-const columnDefs = {
+const columnDefs: ColumnDefinitions = {
     name: { header: 'Name', index: 0 },
 }
 

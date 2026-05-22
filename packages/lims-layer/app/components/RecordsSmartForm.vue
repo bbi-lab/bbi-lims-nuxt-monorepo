@@ -15,7 +15,7 @@ const props = defineProps({
         required: true,
     },
     fieldConfigs: {
-        type: Object as () => Record<string, FormFieldConfig>,
+        type: Object as () => FormFieldConfigs,
         required: false,
         default: () => ({}),
     },
@@ -225,7 +225,7 @@ onMounted(() => {
 <template>
     <ConfirmDialog />
     <ProgressSpinner v-if="loading" />
-    <div v-else class="flex flex-col gap-4 m-4">
+    <div v-else class="flex flex-col gap-4 m-4 h-full overflow-y-auto">
         <SmartFormMultiple
             v-if="isMultiEdit"
             :zodSchema="zodSchema"

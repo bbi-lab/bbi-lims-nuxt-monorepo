@@ -17,6 +17,7 @@ export default defineNuxtConfig({
         'drizzle-orm/pg-core',
         'drizzle-orm',
         'drizzle-orm/sql',
+        'drizzle-orm/zod',
         'lodash', // CJS
         'moment',
         'papaparse', // CJS
