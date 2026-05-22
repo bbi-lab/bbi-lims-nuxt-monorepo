@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
             ? jsonLogicToSql(selectParams.where, (name) => (table as any)[name])
             : undefined
 
-        if (selectParams.where && sqlFilter === null) {
+        if (sqlFilter === null) {
             throw new Error(`Filter expression not supported for count queries on ${recordType}`)
         }
 
