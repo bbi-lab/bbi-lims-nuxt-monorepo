@@ -1,0 +1,18 @@
+# Large root-level directories not needed in the build context
+.git
+node_modules
+
+# Packages not copied by this Dockerfile
+packages/demo-app
+packages/lims-app
+
+# Build and dev artifacts within copied packages
+**/node_modules
+**/.nuxt
+**/.output
+
+# Secrets — use runtime env injection instead
+**/.env
+**/.env.*
+!**/.env.example
+
