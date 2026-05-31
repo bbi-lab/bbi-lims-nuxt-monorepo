@@ -17,7 +17,6 @@ export default defineNuxtConfig({
         'drizzle-orm/sql',
         'drizzle-orm/zod',
         'lodash', // CJS
-        'moment',
         'papaparse', // CJS
         'uuid',
         'xlsx',
