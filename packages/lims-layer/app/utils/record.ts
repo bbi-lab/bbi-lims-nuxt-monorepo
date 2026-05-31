@@ -4,8 +4,6 @@ import type { TableNames } from '../../shared/types/drizzle'
 // Cast to bypass TypeScript's route-inference on dynamic baseUrl strings
 const _fetch = $fetch as any
 
-const { showLoginModal } = useLayout()
-
 export const RecordService = {
     async getRecord(baseUrl: string, id: string, withClause: Object | undefined) {
         const fetchOptions = withClause ? {query: {with: withClause}} : undefined
@@ -14,7 +12,7 @@ export const RecordService = {
             return record
         } catch (error: any) {
             if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                showLoginModal()
+                useLayout().showLoginModal()
             } else {
                 throw error
             }
@@ -42,7 +40,7 @@ export const RecordService = {
             return records
         } catch (error: any) {
             if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                showLoginModal()
+                useLayout().showLoginModal()
             } else {
                 throw error
             }
@@ -62,7 +60,7 @@ export const RecordService = {
             }
         } catch (error: any) {
             if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                showLoginModal()
+                useLayout().showLoginModal()
             } else {
                 throw error
             }
@@ -82,7 +80,7 @@ export const RecordService = {
             }
         } catch (error: any) {
             if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                showLoginModal()
+                useLayout().showLoginModal()
             } else {
                 throw error
             }
@@ -96,7 +94,7 @@ export const RecordService = {
             return _.get(newRecords, 0)
         } catch (error: any) {
             if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                showLoginModal()
+                useLayout().showLoginModal()
             } else {
                 throw error
             }
@@ -110,7 +108,7 @@ export const RecordService = {
             return newRecords
         } catch (error: any) {
             if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                showLoginModal()
+                useLayout().showLoginModal()
             } else {
                 throw error
             }
@@ -123,7 +121,7 @@ export const RecordService = {
             return deletedRecord
         } catch (error: any) {
             if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                showLoginModal()
+                useLayout().showLoginModal()
             } else {
                 throw error
             }
@@ -140,7 +138,7 @@ export const RecordService = {
             return deletedRecords
         } catch (error: any) {
             if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                showLoginModal()
+                useLayout().showLoginModal()
             } else {
                 throw error
             }
