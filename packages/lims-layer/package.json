@@ -10,7 +10,7 @@
     "generate": "nuxt generate .playground",
     "preview": "nuxt preview .playground",
     "lint": "eslint .",
-    "typecheck": "nuxi typecheck .playground",
+    "typecheck": "nuxi typecheck",
     "test": "vitest run",
     "test:watch": "vitest"
   },
