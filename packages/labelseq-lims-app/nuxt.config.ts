@@ -40,5 +40,6 @@ export default defineNuxtConfig({
     smtpUser: '',
     smtpPass: '',
     smtpFrom: '',
+    wellableTableNames: '',
   },
 })
