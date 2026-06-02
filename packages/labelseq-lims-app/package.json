@@ -20,6 +20,7 @@
     "@types/lodash": "^4.17.23",
     "drizzle-kit": "1.0.0-rc.1",
     "drizzle-orm": "1.0.0-rc.1",
-    "nuxt": "^4.4.2"
+    "nuxt": "^4.4.2",
+    "vue-tsc": "^3.2.7"
   }
 }
