@@ -18,8 +18,8 @@ export default defineEventHandler<{ body: LoginUser }>(async (event) => {
         const existingUser = values.email ? await getUserByEmail(values.email) : null
         if (!existingUser) {
             throw createError({
-                statusCode: 404,
-                statusMessage: 'USER NOT FOUND'
+                statusCode: 401,
+                statusMessage: 'INVALID CREDENTIALS'
             })
         } else if (!existingUser.isVerified) {
             throw createError({
@@ -35,8 +35,8 @@ export default defineEventHandler<{ body: LoginUser }>(async (event) => {
         )
         if (!matchPassword) {
             throw createError({
-                statusCode: 400,
-                statusMessage: 'INVALID PASSWORD'
+                statusCode: 401,
+                statusMessage: 'INVALID CREDENTIALS'
             })
         }
         const tokens = generateTokens(existingUser.id)
