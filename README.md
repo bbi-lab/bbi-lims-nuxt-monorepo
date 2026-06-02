@@ -54,5 +54,5 @@ Copy `.env.example` to `.env.docker` and change the database URL's host from `lo
 
 Start the docker container:
 ```
-docker run -p 3000:3000 --env-file /packages/labelseq-lims/.env.docker labelseq-lims
+docker run -p 3000:3000 --env-file packages/labelseq-lims-app/.env.docker labelseq-lims
 ```

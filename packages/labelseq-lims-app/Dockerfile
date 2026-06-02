@@ -12,7 +12,6 @@ FROM base AS build
 COPY --link package.json /src/
 COPY --link pnpm-lock.yaml /src/
 COPY --link pnpm-workspace.yaml /src/
-COPY --link pnpm.yaml /src/
 
 # Copy package.json files first so pnpm can resolve the workspace before installing
 COPY --link packages/labelseq-lims-app/package.json /src/packages/labelseq-lims-app/
