@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import type { ValueFn } from "d3"
 import _ from "lodash"
-import type { PlateType, PlateWithPlateDiagramWells } from "../types/plates"
+import type { PlateType, PlateWithPlateDiagramWells, PlateDiagram, CoordinatePair, PlateDiagramWell } from "../types/plates"
 
 function hexToRgb(hex: string): {r: number, g: number, b: number} | null {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);

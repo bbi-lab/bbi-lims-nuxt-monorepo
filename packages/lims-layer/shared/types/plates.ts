@@ -1,3 +1,4 @@
+/// <reference lib="dom" />
 import type { plates } from '../db/schema/plate'
 import type { schemas } from '../db/zod/zodSchemas'
 import type { InferSelectModel } from 'drizzle-orm'

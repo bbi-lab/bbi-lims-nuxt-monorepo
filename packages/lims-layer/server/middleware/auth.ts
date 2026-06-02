@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
                 statusMessage: 'UNAUTHORIZED'
             })
         }
-        accessToken = headers.authorization.split(' ')[1]
+        accessToken = headers.authorization.split(' ')[1] ?? null
     } else {
         // to support sessions stored in cookies (via nuxt-auth-utils)
         // getUserSession returns {} (empty object) when no session — not null

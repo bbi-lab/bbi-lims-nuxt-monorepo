@@ -53,7 +53,7 @@ export default defineEventHandler((event) => {
 
   if (entry.count > limit.max) {
     const retryAfterSecs = Math.ceil((entry.resetAt - now) / 1000)
-    setResponseHeader(event, 'Retry-After', String(retryAfterSecs))
+    setResponseHeader(event, 'Retry-After', retryAfterSecs)
     throw createError({
       statusCode: 429,
       statusMessage: 'TOO MANY REQUESTS',
