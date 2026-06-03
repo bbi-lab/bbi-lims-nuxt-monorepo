@@ -10,11 +10,10 @@ import { wellables, wellContents, wellContentSources, wells } from 'lims-layer/s
 // labelseq-lims-app tables
 import { projects } from '../../../shared/db/schema/project'
 import { superblocks, tiles, tileVariants } from '../../../shared/db/schema/tiles'
-import { retrieverPrimers } from '../../../shared/db/schema/primers'
+import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '../../../shared/db/schema/primers'
 import { restrictionEnzymes } from '../../../shared/db/schema/reagents'
 import { refseqTranscripts } from '../../../shared/db/schema/transcripts'
 import { viewTilesWithSequences, viewTileVariantsWithSequences } from '~~/shared/db/schema/views'
-import { view } from 'drizzle-orm/sqlite-core/view'
 
 export const relations = defineRelations({
   // lims-layer tables
@@ -36,6 +35,8 @@ export const relations = defineRelations({
   tiles,
   tileVariants,
   retrieverPrimers,
+  labelseqIndexPrimers,
+  nexteraIndexPrimers,
   restrictionEnzymes,
   refseqTranscripts,
 
@@ -90,6 +91,14 @@ export const relations = defineRelations({
   },
   wellables: {
     wellContents: r.many.wellContents(),
+    labelseqIndexPrimers: r.one.labelseqIndexPrimers({
+      from: r.wellables.id,
+      to: r.labelseqIndexPrimers.id,
+    }),
+    nexteraIndexPrimers: r.one.nexteraIndexPrimers({
+      from: r.wellables.id,
+      to: r.nexteraIndexPrimers.id,
+    }),
   },
   wellContentSources: {
     wellContent: r.one.wellContents({

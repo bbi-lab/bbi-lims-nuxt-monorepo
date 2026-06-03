@@ -3,7 +3,7 @@ import { createSelectSchema } from 'drizzle-orm/zod'
 import { z } from 'zod'
 import { projects } from '../schema/project'
 import { restrictionEnzymes } from '../schema/reagents'
-import { retrieverPrimers } from '../schema/primers'
+import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '../schema/primers'
 import { superblocks, tiles, tileVariants } from '../schema/tiles'
 import { refseqTranscripts } from '../schema/transcripts'
 
@@ -23,6 +23,14 @@ const updateRestrictionEnzymeSchema = insertRestrictionEnzymeSchema
 const selectRetrieverPrimerSchema = createSelectSchema(retrieverPrimers)
 const insertRetrieverPrimerSchema = selectRetrieverPrimerSchema.omit({ id: true, seqRevComp: true }).partial()
 const updateRetrieverPrimerSchema = insertRetrieverPrimerSchema
+
+const selectLabelseqIndexPrimerSchema = createSelectSchema(labelseqIndexPrimers)
+const insertLabelseqIndexPrimerSchema = selectLabelseqIndexPrimerSchema.omit({ id: true, indexSeqRevComp: true }).partial()
+const updateLabelseqIndexPrimerSchema = insertLabelseqIndexPrimerSchema
+
+const selectNexteraIndexPrimerSchema = createSelectSchema(nexteraIndexPrimers)
+const insertNexteraIndexPrimerSchema = selectNexteraIndexPrimerSchema.omit({ id: true, indexSeqRevComp: true }).partial()
+const updateNexteraIndexPrimerSchema = insertNexteraIndexPrimerSchema
 
 const selectSuperblocksSchema = createSelectSchema(superblocks)
 const insertSuperblocksSchema = selectSuperblocksSchema.omit({ id: true }).partial()
@@ -73,6 +81,16 @@ export const schemas = freezeSchemas({
         select: selectRetrieverPrimerSchema,
         insert: insertRetrieverPrimerSchema,
         update: updateRetrieverPrimerSchema,
+    },
+    labelseqIndexPrimers: {
+        select: selectLabelseqIndexPrimerSchema,
+        insert: insertLabelseqIndexPrimerSchema,
+        update: updateLabelseqIndexPrimerSchema,
+    },
+    nexteraIndexPrimers: {
+        select: selectNexteraIndexPrimerSchema,
+        insert: insertNexteraIndexPrimerSchema,
+        update: updateNexteraIndexPrimerSchema,
     },
     superblocks: {
         select: selectSuperblocksSchema,
