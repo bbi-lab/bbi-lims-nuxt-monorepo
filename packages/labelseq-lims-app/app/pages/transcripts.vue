@@ -19,8 +19,9 @@ const columnDefs: ColumnDefinitions = {
     transcriptId: { header: 'RefSeq Transcript ID', index: 0 },
     geneId: { display: false },
     gene: { header: 'Gene', index: 1, path: 'gene.symbol' },
-    seq: { header: 'Sequence', index: 2, bodyClass: 'max-w-64 truncate' },
-    length: { header: 'Length', index: 3, format: (row) => row.seq.length, path: 'length.displayValue' },
+    geneType: { index: 2 },
+    seq: { header: 'Sequence', index: 3, bodyClass: 'max-w-64 truncate' },
+    length: { header: 'Length', index: 4, format: (row) => row.seq.length, path: 'length.displayValue' },
 }
 
 const fieldConfigs: FormFieldConfigs = {

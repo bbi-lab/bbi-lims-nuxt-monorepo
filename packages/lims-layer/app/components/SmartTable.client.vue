@@ -341,7 +341,7 @@ function updateColOrder() {
 }
 
 function saveSettings() {
-    if (visibleColumns.value === visibleColumnsOptions.value) {
+    if (_.isEqual(visibleColumns.value, visibleColumnsOptions.value)) {
         clientSettings.value = {}
         localStorage.removeItem(localStorageKey.value)
     } else {
@@ -500,9 +500,9 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                     <template #end>
                         <SplitButton v-if="props.canExport" label="Export" class="mr-2" :model="exportOptions" severity="secondary" @click="exportXLSX"></SplitButton>
                         <template v-if="!props.hideSettings">
-                            <Button icon="pi pi-cog" :disabled="showSettings" class="mr-2" :severity="_.isEmpty(clientSettings) ? 'secondary' : 'info'" variant="text" @click="showSettings = !showSettings" />
-                            <IftaLabel :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`">
-                                <MultiSelect inputId="visibileColumnsInput" v-model="visibleColumns" :options="visibleColumnsOptions" optionLabel="name" :maxSelectedLabels="0" placeholder="select" />
+                            <Button label="Columns" class="mr-2" :icon="`pi ${_.isEmpty(clientSettings) ? 'pi-eye' : 'pi-eye-slash'}`" :severity="`${_.isEmpty(clientSettings) ? 'secondary' : 'warn'}`" @click="showSettings = !showSettings" />
+                            <IftaLabel :class="`min-w-44 mr-2 ${showSettings ? 'visible' : 'invisible'}`">
+                                <MultiSelect class="w-full" inputId="visibileColumnsInput" v-model="visibleColumns" :options="visibleColumnsOptions" optionLabel="name" :maxSelectedLabels="0" placeholder="select" />
                                 <label for="visibileColumnsInput" v-if="showSettings">Columns</label>
                             </IftaLabel>
                             <Button icon="pi pi-undo" :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`" severity="secondary" v-tooltip="{value: 'Clear settings'}" @click="clearSettings" />
