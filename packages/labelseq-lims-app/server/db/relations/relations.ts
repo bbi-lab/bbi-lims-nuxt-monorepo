@@ -91,6 +91,10 @@ export const relations = defineRelations({
   },
   wellables: {
     wellContents: r.many.wellContents(),
+    retrieverPrimers: r.one.retrieverPrimers({
+      from: r.wellables.id,
+      to: r.retrieverPrimers.id,
+    }),
     labelseqIndexPrimers: r.one.labelseqIndexPrimers({
       from: r.wellables.id,
       to: r.labelseqIndexPrimers.id,
