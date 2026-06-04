@@ -36,6 +36,7 @@ export interface PlateDiagram {
 
     render: (container: HTMLElement) => PlateDiagram
     refresh: () => PlateDiagram
+    destroy: () => void
     resize: () => PlateDiagram
 
     wellRangeSelected: Accessor<((wells: PlateDiagramWell[]) => void) | null, PlateDiagram>

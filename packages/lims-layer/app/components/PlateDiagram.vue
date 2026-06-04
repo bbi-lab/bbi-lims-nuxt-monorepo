@@ -103,6 +103,10 @@ onMounted(async() => {
     renderOrRefreshChart()
 })
 
+onUnmounted(async() => {
+    plateDiagram?.destroy()
+})
+
 const updateWells = (newValues: PlateDiagramWell[], oldValues: PlateDiagramWell[]) => {
     if (plateDiagram) {
         plateDiagram.updateWellContents(newValues)
