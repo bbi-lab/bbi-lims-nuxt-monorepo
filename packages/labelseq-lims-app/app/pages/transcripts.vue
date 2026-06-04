@@ -20,7 +20,7 @@ const columnDefs: ColumnDefinitions = {
     geneId: { display: false },
     gene: { header: 'Gene', index: 1, path: 'gene.symbol' },
     geneType: { index: 2 },
-    seq: { header: 'Sequence', index: 3, bodyClass: 'max-w-64 truncate' },
+    seq: { header: 'Sequence', index: 3, bodyClass: 'max-w-64', truncatable: true },
     length: { header: 'Length', index: 4, format: (row) => row.seq.length, path: 'length.displayValue' },
 }
 

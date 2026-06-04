@@ -26,7 +26,7 @@ const columnDefs: ColumnDefinitions = {
     ntPosition: { header: 'NT Position', index: 4 },
     ntRef: { header: 'NT Ref', index: 5 },
     ntAlt: { header: 'NT Alt', index: 6 },
-    fullSequence: { header: 'Full sequence', index: 7, bodyClass: 'max-w-64 truncate' },
+    fullSequence: { header: 'Full sequence', index: 7, bodyClass: 'max-w-64', truncatable: true },
 }
 
 const fieldConfigs: FormFieldConfigs = {

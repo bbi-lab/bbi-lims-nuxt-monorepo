@@ -26,7 +26,7 @@ const columnDefs: ColumnDefinitions = {
     refseqTranscript: { header: 'RefSeq transcript ID', index: 4, path: 'refseqTranscript.transcriptId' },
     start: { index: 5 },
     end: { index: 6 },
-    seq: { header: 'Sequence (optimized)', index: 7, bodyClass: 'max-w-64 truncate' },
+    seq: { header: 'Sequence (optimized)', index: 7, bodyClass: 'max-w-64', truncatable: true },
     length: { header: 'Length', index: 8, format: (row) => row.seq.length, path: 'length.displayValue' },
 }
 

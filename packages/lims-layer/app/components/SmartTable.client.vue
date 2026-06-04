@@ -261,6 +261,28 @@ const clearRouteQueryParams = async () => {
     loadTableData()
 }
 
+// ── Truncatable cell expansion ─────────────────────────────────────────────
+const expandedCells = ref<Set<string>>(new Set())
+
+function toggleExpandedCell(rowId: string, colKey: string) {
+    const key = `${rowId}-${colKey}`
+    const next = new Set(expandedCells.value)
+    if (next.has(key)) next.delete(key)
+    else next.add(key)
+    expandedCells.value = next
+}
+
+function getCellValue(columnDef: SortedColumnDefinition, data: any): string {
+    if (columnDef.path) {
+        const val = _.get(data, columnDef.path)
+        if (columnDef.type === 'array' || Array.isArray(val)) {
+            return _.join(_.filter(val, v => v === null || typeof v !== 'object'), ', ')
+        }
+        return val
+    }
+    return data[columnDef.key]
+}
+
 function toggleColumnFilters() {
     displayColumnFilters.value = !displayColumnFilters.value
 }
@@ -593,10 +615,20 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                     <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
                         <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
                     </template>
-                    <template v-if="columnDef.path" #body="slotProps">
-                        {{ (columnDef.type == 'array' || Array.isArray(_.get(slotProps.data, columnDef.path)))
-                            ? _.join(_.filter(_.get(slotProps.data, columnDef.path), v => v === null || typeof v !== 'object'), ', ')
-                            : _.get(slotProps.data, columnDef.path) }}
+                    <template v-if="columnDef.path || columnDef.truncatable" #body="slotProps">
+                        <template v-if="columnDef.truncatable">
+                            <span v-if="expandedCells.has(`${slotProps.data.id}-${columnDef.key}`)" class="wrap-anywhere">
+                                {{ getCellValue(columnDef, slotProps.data) }}<a class="ml-1 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[less]</a>
+                            </span>
+                            <span v-else class="flex items-baseline gap-1 min-w-0">
+                                <span class="truncate min-w-0 flex-1">{{ getCellValue(columnDef, slotProps.data) }}</span><a class="flex-shrink-0 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[more]</a>
+                            </span>
+                        </template>
+                        <template v-else-if="columnDef.path">
+                            {{ (columnDef.type == 'array' || Array.isArray(_.get(slotProps.data, columnDef.path)))
+                                ? _.join(_.filter(_.get(slotProps.data, columnDef.path), v => v === null || typeof v !== 'object'), ', ')
+                                : _.get(slotProps.data, columnDef.path) }}
+                        </template>
                     </template>
                 </Column>
             </template>
