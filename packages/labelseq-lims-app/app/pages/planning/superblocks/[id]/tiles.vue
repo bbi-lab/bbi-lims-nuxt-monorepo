@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { OligoItem } from '~~/app/utils/oligo-items'
 
 const route = useRoute()
 const router = useRouter()

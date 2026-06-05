@@ -2,8 +2,7 @@
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
-import { schemas } from '~~/shared/db/zod/zodSchemas'
-import type { OligoItem } from '~~/app/utils/oligo-items'
+import { schemas } from '#shared/db/zod/zodSchemas'
 
 import { Icon } from '#components'
 const CompareHorizontalIcon = h(Icon, { name: 'mdi:compare-horizontal' })

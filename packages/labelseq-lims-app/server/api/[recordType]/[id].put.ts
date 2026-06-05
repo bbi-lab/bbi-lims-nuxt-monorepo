@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { useAppDrizzle } from '../../utils/db'
 import { schemas as baseSchemas } from 'lims-layer/shared/db/zod/zodSchemas'
 import { schemas as appSchemas } from '#shared/db/zod/zodSchemas'
 import type { ZodObject } from 'zod'

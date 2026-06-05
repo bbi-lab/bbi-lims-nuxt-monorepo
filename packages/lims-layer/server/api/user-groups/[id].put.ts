@@ -1,4 +1,3 @@
-import { updateUserGroup } from '../../utils/user'
 import { schemas } from '../../../shared/db/zod/zodSchemas'
 
 import _ from 'lodash'

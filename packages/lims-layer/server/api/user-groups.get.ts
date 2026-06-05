@@ -1,4 +1,3 @@
-import { getUserGroups } from '../utils/user'
 
 export default defineEventHandler(async (event) => {
     const queryParams = getQuery(event) as QueryParams

@@ -194,7 +194,7 @@ export function makePlateDiagram(plateType: PlateType, sizeX: number = 12, sizeY
     }
 
     const mouseleave = function(this: SVGRectElement, event: MouseEvent, w: PlateDiagramWell) {
-        tooltip.style("opacity", 0)
+        tooltip?.style("opacity", 0)
         updateWellOutlines()
     }
 

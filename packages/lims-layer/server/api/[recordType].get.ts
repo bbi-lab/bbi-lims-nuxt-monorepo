@@ -1,7 +1,4 @@
-import { selectRecords, selectRecordsFromView } from '../utils/record'
 import _ from 'lodash'
-import { type QueryParams, type SelectParams, queryToSelectParams } from '../utils/restApi'
-import { useDrizzle, schema } from '../utils/db'
 
 export default defineEventHandler(async (event) => {
     const { recordType } = event.context.params as {recordType: string}

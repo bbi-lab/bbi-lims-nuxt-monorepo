@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { FilterMatchMode } from '@primevue/core/api'
-import { RecordService } from '../utils/record'
 import Papa from 'papaparse'
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
 import { v4 as uuidv4 } from 'uuid'

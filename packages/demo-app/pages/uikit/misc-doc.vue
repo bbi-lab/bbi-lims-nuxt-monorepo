@@ -1,5 +1,4 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 const value = ref(0);
 let interval = null;

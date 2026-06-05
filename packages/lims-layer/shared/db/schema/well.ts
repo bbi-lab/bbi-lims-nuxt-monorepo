@@ -3,7 +3,6 @@ import { pgTable, uuid, smallint, varchar, unique, check, timestamp} from 'drizz
 import { plates } from './plate'
 import { users } from '../../../server/db/schema/user'
 import _ from 'lodash'
-import { wellableTableNames } from '../../utils/constants'
 
 export const wells = pgTable('wells', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),

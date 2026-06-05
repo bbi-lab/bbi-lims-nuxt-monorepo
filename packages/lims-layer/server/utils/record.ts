@@ -3,7 +3,6 @@ import { type SelectParams, applySelectParamsToRecords, jsonLogicToSql, jsonLogi
 import type { RelationalQueryBuilder } from 'drizzle-orm/pg-core/query-builders/query'
 import type { PgViewWithSelection, PgTable } from 'drizzle-orm/pg-core'
 import { eq, inArray, asc, desc, type ColumnType, type ColumnBaseConfig, Column } from 'drizzle-orm'
-import { useDrizzle } from '../utils/db'
 
 export interface RecordValues {[key: string]: string | number | boolean | null | undefined }
 

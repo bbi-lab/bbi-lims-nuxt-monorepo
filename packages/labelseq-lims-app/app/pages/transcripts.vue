@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { v4 as uuidv4 } from 'uuid'
-import { schemas } from '~~/shared/db/zod/zodSchemas'
+import { schemas } from '#shared/db/zod/zodSchemas'
 
 const route = useRoute()
 const crudTable = useCrudTable()

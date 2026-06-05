@@ -8,12 +8,12 @@ import { plateTypes } from 'lims-layer/shared/db/schema/plateTypes'
 import { wellables, wellContents, wellContentSources, wells } from 'lims-layer/shared/db/schema/well'
 
 // labelseq-lims-app tables
-import { projects } from '../../../shared/db/schema/project'
-import { superblocks, tiles, tileVariants } from '../../../shared/db/schema/tiles'
-import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '../../../shared/db/schema/primers'
-import { restrictionEnzymes } from '../../../shared/db/schema/reagents'
-import { refseqTranscripts } from '../../../shared/db/schema/transcripts'
-import { viewTilesWithSequences, viewTileVariantsWithSequences } from '~~/shared/db/schema/views'
+import { projects } from '#shared/db/schema/project'
+import { superblocks, tiles, tileVariants } from '#shared/db/schema/tiles'
+import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '#shared/db/schema/primers'
+import { restrictionEnzymes } from '#shared/db/schema/reagents'
+import { refseqTranscripts } from '#shared/db/schema/transcripts'
+import { viewTilesWithSequences, viewTileVariantsWithSequences } from '#shared/db/schema/views'
 
 export const relations = defineRelations({
   // lims-layer tables

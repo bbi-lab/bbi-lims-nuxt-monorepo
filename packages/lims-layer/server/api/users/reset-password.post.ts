@@ -1,6 +1,4 @@
-import { getValidPasswordResetToken, deletePasswordResetToken, changePassword } from '../../utils/user'
 import { schemas } from '../../../shared/db/zod/zodSchemas'
-import { isValidPassword } from '../../utils/auth'
 
 export default defineEventHandler<{ body: ResetPassword }>(async (event) => {
   try {

@@ -1,4 +1,3 @@
-import { deleteRecord } from '../../utils/record'
 import { eq } from 'drizzle-orm'
 import { plates } from '../../../shared/db/schema/plate'
 import { wellContents, wells } from '../../../shared/db/schema/well'

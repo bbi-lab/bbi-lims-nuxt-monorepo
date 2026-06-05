@@ -1,4 +1,3 @@
-import { updateRecord } from '../../utils/record'
 import { plates } from '../../../shared/db/schema/plate'
 import { schemas } from '../../../shared/db/zod/zodSchemas'
 import { wells } from '../../../shared/db/schema/well'

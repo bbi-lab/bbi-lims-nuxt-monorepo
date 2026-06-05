@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue';
 
 const menu = ref(null);
 const contextMenu = ref(null);

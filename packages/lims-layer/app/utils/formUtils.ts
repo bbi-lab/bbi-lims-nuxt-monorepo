@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import { z } from 'zod'
-import type { Component, Ref } from 'vue'
 import type { $ZodTypeDef } from "zod/v4/core"
 
 export const formatFieldLabel =  (val: String) => {

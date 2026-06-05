@@ -1,11 +1,8 @@
-import { updateRecord } from '../../utils/record'
 import _ from 'lodash'
 import { schemas } from '../../../shared/db/zod/zodSchemas'
 import type { ZodObject } from 'zod'
 // import { updateTargets as updateTranfectExperimentTargets} from '~/server/services/transfect-experiment-services'
-import { parsePutPostError } from '../../utils/restApi'
 // import { updateHomologyArmPrimerTargets } from '~/server/utils/sge'
-import type { RecordValues } from '../../utils/record'
 
 export default defineEventHandler(async (event) => {
     const { recordType, id } = event.context.params as {recordType: string, id: string}
