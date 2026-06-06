@@ -1,5 +1,3 @@
-import { getUserByEmail, createPasswordResetToken } from '../../utils/user'
-import { sendPasswordResetEmail } from '../../utils/email'
 import { schemas } from '../../../shared/db/zod/zodSchemas'
 
 export default defineEventHandler<{ body: RequestPasswordReset }>(async (event) => {

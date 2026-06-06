@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { deleteUser } from '../../utils/user'
 
 export default defineEventHandler(async (event) => {
     const { id } = event.context.params as {id: string}

@@ -1,4 +1,3 @@
-import { useDrizzle } from '../../utils/db'
 
 export default defineEventHandler(async (event) => {
     const { value } = event.context.params as { value: string }

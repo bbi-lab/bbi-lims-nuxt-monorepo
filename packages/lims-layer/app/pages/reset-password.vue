@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { resetPassword } from '../utils/auth'
 
 definePageMeta({
   layout: 'empty',

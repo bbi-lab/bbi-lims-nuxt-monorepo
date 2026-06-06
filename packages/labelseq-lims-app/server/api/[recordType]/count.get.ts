@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import { count } from 'drizzle-orm'
 import { type QueryParams, queryToSelectParams, type SelectParams, jsonLogicToSql } from 'lims-layer/server/utils/restApi'
-import { useAppDrizzle, appSchema } from '../../utils/db'
 
 export default defineEventHandler(async (event) => {
     const { recordType } = event.context.params as { recordType: string }

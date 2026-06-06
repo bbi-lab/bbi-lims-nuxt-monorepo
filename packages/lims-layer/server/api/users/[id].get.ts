@@ -1,4 +1,3 @@
-import { getUserById } from '../../utils/user'
 
 export default defineEventHandler(async (event) => {
     const { id } = event.context.params as {id: string}

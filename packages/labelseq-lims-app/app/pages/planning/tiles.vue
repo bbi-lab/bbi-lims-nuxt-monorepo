@@ -2,8 +2,7 @@
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
-import { schemas } from '~~/shared/db/zod/zodSchemas'
-import type { OligoItem } from '~~/app/utils/oligo-items'
+import { schemas } from '#shared/db/zod/zodSchemas'
 
 import { Icon } from '#components'
 const CompareHorizontalIcon = h(Icon, { name: 'mdi:compare-horizontal' })
@@ -48,7 +47,7 @@ const columnDefs: ColumnDefinitions = {
     retrieverPrimerReverseId: { display: false },
     retrieverPrimerForward: { header: 'Forward Primer', index: 6, path: 'retrieverPrimerForward.name' },
     retrieverPrimerReverse: { header: 'Reverse Primer', index: 7, path: 'retrieverPrimerReverse.name' },
-    fullSequence: { header: 'Full sequence', index: 8, bodyClass: 'max-w-64 truncate' },
+    fullSequence: { header: 'Full sequence', index: 8, bodyClass: 'max-w-64', truncatable: true },
     fullSequenceLength: {
         header: 'Full sequence length',
         index: 9,

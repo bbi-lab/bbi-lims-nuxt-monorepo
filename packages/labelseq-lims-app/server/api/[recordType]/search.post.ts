@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { useAppDrizzle, appSchema } from '../../utils/db'
 
 export default defineEventHandler(async (event) => {
     const { recordType } = event.context.params as { recordType: string }

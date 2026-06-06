@@ -1,4 +1,3 @@
-import { selectUserGroup } from '../../utils/user'
 import _ from 'lodash'
 
 export default defineEventHandler(async (event) => {

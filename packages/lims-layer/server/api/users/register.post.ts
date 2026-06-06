@@ -1,6 +1,4 @@
-import { addUser, getUserByEmail } from '../../utils/user'
 import { schemas } from '../../../shared/db/zod/zodSchemas'
-import {isValidPassword} from '../../utils/auth'
 
 export default defineEventHandler<{ body: NewUser }>(async (event) => {
     try {

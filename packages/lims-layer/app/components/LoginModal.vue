@@ -1,5 +1,4 @@
 <script setup>
-import { loginUser } from '../utils/auth'
 const { fetch, loggedIn, session } = useUserSession()
 
 const router = useRouter()

@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { parseDeleteError } from '../../utils/restApi'
 import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {

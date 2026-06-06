@@ -1,10 +1,6 @@
 import _ from 'lodash'
-// import { insertRecords, type RecordValues } from 'lims-layer/server/utils/record'
 import { schemas } from '#shared/db/zod/zodSchemas'
 import type { ZodObject } from 'zod'
-import { useAppDrizzle } from '../utils/db'
-// import { parsePutPostError } from 'lims-layer/server/utils/restApi'
-// import { updateHomologyArmPrimerTargets } from '../utils/sge'
 
 export default defineEventHandler(async (event) => {
     const { recordType } = event.context.params as {recordType: string}

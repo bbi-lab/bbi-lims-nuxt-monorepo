@@ -13,6 +13,7 @@ export interface ColumnDefinition {
     exportable?: boolean
     exportValue?: (record: any) => string
     bodyClass?: string
+    truncatable?: boolean
 }
 
 export interface SortedColumnDefinition extends ColumnDefinition {

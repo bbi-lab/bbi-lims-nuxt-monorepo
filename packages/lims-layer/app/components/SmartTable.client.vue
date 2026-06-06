@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { FilterMatchMode } from '@primevue/core/api'
-import { RecordService } from '../utils/record'
 import Papa from 'papaparse'
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
 import { v4 as uuidv4 } from 'uuid'
@@ -261,6 +260,28 @@ const clearRouteQueryParams = async () => {
     loadTableData()
 }
 
+// ── Truncatable cell expansion ─────────────────────────────────────────────
+const expandedCells = ref<Set<string>>(new Set())
+
+function toggleExpandedCell(rowId: string, colKey: string) {
+    const key = `${rowId}-${colKey}`
+    const next = new Set(expandedCells.value)
+    if (next.has(key)) next.delete(key)
+    else next.add(key)
+    expandedCells.value = next
+}
+
+function getCellValue(columnDef: SortedColumnDefinition, data: any): string {
+    if (columnDef.path) {
+        const val = _.get(data, columnDef.path)
+        if (columnDef.type === 'array' || Array.isArray(val)) {
+            return _.join(_.filter(val, v => v === null || typeof v !== 'object'), ', ')
+        }
+        return val
+    }
+    return data[columnDef.key]
+}
+
 function toggleColumnFilters() {
     displayColumnFilters.value = !displayColumnFilters.value
 }
@@ -341,7 +362,7 @@ function updateColOrder() {
 }
 
 function saveSettings() {
-    if (visibleColumns.value === visibleColumnsOptions.value) {
+    if (_.isEqual(visibleColumns.value, visibleColumnsOptions.value)) {
         clientSettings.value = {}
         localStorage.removeItem(localStorageKey.value)
     } else {
@@ -500,9 +521,9 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                     <template #end>
                         <SplitButton v-if="props.canExport" label="Export" class="mr-2" :model="exportOptions" severity="secondary" @click="exportXLSX"></SplitButton>
                         <template v-if="!props.hideSettings">
-                            <Button icon="pi pi-cog" :disabled="showSettings" class="mr-2" :severity="_.isEmpty(clientSettings) ? 'secondary' : 'info'" variant="text" @click="showSettings = !showSettings" />
-                            <IftaLabel :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`">
-                                <MultiSelect inputId="visibileColumnsInput" v-model="visibleColumns" :options="visibleColumnsOptions" optionLabel="name" :maxSelectedLabels="0" placeholder="select" />
+                            <Button label="Columns" class="mr-2" :icon="`pi ${_.isEmpty(clientSettings) ? 'pi-eye' : 'pi-eye-slash'}`" :severity="`${_.isEmpty(clientSettings) ? 'secondary' : 'warn'}`" @click="showSettings = !showSettings" />
+                            <IftaLabel :class="`min-w-44 mr-2 ${showSettings ? 'visible' : 'invisible'}`">
+                                <MultiSelect class="w-full" inputId="visibileColumnsInput" v-model="visibleColumns" :options="visibleColumnsOptions" optionLabel="name" :maxSelectedLabels="0" placeholder="select" />
                                 <label for="visibileColumnsInput" v-if="showSettings">Columns</label>
                             </IftaLabel>
                             <Button icon="pi pi-undo" :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`" severity="secondary" v-tooltip="{value: 'Clear settings'}" @click="clearSettings" />
@@ -593,10 +614,20 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                     <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
                         <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
                     </template>
-                    <template v-if="columnDef.path" #body="slotProps">
-                        {{ (columnDef.type == 'array' || Array.isArray(_.get(slotProps.data, columnDef.path)))
-                            ? _.join(_.filter(_.get(slotProps.data, columnDef.path), v => v === null || typeof v !== 'object'), ', ')
-                            : _.get(slotProps.data, columnDef.path) }}
+                    <template v-if="columnDef.path || columnDef.truncatable" #body="slotProps">
+                        <template v-if="columnDef.truncatable">
+                            <span v-if="expandedCells.has(`${slotProps.data.id}-${columnDef.key}`)" class="wrap-anywhere">
+                                {{ getCellValue(columnDef, slotProps.data) }}<a class="ml-1 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[less]</a>
+                            </span>
+                            <span v-else class="flex items-baseline gap-1 min-w-0">
+                                <span class="truncate min-w-0 flex-1">{{ getCellValue(columnDef, slotProps.data) }}</span><a class="flex-shrink-0 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[more]</a>
+                            </span>
+                        </template>
+                        <template v-else-if="columnDef.path">
+                            {{ (columnDef.type == 'array' || Array.isArray(_.get(slotProps.data, columnDef.path)))
+                                ? _.join(_.filter(_.get(slotProps.data, columnDef.path), v => v === null || typeof v !== 'object'), ', ')
+                                : _.get(slotProps.data, columnDef.path) }}
+                        </template>
                     </template>
                 </Column>
             </template>

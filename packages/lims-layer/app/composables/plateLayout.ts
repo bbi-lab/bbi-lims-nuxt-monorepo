@@ -1,6 +1,5 @@
 import _ from "lodash"
 import { VALID_WELL_COLORS } from "../../shared/lib/plate-diagram"
-import { RecordService } from "../utils/record"
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
 
 type PlateWithWellContents = Plate & {

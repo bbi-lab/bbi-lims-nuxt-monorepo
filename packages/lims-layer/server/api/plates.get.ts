@@ -1,6 +1,3 @@
-import { selectRecords } from '../utils/record'
-import { type QueryParams, type SelectParams, queryToSelectParams } from '../utils/restApi'
-import { useDrizzle } from '../utils/db'
 
 export default defineEventHandler(async (event) => {
     const db = useDrizzle()

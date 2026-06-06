@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { v4 as uuidv4 } from 'uuid'
-import { schemas } from '~~/shared/db/zod/zodSchemas'
-import { Icon } from '#components'
-
-const TilesIcon = h(Icon, { name: 'fluent-mdl2:tiles', class: 'm-1' })
+import { schemas } from '#shared/db/zod/zodSchemas'
 
 const route = useRoute()
 const router = useRouter()
@@ -24,12 +21,13 @@ const columnDefs: ColumnDefinitions = {
     description: { index: 1 },
     projectId: { display: false },
     project: { header: 'Project', index: 2, path: 'project.name' },
+    classification: { index: 3 },
     refseqTranscriptId: { display: false },
-    refseqTranscript: { header: 'RefSeq transcript ID', index: 3, path: 'refseqTranscript.transcriptId' },
-    start: { index: 4 },
-    end: { index: 5 },
-    seq: { header: 'Sequence (optimized)', index: 6, bodyClass: 'max-w-64 truncate' },
-    length: { header: 'Length', index: 7, format: (row) => row.seq.length, path: 'length.displayValue' },
+    refseqTranscript: { header: 'RefSeq transcript ID', index: 4, path: 'refseqTranscript.transcriptId' },
+    start: { index: 5 },
+    end: { index: 6 },
+    seq: { header: 'Sequence (optimized)', index: 7, bodyClass: 'max-w-64', truncatable: true },
+    length: { header: 'Length', index: 8, format: (row) => row.seq.length, path: 'length.displayValue' },
 }
 
 const fieldConfigs: FormFieldConfigs = {

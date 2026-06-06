@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { useAppDrizzle } from '../../utils/db'
 import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {

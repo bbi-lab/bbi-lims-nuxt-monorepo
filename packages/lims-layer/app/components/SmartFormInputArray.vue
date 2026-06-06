@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import type { z } from 'zod'
-import { nextTick } from 'vue'
 
 const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
 const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')

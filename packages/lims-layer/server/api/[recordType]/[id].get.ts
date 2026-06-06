@@ -1,4 +1,3 @@
-import { selectRecord, selectRecordFromView } from '../../utils/record'
 import _ from 'lodash'
 
 export default defineEventHandler(async (event) => {

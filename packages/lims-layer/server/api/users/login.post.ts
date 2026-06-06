@@ -1,7 +1,5 @@
-import { getUserByEmail } from '../../utils/user'
 import { schemas } from '../../../shared/db/zod/zodSchemas'
 import argon2 from 'argon2'
-import { generateTokens } from '../../utils/jwt'
 import _ from 'lodash'
 
 export default defineEventHandler<{ body: LoginUser }>(async (event) => {

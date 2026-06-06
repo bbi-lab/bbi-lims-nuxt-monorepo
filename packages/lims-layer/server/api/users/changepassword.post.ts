@@ -1,8 +1,6 @@
-import { changePassword } from '../../utils/user'
 import { schemas } from '../../../shared/db/zod/zodSchemas'
 import argon2 from 'argon2'
 import _ from 'lodash'
-import {isValidPassword} from '../../utils/auth'
 
 export default defineEventHandler<{ body: ChangePassword }>(async (event) => {
     try {
