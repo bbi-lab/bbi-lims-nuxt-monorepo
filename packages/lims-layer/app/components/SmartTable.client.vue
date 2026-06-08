@@ -262,6 +262,7 @@ const clearRouteQueryParams = async () => {
 
 // ── Truncatable cell expansion ─────────────────────────────────────────────
 const expandedCells = ref<Set<string>>(new Set())
+const overflowingCells = ref<Set<string>>(new Set())
 
 function toggleExpandedCell(rowId: string, colKey: string) {
     const key = `${rowId}-${colKey}`
@@ -269,6 +270,20 @@ function toggleExpandedCell(rowId: string, colKey: string) {
     if (next.has(key)) next.delete(key)
     else next.add(key)
     expandedCells.value = next
+}
+
+function checkCellOverflow(el: Element | null, rowId: string, colKey: string) {
+    if (!el) return
+    nextTick(() => {
+        const key = `${rowId}-${colKey}`
+        const isOverflowing = (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth
+        if (isOverflowing !== overflowingCells.value.has(key)) {
+            const next = new Set(overflowingCells.value)
+            if (isOverflowing) next.add(key)
+            else next.delete(key)
+            overflowingCells.value = next
+        }
+    })
 }
 
 function getCellValue(columnDef: SortedColumnDefinition, data: any): string {
@@ -620,7 +635,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                                 {{ getCellValue(columnDef, slotProps.data) }}<a class="ml-1 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[less]</a>
                             </span>
                             <span v-else class="flex items-baseline gap-1 min-w-0">
-                                <span class="truncate min-w-0 flex-1">{{ getCellValue(columnDef, slotProps.data) }}</span><a class="flex-shrink-0 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[more]</a>
+                                <span :ref="(el) => checkCellOverflow(el as Element | null, slotProps.data.id, columnDef.key)" class="truncate min-w-0 flex-1">{{ getCellValue(columnDef, slotProps.data) }}</span><a v-if="overflowingCells.has(`${slotProps.data.id}-${columnDef.key}`)" class="flex-shrink-0 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[more]</a>
                             </span>
                         </template>
                         <template v-else-if="columnDef.path">
