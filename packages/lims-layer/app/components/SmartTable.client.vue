@@ -544,7 +544,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                             <Button icon="pi pi-undo" :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`" severity="secondary" v-tooltip="{value: 'Clear settings'}" @click="clearSettings" />
                             <Button icon="pi pi-check" :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`" style="color: green" severity="secondary" v-tooltip="{value: 'Save settings'}" @click="saveSettings" />
                         </template>
-                        <ProgressSpinner :class="`size-8 ${filteringInProgress ? 'visible' : 'invisible'}`" />
+                        <ProgressSpinner :class="`max-w-12 max-h-12 ${filteringInProgress ? 'visible' : 'invisible'}`" strokeWidth="4" />
                     </template>
                 </Toolbar>
                 <IconField>
