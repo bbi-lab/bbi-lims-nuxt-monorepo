@@ -1,0 +1,29 @@
+import _ from 'lodash'
+import { count } from 'drizzle-orm'
+
+export default defineEventHandler(async (event) => {
+    const db = useAppDrizzle()
+
+    try {
+        const queryParams = getQuery(event) as QueryParams
+        const selectParams = queryToSelectParams(queryParams) as SelectParams
+
+        const sqlFilter = selectParams.where
+            ? jsonLogicToSql(selectParams.where, (name) => (appSchema.plates as any)[name])
+            : undefined
+
+        if (selectParams.where && sqlFilter === null) {
+            throw new Error(`Filter expression not supported for count queries on plates`)
+        }
+
+        const query = db.select({ count: count() }).from(appSchema.plates as any)
+        const [result] = sqlFilter ? await query.where(sqlFilter) : await query
+
+        return { count: Number(result?.count ?? 0) }
+    } catch (e: any) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: e.message,
+        })
+    }
+})
