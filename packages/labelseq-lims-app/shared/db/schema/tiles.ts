@@ -13,7 +13,7 @@ export const superblocks = pgTable('superblocks', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     projectId: uuid('project_id').notNull().references(() => projects.id),
     refseqTranscriptId: uuid('refseq_transcript_id').references(() => refseqTranscripts.id),
-    name: varchar('name', { length: 50 }).notNull(),
+    name: varchar('name', { length: 50 }).notNull().unique(),
     classification: superblockClassificationEnum('classification'),
     description: varchar('description', { length: 255 }),
     start: integer('start'),
@@ -26,7 +26,7 @@ export const superblocks = pgTable('superblocks', {
 export const tiles = pgTable('tiles', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     superblockId: uuid('superblock_id').notNull().references(() => superblocks.id),
-    tileName: varchar('tile_name', { length: 50 }).notNull(),
+    tileName: varchar('tile_name', { length: 50 }).notNull().unique(),
     tileStart: integer('tile_start').notNull(),
     tileEnd: integer('tile_end').notNull(),
     mutagenesisStart: integer('mutagenesis_start'),

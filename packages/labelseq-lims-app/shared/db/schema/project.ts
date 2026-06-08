@@ -3,7 +3,7 @@ import { restrictionEnzymes } from './reagents'
 
 export const projects = pgTable('projects', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
-    name: varchar('name', { length: 255 }).notNull(),
+    name: varchar('name', { length: 255 }).notNull().unique(),
     description: varchar('description', { length: 500 }),
     restrictionEnzymeId: uuid('restriction_enzyme_id').references(() => restrictionEnzymes.id),
     createdAt: timestamp('created_at').$defaultFn(() => new Date()),
