@@ -31,8 +31,8 @@ const columnDefs: ColumnDefinitions = {
     filled: {
         index: 3,
         format: (data: any) => {
-            if (_.isNumber(data.wellsCount) && data.wellsCount > 0 && _.isNumber(data.wellsWithContentCount)) {
-                return `${data.wellsWithContentCount} / ${data.wellsCount}`
+            if (isNumeric(data.wellsCount) && _.toNumber(data.wellsCount) > 0 && isNumeric(data.wellsWithContentCount)) {
+                return `${_.toNumber(data.wellsWithContentCount)} / ${_.toNumber(data.wellsCount)}`
             } else {
                 return '-'
             }

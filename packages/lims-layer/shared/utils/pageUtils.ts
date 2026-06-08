@@ -1,6 +1,8 @@
 import { wellCoordinateToChar } from '../lib/plate-diagram'
 import _ from 'lodash'
 
+export const isNumeric = (val: any): boolean => typeof val === 'string' && val.trim() !== '' && Number.isFinite(Number(val))
+
 export const combinedWellLocations = <T extends boolean>(x: any, options: {asDict?: T, excludePlateIds?: string[], includePlateIds?: string[]} = {}): T extends true ? Record<string, string> : string => {
     const wellContents = x?.wellable?.wellContents || []
 
