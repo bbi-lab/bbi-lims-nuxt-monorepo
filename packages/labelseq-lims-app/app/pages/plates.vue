@@ -78,9 +78,6 @@ const fieldConfigs: FormFieldConfigs = {
     },
 }
 
-const withClause = {
-    plateTypeRef: true,
-}
 // plateType is now a FK to plate_types.value — use z.string() since valid values are enforced by the DB
 const insertPlateSchema = schemas.plates.insert
 const updatePlateSchema = schemas.plates.update

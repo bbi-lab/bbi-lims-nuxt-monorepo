@@ -39,6 +39,8 @@ const model = ref([
                 iconComponent: OligosIcon,
                 items: [
                     { label: 'Retriever Primers', to: '/oligos/primers/retriever-primers' },
+                    { label: 'LABEL-seq Index Primers', to: '/oligos/primers/labelseq-index-primers' },
+                    { label: 'Nextera Index Primers', to: '/oligos/primers/nextera-index-primers' },
                 ]
             },
             {

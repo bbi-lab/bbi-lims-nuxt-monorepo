@@ -17,9 +17,6 @@ watch(() => route.query, async (newValue, oldValue) => {
 
 const columnDefs: ColumnDefinitions = {
     name: { index: 0 },
-    direction: { index: 1 },
-    seq: { index: 2 },
-    seqRevComp: { header: 'Rev Comp Seq', index: 3 },
 }
 </script>
 <template>
@@ -28,9 +25,9 @@ const columnDefs: ColumnDefinitions = {
             <SmartTable
                 :key="tableKey"
                 :ref="crudTable.setTableRef"
-                table-name="retriever-primers"
-                :zodSchema="schemas.retrieverPrimers.select"
-                title="Retriever Primers"
+                table-name="labelseq-index-primers"
+                :zodSchema="schemas.labelseqIndexPrimers.select"
+                title="LABEL-seq Index Primers"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 :column-defs="columnDefs"
                 :where="whereClauses"
@@ -45,20 +42,20 @@ const columnDefs: ColumnDefinitions = {
         <SplitterPanel v-if="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm">
             <RecordsSmartForm
                 v-if="crudTable.state.showAddForm"
-                submitUrl="/api/retriever-primers"
+                submitUrl="/api/labelseq-index-primers"
                 submitMethod="POST"
-                :zodSchema="schemas.retrieverPrimers.insert"
+                :zodSchema="schemas.labelseqIndexPrimers.insert"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
                 @record-add="crudTable.didAddRecord"
             />
             <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                selectUrl="/api/retriever-primers"
+                selectUrl="/api/labelseq-index-primers"
                 :recordIds="[crudTable.state.editingRecordId]"
-                submitUrl="/api/retriever-primers"
+                submitUrl="/api/labelseq-index-primers"
                 submitMethod="PUT"
-                :zodSchema="schemas.retrieverPrimers.update"
+                :zodSchema="schemas.labelseqIndexPrimers.update"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
@@ -67,11 +64,11 @@ const columnDefs: ColumnDefinitions = {
             />
             <RecordsSmartForm
                 v-if="crudTable.state.showMultipleEditForm && crudTable.state.editingMultipleRecordsIds.length > 0"
-                selectUrl="/api/retriever-primers"
+                selectUrl="/api/labelseq-index-primers"
                 :recordIds="crudTable.state.editingMultipleRecordsIds"
-                submitUrl="/api/retriever-primers"
+                submitUrl="/api/labelseq-index-primers"
                 submitMethod="PUT"
-                :zodSchema="schemas.retrieverPrimers.update"
+                :zodSchema="schemas.labelseqIndexPrimers.update"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelMultipleEditForm"
                 @records-update="crudTable.didUpdateMultipleRecords"

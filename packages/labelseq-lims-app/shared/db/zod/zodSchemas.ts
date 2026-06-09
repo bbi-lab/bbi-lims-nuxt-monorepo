@@ -22,15 +22,21 @@ const updateRestrictionEnzymeSchema = insertRestrictionEnzymeSchema
 
 const selectRetrieverPrimerSchema = createSelectSchema(retrieverPrimers)
 const insertRetrieverPrimerSchema = selectRetrieverPrimerSchema.omit({ id: true, seqRevComp: true }).partial()
-const updateRetrieverPrimerSchema = insertRetrieverPrimerSchema
+const updateRetrieverPrimerSchema = insertRetrieverPrimerSchema.extend({
+    seqRevComp: selectRetrieverPrimerSchema.shape.seqRevComp.readonly(),
+})
 
 const selectLabelseqIndexPrimerSchema = createSelectSchema(labelseqIndexPrimers)
 const insertLabelseqIndexPrimerSchema = selectLabelseqIndexPrimerSchema.omit({ id: true, indexSeqRevComp: true }).partial()
-const updateLabelseqIndexPrimerSchema = insertLabelseqIndexPrimerSchema
+const updateLabelseqIndexPrimerSchema = insertLabelseqIndexPrimerSchema.extend({
+    indexSeqRevComp: selectLabelseqIndexPrimerSchema.shape.indexSeqRevComp.readonly(),
+})
 
 const selectNexteraIndexPrimerSchema = createSelectSchema(nexteraIndexPrimers)
 const insertNexteraIndexPrimerSchema = selectNexteraIndexPrimerSchema.omit({ id: true, indexSeqRevComp: true }).partial()
-const updateNexteraIndexPrimerSchema = insertNexteraIndexPrimerSchema
+const updateNexteraIndexPrimerSchema = insertNexteraIndexPrimerSchema.extend({
+    indexSeqRevComp: selectNexteraIndexPrimerSchema.shape.indexSeqRevComp.readonly(),
+})
 
 const selectSuperblocksSchema = createSelectSchema(superblocks)
 const insertSuperblocksSchema = selectSuperblocksSchema.omit({ id: true }).partial()
