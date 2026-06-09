@@ -703,11 +703,10 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
 }
 .p-datatable-frozen-tbody > tr {
     box-shadow: inset 0 0 1px black;
-    background-color: var(--p-content-border-color);
     color: var(--p-text-color);
 }
-.p-datatable-scrollable td.p-datatable-frozen-column {
-    background-color: inherit;
+.p-datatable-frozen-tbody > tr > td {
+    background-color: var(--p-content-border-color) !important;
 }
 .p-datatable-table tr {
     box-shadow: 0 0 1px var(--p-text-color);
