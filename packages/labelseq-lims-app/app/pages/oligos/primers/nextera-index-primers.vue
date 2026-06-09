@@ -17,6 +17,18 @@ watch(() => route.query, async (newValue, oldValue) => {
 
 const columnDefs: ColumnDefinitions = {
     name: { index: 0 },
+    fullSequence: {
+        format: (data: any) => {
+            if (data.primerType === 'p7') {
+                return NEXTERA_INDEX_PRIMER_P7_ADAPTER_SEQ + data.indexSeq + NEXTERA_INDEX_PRIMER_R2_BINDING_SEQ
+            } else if (data.primerType === 'p5') {
+                return NEXTERA_INDEX_PRIMER_P5_ADAPTER_SEQ + data.indexSeq + NEXTERA_INDEX_PRIMER_R1_BINDING_SEQ
+            } else {
+                return '-'
+            }
+        },
+        path: 'fullSequence.displayValue',
+    }
 }
 </script>
 <template>
