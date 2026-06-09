@@ -98,6 +98,10 @@ const withClause = {
 const whereClause = {
 }
 
+const frozenRecordIds = computed(() => {
+    return _.compact(_.flatten(_.map(plateLayout.selectedWells.value, 'selectionTableRecordIds')))
+})
+
 </script>
 <template>
     <Splitter class="h-full mb-8" :layout="smallerThanLg ? 'vertical' : 'horizontal'">
@@ -115,6 +119,7 @@ const whereClause = {
                 :can-delete="false"
                 :show-column-filters="true"
                 :sort-by="['name']"
+                :frozen-record-ids="frozenRecordIds"
             />
         </SplitterPanel>
         <SplitterPanel class="flex justify-center overflow-scroll mt-10" :size="40" :minSize="25">
