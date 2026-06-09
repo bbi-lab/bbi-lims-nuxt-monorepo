@@ -136,7 +136,7 @@ const selectedRecords: Ref<any[]> = ref([])
 const clientSettings = ref<Record<string, any>>({})
 const visibleColumns = ref<VisibleColumn[]>([])
 const displayDeleteConfirmation = ref(false)
-const loading = ref(true)
+const loading = ref(false)
 const showSettings = ref(false)
 const filteringInProgress = ref(false)
 const globalFilterFields: Ref<GlobalFilterField[]> = ref([])
@@ -168,6 +168,7 @@ const refreshFormattedValues = (ids?: string[]) => {
 }
 
 const loadTableData = async () => {
+    loading.value = true
     records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where)
     refreshFormattedValues()
     if (props.sortBy) records.value = _.sortBy(records.value, props.sortBy)
@@ -544,7 +545,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                             <Button icon="pi pi-undo" :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`" severity="secondary" v-tooltip="{value: 'Clear settings'}" @click="clearSettings" />
                             <Button icon="pi pi-check" :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`" style="color: green" severity="secondary" v-tooltip="{value: 'Save settings'}" @click="saveSettings" />
                         </template>
-                        <ProgressSpinner :class="`max-w-12 max-h-12 ${filteringInProgress ? 'visible' : 'invisible'}`" strokeWidth="4" />
+                        <ProgressSpinner :class="`max-w-12 max-h-12 ${loading || filteringInProgress ? 'visible' : 'invisible'}`" strokeWidth="4" />
                     </template>
                 </Toolbar>
                 <IconField>
