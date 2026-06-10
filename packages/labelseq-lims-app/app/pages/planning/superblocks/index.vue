@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '#shared/db/zod/zodSchemas'
+import _ from 'lodash'
 
 const route = useRoute()
 const router = useRouter()
@@ -26,8 +27,14 @@ const columnDefs: ColumnDefinitions = {
     refseqTranscript: { header: 'RefSeq transcript ID', index: 4, path: 'refseqTranscript.transcriptId' },
     start: { index: 5 },
     end: { index: 6 },
-    seq: { header: 'Sequence (optimized)', index: 7, bodyClass: 'max-w-64', truncatable: true },
-    length: { header: 'Length', index: 8, format: (row) => row.seq.length, path: 'length.displayValue' },
+    aaStart: {
+        index: 7,
+        header: 'AA start',
+        format: (row) => row.start && (row.start - 1) % 3 === 0 ? _.toString((row.start - 1) / 3 + 1) : '',
+        path: 'aaStart.displayValue',
+    },
+    seq: { header: 'Sequence (optimized)', index: 8, bodyClass: 'max-w-64', truncatable: true },
+    length: { header: 'Length', index: 9, format: (row) => row.seq?.length || '', path: 'length.displayValue' },
 }
 
 const fieldConfigs: FormFieldConfigs = {
