@@ -22,9 +22,10 @@ const columnDefs: ColumnDefinitions = {
     geneType: { index: 2 },
     description: { header: 'Description', index: 3 },
     cds: { header: 'CDS', index: 4, bodyClass: 'max-w-64', truncatable: true },
-    aa: { header: 'AA', index: 5, bodyClass: 'max-w-64', truncatable: true },
-    length: { header: 'Length', index: 6, format: (row) => row.cds?.length ?? 0, path: 'length.displayValue' },
-    notes: { header: 'Notes', index: 7 },
+    cdsLength: { header: 'Length', index: 5, format: (row) => row.cds?.length ?? 0, path: 'cdsLength.displayValue' },
+    aa: { header: 'AA', index: 6, bodyClass: 'max-w-64', truncatable: true },
+    aaLength: { header: 'AA Length', index: 7, format: (row) => row.aa?.length ?? 0, path: 'aaLength.displayValue'  },
+    notes: { header: 'Notes', index: 8 },
 }
 
 const fieldConfigs: FormFieldConfigs = {
