@@ -20,8 +20,12 @@ const columnDefs: ColumnDefinitions = {
     geneId: { display: false },
     gene: { header: 'Gene', index: 1, path: 'gene.symbol' },
     geneType: { index: 2 },
-    seq: { header: 'Sequence', index: 3, bodyClass: 'max-w-64', truncatable: true },
-    length: { header: 'Length', index: 4, format: (row) => row.seq.length, path: 'length.displayValue' },
+    description: { header: 'Description', index: 3 },
+    cds: { header: 'CDS', index: 4, bodyClass: 'max-w-64', truncatable: true },
+    cdsLength: { header: 'Length', index: 5, format: (row) => row.cds?.length ?? 0, path: 'cdsLength.displayValue' },
+    aa: { header: 'AA', index: 6, bodyClass: 'max-w-64', truncatable: true },
+    aaLength: { header: 'AA Length', index: 7, format: (row) => row.aa?.length ?? 0, path: 'aaLength.displayValue'  },
+    notes: { header: 'Notes', index: 8 },
 }
 
 const fieldConfigs: FormFieldConfigs = {
@@ -37,9 +41,20 @@ const fieldConfigs: FormFieldConfigs = {
             searchFields: ['symbol'],
         },
     },
-    seq: {
+    description: {
         inputType: 'textarea',
-        label: 'Sequence',
+    },
+    cds: {
+        inputType: 'textarea',
+        label: 'CDS',
+    },
+    aa: {
+        inputType: 'textarea',
+        label: 'AA',
+    },
+    notes: {
+        inputType: 'textarea',
+        label: 'Notes',
     },
 }
 const withClause = {

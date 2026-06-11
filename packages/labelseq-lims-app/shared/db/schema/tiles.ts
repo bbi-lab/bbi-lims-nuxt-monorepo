@@ -1,8 +1,8 @@
 
-import { pgTable, uuid, varchar, text, integer, boolean, check, char, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, varchar, text, integer, boolean, check, pgEnum } from 'drizzle-orm/pg-core'
 import { projects } from './project'
 import { retrieverPrimers } from './primers'
-import { sql } from 'drizzle-orm/sql'
+import { SQL, sql } from 'drizzle-orm/sql'
 import { refseqTranscripts } from './transcripts'
 
 export const superblockClassificationEnum = pgEnum('superblock_classification', [
@@ -13,12 +13,13 @@ export const superblocks = pgTable('superblocks', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     projectId: uuid('project_id').notNull().references(() => projects.id),
     refseqTranscriptId: uuid('refseq_transcript_id').references(() => refseqTranscripts.id),
-    name: varchar('name', { length: 50 }).notNull(),
+    name: varchar('name', { length: 50 }).notNull().unique(),
     classification: superblockClassificationEnum('classification'),
     description: varchar('description', { length: 255 }),
     start: integer('start'),
     end: integer('end'),
     seq: text('seq'),
+    aaSeq: text('aa_seq').generatedAlwaysAs((): SQL => sql`translate_dna(${superblocks.seq})`),
 }, (t) => [
     check('seq_check', sql`${t.seq} ~* '^[actg]*$'`),
 ])
@@ -26,7 +27,7 @@ export const superblocks = pgTable('superblocks', {
 export const tiles = pgTable('tiles', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     superblockId: uuid('superblock_id').notNull().references(() => superblocks.id),
-    tileName: varchar('tile_name', { length: 50 }).notNull(),
+    tileName: varchar('tile_name', { length: 50 }).notNull().unique(),
     tileStart: integer('tile_start').notNull(),
     tileEnd: integer('tile_end').notNull(),
     mutagenesisStart: integer('mutagenesis_start'),

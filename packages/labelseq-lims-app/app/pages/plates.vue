@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
-import { schemas } from '../../shared/db/zod/zodSchemas'
+import { schemas } from 'lims-layer/shared/db/zod/zodSchemas'
 
 const router = useRouter()
 const route = useRoute()
@@ -78,9 +78,6 @@ const fieldConfigs: FormFieldConfigs = {
     },
 }
 
-const withClause = {
-    plateTypeRef: true,
-}
 // plateType is now a FK to plate_types.value — use z.string() since valid values are enforced by the DB
 const insertPlateSchema = schemas.plates.insert
 const updatePlateSchema = schemas.plates.update

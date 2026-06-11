@@ -91,15 +91,15 @@ export const relations = defineRelations({
   },
   wellables: {
     wellContents: r.many.wellContents(),
-    retrieverPrimers: r.one.retrieverPrimers({
+    retrieverPrimer: r.one.retrieverPrimers({
       from: r.wellables.id,
       to: r.retrieverPrimers.id,
     }),
-    labelseqIndexPrimers: r.one.labelseqIndexPrimers({
+    labelseqIndexPrimer: r.one.labelseqIndexPrimers({
       from: r.wellables.id,
       to: r.labelseqIndexPrimers.id,
     }),
-    nexteraIndexPrimers: r.one.nexteraIndexPrimers({
+    nexteraIndexPrimer: r.one.nexteraIndexPrimers({
       from: r.wellables.id,
       to: r.nexteraIndexPrimers.id,
     }),
@@ -184,6 +184,22 @@ export const relations = defineRelations({
   retrieverPrimers: {
     tilesForward: r.many.tiles({ alias: 'retrieverPrimerForward' }),
     tilesReverse: r.many.tiles({ alias: 'retrieverPrimerReverse' }),
+    wellable: r.one.wellables({
+      from: r.retrieverPrimers.id,
+      to: r.wellables.id,
+    }),
+  },
+  labelseqIndexPrimers: {
+    wellable: r.one.wellables({
+      from: r.labelseqIndexPrimers.id,
+      to: r.wellables.id,
+    }),
+  },
+  nexteraIndexPrimers: {
+    wellable: r.one.wellables({
+      from: r.nexteraIndexPrimers.id,
+      to: r.wellables.id,
+    }),
   },
   viewTilesWithSequences: {
     superblock: r.one.superblocks({

@@ -136,7 +136,7 @@ const selectedRecords: Ref<any[]> = ref([])
 const clientSettings = ref<Record<string, any>>({})
 const visibleColumns = ref<VisibleColumn[]>([])
 const displayDeleteConfirmation = ref(false)
-const loading = ref(true)
+const loading = ref(false)
 const showSettings = ref(false)
 const filteringInProgress = ref(false)
 const globalFilterFields: Ref<GlobalFilterField[]> = ref([])
@@ -168,6 +168,7 @@ const refreshFormattedValues = (ids?: string[]) => {
 }
 
 const loadTableData = async () => {
+    loading.value = true
     records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where)
     refreshFormattedValues()
     if (props.sortBy) records.value = _.sortBy(records.value, props.sortBy)
@@ -262,6 +263,7 @@ const clearRouteQueryParams = async () => {
 
 // ── Truncatable cell expansion ─────────────────────────────────────────────
 const expandedCells = ref<Set<string>>(new Set())
+const overflowingCells = ref<Set<string>>(new Set())
 
 function toggleExpandedCell(rowId: string, colKey: string) {
     const key = `${rowId}-${colKey}`
@@ -269,6 +271,20 @@ function toggleExpandedCell(rowId: string, colKey: string) {
     if (next.has(key)) next.delete(key)
     else next.add(key)
     expandedCells.value = next
+}
+
+function checkCellOverflow(el: Element | null, rowId: string, colKey: string) {
+    if (!el) return
+    nextTick(() => {
+        const key = `${rowId}-${colKey}`
+        const isOverflowing = (el as HTMLElement).scrollWidth > (el as HTMLElement).clientWidth
+        if (isOverflowing !== overflowingCells.value.has(key)) {
+            const next = new Set(overflowingCells.value)
+            if (isOverflowing) next.add(key)
+            else next.delete(key)
+            overflowingCells.value = next
+        }
+    })
 }
 
 function getCellValue(columnDef: SortedColumnDefinition, data: any): string {
@@ -529,7 +545,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                             <Button icon="pi pi-undo" :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`" severity="secondary" v-tooltip="{value: 'Clear settings'}" @click="clearSettings" />
                             <Button icon="pi pi-check" :class="`mr-2 ${showSettings ? 'visible' : 'invisible'}`" style="color: green" severity="secondary" v-tooltip="{value: 'Save settings'}" @click="saveSettings" />
                         </template>
-                        <ProgressSpinner :class="`size-8 ${filteringInProgress ? 'visible' : 'invisible'}`" />
+                        <ProgressSpinner :class="`max-w-12 max-h-12 ${loading || filteringInProgress ? 'visible' : 'invisible'}`" strokeWidth="4" />
                     </template>
                 </Toolbar>
                 <IconField>
@@ -620,7 +636,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                                 {{ getCellValue(columnDef, slotProps.data) }}<a class="ml-1 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[less]</a>
                             </span>
                             <span v-else class="flex items-baseline gap-1 min-w-0">
-                                <span class="truncate min-w-0 flex-1">{{ getCellValue(columnDef, slotProps.data) }}</span><a class="flex-shrink-0 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[more]</a>
+                                <span :ref="(el) => checkCellOverflow(el as Element | null, slotProps.data.id, columnDef.key)" class="truncate min-w-0 flex-1">{{ getCellValue(columnDef, slotProps.data) }}</span><a v-if="overflowingCells.has(`${slotProps.data.id}-${columnDef.key}`)" class="flex-shrink-0 text-blue-500 cursor-pointer text-xs whitespace-nowrap select-none" @click.stop="toggleExpandedCell(slotProps.data.id, columnDef.key)">[more]</a>
                             </span>
                         </template>
                         <template v-else-if="columnDef.path">
@@ -687,11 +703,10 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
 }
 .p-datatable-frozen-tbody > tr {
     box-shadow: inset 0 0 1px black;
-    background-color: var(--p-content-border-color);
     color: var(--p-text-color);
 }
-.p-datatable-scrollable td.p-datatable-frozen-column {
-    background-color: inherit;
+.p-datatable-frozen-tbody > tr > td {
+    background-color: var(--p-content-border-color) !important;
 }
 .p-datatable-table tr {
     box-shadow: 0 0 1px var(--p-text-color);

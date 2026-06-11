@@ -41,6 +41,8 @@ export const wellContents = pgTable('well_contents', {
 //      END;
 //    $$ LANGUAGE plpgsql;--> statement-breakpoint
 
+const wellableTableNames = (process.env.NUXT_WELLABLE_TABLE_NAMES ?? "").split(",").filter(Boolean)
+
 export const wellables = pgTable('wellables', {
   id: uuid('id').notNull().primaryKey(),
   tableName: varchar('table_name').notNull()

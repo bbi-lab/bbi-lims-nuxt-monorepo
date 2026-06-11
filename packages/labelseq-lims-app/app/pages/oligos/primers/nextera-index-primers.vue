@@ -17,9 +17,18 @@ watch(() => route.query, async (newValue, oldValue) => {
 
 const columnDefs: ColumnDefinitions = {
     name: { index: 0 },
-    direction: { index: 1 },
-    seq: { index: 2 },
-    seqRevComp: { header: 'Rev Comp Seq', index: 3 },
+    fullSequence: {
+        format: (data: any) => {
+            if (data.primerType === 'p7') {
+                return NEXTERA_INDEX_PRIMER_P7_ADAPTER_SEQ + data.indexSeq + NEXTERA_INDEX_PRIMER_R2_BINDING_SEQ
+            } else if (data.primerType === 'p5') {
+                return NEXTERA_INDEX_PRIMER_P5_ADAPTER_SEQ + data.indexSeq + NEXTERA_INDEX_PRIMER_R1_BINDING_SEQ
+            } else {
+                return '-'
+            }
+        },
+        path: 'fullSequence.displayValue',
+    }
 }
 </script>
 <template>
@@ -28,9 +37,9 @@ const columnDefs: ColumnDefinitions = {
             <SmartTable
                 :key="tableKey"
                 :ref="crudTable.setTableRef"
-                table-name="retriever-primers"
-                :zodSchema="schemas.retrieverPrimers.select"
-                title="Retriever Primers"
+                table-name="nextera-index-primers"
+                :zodSchema="schemas.nexteraIndexPrimers.select"
+                title="Nextera Index Primers"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 :column-defs="columnDefs"
                 :where="whereClauses"
@@ -45,20 +54,20 @@ const columnDefs: ColumnDefinitions = {
         <SplitterPanel v-if="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm">
             <RecordsSmartForm
                 v-if="crudTable.state.showAddForm"
-                submitUrl="/api/retriever-primers"
+                submitUrl="/api/nextera-index-primers"
                 submitMethod="POST"
-                :zodSchema="schemas.retrieverPrimers.insert"
+                :zodSchema="schemas.nexteraIndexPrimers.insert"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
                 @record-add="crudTable.didAddRecord"
             />
             <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                selectUrl="/api/retriever-primers"
+                selectUrl="/api/nextera-index-primers"
                 :recordIds="[crudTable.state.editingRecordId]"
-                submitUrl="/api/retriever-primers"
+                submitUrl="/api/nextera-index-primers"
                 submitMethod="PUT"
-                :zodSchema="schemas.retrieverPrimers.update"
+                :zodSchema="schemas.nexteraIndexPrimers.update"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
@@ -67,11 +76,11 @@ const columnDefs: ColumnDefinitions = {
             />
             <RecordsSmartForm
                 v-if="crudTable.state.showMultipleEditForm && crudTable.state.editingMultipleRecordsIds.length > 0"
-                selectUrl="/api/retriever-primers"
+                selectUrl="/api/nextera-index-primers"
                 :recordIds="crudTable.state.editingMultipleRecordsIds"
-                submitUrl="/api/retriever-primers"
+                submitUrl="/api/nextera-index-primers"
                 submitMethod="PUT"
-                :zodSchema="schemas.retrieverPrimers.update"
+                :zodSchema="schemas.nexteraIndexPrimers.update"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelMultipleEditForm"
                 @records-update="crudTable.didUpdateMultipleRecords"

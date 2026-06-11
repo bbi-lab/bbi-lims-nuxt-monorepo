@@ -7,9 +7,13 @@ export const geneTypeEnum = pgEnum('gene_type', ['c-tag', 'n-tag'])
 export const refseqTranscripts = pgTable('refseq_transcripts', {
     id: uuid('id').primaryKey().defaultRandom().notNull(),
     transcriptId: varchar('transcript_id', { length: 50 }).unique().notNull(),
+    description: text('description'),
     geneType: geneTypeEnum('gene_type'),
     geneId: uuid('gene_id').notNull().references(() => genes.id),
-    seq: text('seq'),
+    cds: text('cds'),
+    aa: text('aa'),
+    notes: text('notes'),
 }, (t) => [
-    check("seq_check", sql`${t.seq} ~* '^[actg]*$'`),
+    check("cds_check", sql`${t.cds} ~* '^[actg]*$'`),
+    check("aa_check", sql`${t.aa} ~* '^[ACDEFGHIKLMNPQRSTVWY]*$'`),
 ])

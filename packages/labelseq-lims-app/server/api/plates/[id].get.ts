@@ -1,0 +1,24 @@
+import { plates } from 'lims-layer/shared/db/schema/plate'
+import _ from 'lodash'
+
+export default defineEventHandler(async (event) => {
+    const { id } = event.context.params as { id: string }
+
+    const queryParams = getQuery(event) as QueryParams
+    const selectParams = queryToSelectParams(queryParams) as SelectParams
+
+    try {
+        const db = useAppDrizzle()
+        const queryBuilder = _.get(db.query, 'plates')
+
+        // ignoring any order, limit, or offset params
+        const selectedPlate = await selectRecord(queryBuilder, plates, id, selectParams.with, selectParams.columns)
+
+        return selectedPlate
+    } catch (e: any) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: e.message,
+        })
+    }
+})

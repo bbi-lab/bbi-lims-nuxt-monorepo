@@ -22,15 +22,21 @@ const updateRestrictionEnzymeSchema = insertRestrictionEnzymeSchema
 
 const selectRetrieverPrimerSchema = createSelectSchema(retrieverPrimers)
 const insertRetrieverPrimerSchema = selectRetrieverPrimerSchema.omit({ id: true, seqRevComp: true }).partial()
-const updateRetrieverPrimerSchema = insertRetrieverPrimerSchema
+const updateRetrieverPrimerSchema = insertRetrieverPrimerSchema.extend({
+    seqRevComp: selectRetrieverPrimerSchema.shape.seqRevComp.readonly(),
+})
 
 const selectLabelseqIndexPrimerSchema = createSelectSchema(labelseqIndexPrimers)
 const insertLabelseqIndexPrimerSchema = selectLabelseqIndexPrimerSchema.omit({ id: true, indexSeqRevComp: true }).partial()
-const updateLabelseqIndexPrimerSchema = insertLabelseqIndexPrimerSchema
+const updateLabelseqIndexPrimerSchema = insertLabelseqIndexPrimerSchema.extend({
+    indexSeqRevComp: selectLabelseqIndexPrimerSchema.shape.indexSeqRevComp.readonly(),
+})
 
 const selectNexteraIndexPrimerSchema = createSelectSchema(nexteraIndexPrimers)
 const insertNexteraIndexPrimerSchema = selectNexteraIndexPrimerSchema.omit({ id: true, indexSeqRevComp: true }).partial()
-const updateNexteraIndexPrimerSchema = insertNexteraIndexPrimerSchema
+const updateNexteraIndexPrimerSchema = insertNexteraIndexPrimerSchema.extend({
+    indexSeqRevComp: selectNexteraIndexPrimerSchema.shape.indexSeqRevComp.readonly(),
+})
 
 const selectSuperblocksSchema = createSelectSchema(superblocks)
 const insertSuperblocksSchema = selectSuperblocksSchema.omit({ id: true }).partial()
@@ -45,12 +51,17 @@ const insertTileVariantsSchema = selectTileVariantsSchema.omit({ id: true }).par
 const updateTileVariantsSchema = insertTileVariantsSchema
 
 const selectRefseqTranscriptsSchema = createSelectSchema(refseqTranscripts)
-const insertRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.omit({ id: true }).partial()
-// make seq readonly for update schema since we don't want it to be updated directly (it should only be set on insert or via refseq update process)
-const updateRefseqTranscriptsSchema = insertRefseqTranscriptsSchema.extend({
-    geneId: insertRefseqTranscriptsSchema.shape.geneId.readonly(),
-    seq: insertRefseqTranscriptsSchema.shape.seq.readonly(),
+const insertRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.pick({transcriptId: true, geneType: true,notes: true}).partial()
+// make most fields readonly for update schema since we don't want them to be updated directly
+const updateRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.omit({ id: true }).partial().extend({
+    transcriptId: selectRefseqTranscriptsSchema.shape.transcriptId.readonly(),
+    geneId: selectRefseqTranscriptsSchema.shape.geneId.readonly(),
+    description: selectRefseqTranscriptsSchema.shape.description.readonly(),
+    cds: selectRefseqTranscriptsSchema.shape.cds.readonly(),
+    aa: selectRefseqTranscriptsSchema.shape.aa.readonly(),
 })
+// only allow geneType and notes to be updated directly, other fields are either readonly or auto-populated
+const updateRefseqTranscriptValuesSchema = selectRefseqTranscriptsSchema.pick({geneType: true,notes: true}).partial()
 
 // Freeze all schema shapes to prevent accidental mutation of shared module-level objects.
 // Zod methods like .extend(), .omit(), .partial() return new objects and are unaffected.
@@ -111,5 +122,6 @@ export const schemas = freezeSchemas({
         select: selectRefseqTranscriptsSchema,
         insert: insertRefseqTranscriptsSchema,
         update: updateRefseqTranscriptsSchema,
+        updateValues: updateRefseqTranscriptValuesSchema,
     },
 })
