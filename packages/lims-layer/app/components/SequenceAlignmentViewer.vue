@@ -108,7 +108,7 @@ const rowWidth = computed(() => `${maxLen.value * BASE_CH}ch`)
         <!-- ── Summary bar ─────────────────────────────────────────────────── -->
         <div class="flex flex-wrap items-center gap-3 mb-3 text-xs text-surface-500">
             <span>
-                <span class="font-semibold text-surface-700">{{ maxLen }}</span> bp
+                <span class="font-semibold text-surface-700">length: {{ maxLen }}</span>
             </span>
             <span>
                 <span
@@ -142,23 +142,6 @@ const rowWidth = computed(() => `${maxLen.value * BASE_CH}ch`)
                     lands on an exact ch-based grid column.
                 -->
                 <div class="flex flex-col gap-0">
-                    <!-- ── Position ruler ──────────────────────────────────── -->
-                    <div  v-if="showCodons" class="flex items-end mb-1">
-                        <span class="shrink-0 text-right pr-2 text-surface-400 font-sans" style="width: 3rem">AA</span>
-                        <div class="relative overflow-visible" :style="{ width: rowWidth, height: '1.2em' }">
-                            <!-- In codon mode, also show codon numbers below -->
-                            <template>
-                                <span
-                                    v-for="codonTick in codonTicks"
-                                    :key="'ctick-' + codonTick"
-                                    class="absolute top-0 text-indigo-400 overflow-visible whitespace-nowrap"
-                                    :style="{ left: codonLeft(codonTick) }"
-                                    :title="`Codon ${codonTick + (aaStartPos ?? 1)}`"
-                                >{{ codonTick + (aaStartPos ?? 1) }}</span>
-                            </template>
-                        </div>
-                    </div>
-
                     <!-- ── Position ruler ──────────────────────────────────── -->
                     <div class="flex items-end mb-1">
                         <span class="shrink-0 text-right pr-2 text-surface-400 font-sans" style="width: 3rem">pos</span>
@@ -240,10 +223,6 @@ const rowWidth = computed(() => `${maxLen.value * BASE_CH}ch`)
                             >{{ unit.alt }}</span>
                         </div>
                     </div>
-
-
-
-
                 </div>
             </div>
         </div>

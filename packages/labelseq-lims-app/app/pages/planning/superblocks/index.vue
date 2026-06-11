@@ -39,6 +39,7 @@ const columnDefs: ColumnDefinitions = {
     },
     seq: { header: 'Sequence (optimized)', index: 8, bodyClass: 'max-w-64', truncatable: true },
     length: { header: 'Length', index: 9, format: (row) => row.seq?.length || '', path: 'length.displayValue' },
+    aaSeq: { display: false },
 }
 
 const fieldConfigs: FormFieldConfigs = {
@@ -85,6 +86,9 @@ interface SequenceDialogData {
     refSeq: string
     altSeq: string
     startPos: number
+    refSeqAa: string
+    altSeqAa: string
+    aaStartPos: number
 }
 
 const sequenceDialogVisible = ref(false)
@@ -92,13 +96,20 @@ const sequenceDialog = ref<SequenceDialogData | null>(null)
 
 const openSequenceDialog = async (data: Record<string, any>) => {
     const transcriptSeq: string = data.refseqTranscript?.cds ?? ''
+    // append the stop codon symbol (*) to the transcript AA sequence
+    const transcriptAa: string = data.refseqTranscript?.aa ? `${data.refseqTranscript?.aa}*` : ''
     const start: number = data.start ?? 1
     const end: number = data.end ?? transcriptSeq.length
+    const aaStart0 = (start - 1) / 3
+    const aaEnd0 = end / 3
     sequenceDialog.value = {
         name: data.name,
         refSeq: transcriptSeq.substring(start - 1, end),
         altSeq: data.seq ?? '',
         startPos: start,
+        refSeqAa: `${transcriptAa.substring(aaStart0, aaEnd0)}`,
+        altSeqAa: data.aaSeq ?? '',
+        aaStartPos: aaStart0 + 1,
     }
     sequenceDialogVisible.value = true
 }
@@ -142,6 +153,14 @@ const rowActions = {
             :alt-sequence="sequenceDialog.altSeq"
             :show-codons="true"
             :start-pos="sequenceDialog.startPos"
+        />
+        <hr/>
+        <SequenceAlignmentViewer
+            v-if="sequenceDialog"
+            :reference-sequence="sequenceDialog.refSeqAa"
+            :alt-sequence="sequenceDialog.altSeqAa"
+            :show-codons="false"
+            :start-pos="sequenceDialog.aaStartPos"
         />
     </Dialog>
     <Splitter class="h-full overflow-y-hidden">
