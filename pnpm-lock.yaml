@@ -76,7 +76,7 @@ importers:
         version: link:../base-layer
       nuxt:
         specifier: ^4.2.2
-        version: 4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@24.12.0)(@vue/compiler-sfc@3.5.35)(cac@6.7.14)(db0@0.3.4(drizzle-orm@1.0.0-rc.1(@types/pg@8.18.0)(pg@8.20.0)(zod@4.4.3)))(drizzle-orm@1.0.0-rc.1(@types/pg@8.18.0)(pg@8.20.0)(zod@4.4.3))(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.0)(lightningcss@1.31.1)(magicast@0.5.2)(optionator@0.9.4)(rollup-plugin-visualizer@6.0.11(rollup@4.59.0))(rollup@4.59.0)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(vite@7.3.1(@types/node@24.12.0)(jiti@2.7.0)(lightningcss@1.31.1)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.9.0))(vue-tsc@3.2.7(typescript@5.9.3))(yaml@2.9.0)
+        version: 4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@24.12.0)(@vue/compiler-sfc@3.5.35)(cac@6.7.14)(db0@0.3.4(drizzle-orm@1.0.0-rc.1(@types/pg@8.18.0)(pg@8.20.0)(zod@4.4.3)))(drizzle-orm@1.0.0-rc.1(@types/pg@8.18.0)(pg@8.20.0)(zod@4.4.3))(eslint@9.39.4(jiti@2.6.1))(ioredis@5.10.0)(lightningcss@1.31.1)(magicast@0.5.2)(optionator@0.9.4)(rollup-plugin-visualizer@6.0.11(rollup@4.59.0))(rollup@4.59.0)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.9.0))(vue-tsc@3.2.7(typescript@5.9.3))(yaml@2.9.0)
       primevue:
         specifier: ^4.5.3
         version: 4.5.4(vue@3.5.35(typescript@5.9.3))
@@ -94,7 +94,7 @@ importers:
         version: 3.5.35(typescript@5.9.3)
       vue-router:
         specifier: ^5.1.0
-        version: 5.1.0(@vue/compiler-sfc@3.5.35)(vite@7.3.1(@types/node@24.12.0)(jiti@2.7.0)(lightningcss@1.31.1)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.9.0))(vue@3.5.35(typescript@5.9.3))
+        version: 5.1.0(@vue/compiler-sfc@3.5.35)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.9.0))(vue@3.5.35(typescript@5.9.3))
       vue-tsc:
         specifier: ^3.2.7
         version: 3.2.7(typescript@5.9.3)
@@ -128,7 +128,7 @@ importers:
         version: 1.0.0-rc.1(@types/pg@8.18.0)(pg@8.20.0)(zod@4.4.3)
       nuxt:
         specifier: ^4.4.2
-        version: 4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@24.12.0)(@vue/compiler-sfc@3.5.35)(cac@6.7.14)(db0@0.3.4(drizzle-orm@1.0.0-rc.1(@types/pg@8.18.0)(pg@8.20.0)(zod@4.4.3)))(drizzle-orm@1.0.0-rc.1(@types/pg@8.18.0)(pg@8.20.0)(zod@4.4.3))(eslint@9.39.4(jiti@2.6.1))(ioredis@5.10.0)(lightningcss@1.31.1)(magicast@0.5.2)(optionator@0.9.4)(rollup-plugin-visualizer@6.0.11(rollup@4.59.0))(rollup@4.59.0)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.9.0))(vue-tsc@3.2.7(typescript@5.9.3))(yaml@2.9.0)
+        version: 4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@24.12.0)(@vue/compiler-sfc@3.5.35)(cac@6.7.14)(db0@0.3.4(drizzle-orm@1.0.0-rc.1(@types/pg@8.18.0)(pg@8.20.0)(zod@4.4.3)))(drizzle-orm@1.0.0-rc.1(@types/pg@8.18.0)(pg@8.20.0)(zod@4.4.3))(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.0)(lightningcss@1.31.1)(magicast@0.5.2)(optionator@0.9.4)(rollup-plugin-visualizer@6.0.11(rollup@4.59.0))(rollup@4.59.0)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(typescript@5.9.3)(vite@7.3.1(@types/node@24.12.0)(jiti@2.7.0)(lightningcss@1.31.1)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.9.0))(vue-tsc@3.2.7(typescript@5.9.3))(yaml@2.9.0)
       vue-tsc:
         specifier: ^3.2.7
         version: 3.2.7(typescript@5.9.3)
@@ -230,6 +230,9 @@ importers:
       '@iconify-json/roentgen':
         specifier: ^1.2.19
         version: 1.2.19
+      '@iconify-json/token':
+        specifier: ^1.2.3
+        version: 1.2.37
       '@nuxt/eslint':
         specifier: latest
         version: 1.15.2(@typescript-eslint/utils@8.57.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(@vue/compiler-sfc@3.5.35)(eslint@9.39.4(jiti@2.7.0))(magicast@0.5.2)(typescript@5.9.3)(vite@7.3.1(@types/node@24.12.0)(jiti@2.7.0)(lightningcss@1.31.1)(sass-embedded@1.98.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.9.0))
@@ -1089,6 +1092,9 @@ packages:
 
   '@iconify-json/roentgen@1.2.19':
     resolution: {integrity: sha512-gnBSrhkoQwoauRWYS7AGihvFAk4DHz6YJjkpAAIC8KFdZwNtCGgwT13xNL5fQOAA0cU7Th2Lh2LxS9Afta6REQ==}
+
+  '@iconify-json/token@1.2.37':
+    resolution: {integrity: sha512-xYDgYddQz+HEEU+EHGbcm1257+b3v7H95j8fV6Qtohch6NOYhX20K9XJMRsGtmPx3fRd5ry0xkwOec0xuG7fEw==}
 
   '@iconify/collections@1.0.661':
     resolution: {integrity: sha512-r5dwSQHdwNxfjx8AZiHfn8IuafVYTl850xzN9gKVMi8L9sXyd/XNawTr1qIJQZbJxouCETielBRP8TM9YmiSEA==}
@@ -6764,6 +6770,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/roentgen@1.2.19':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/token@1.2.37':
     dependencies:
       '@iconify/types': 2.0.0
 

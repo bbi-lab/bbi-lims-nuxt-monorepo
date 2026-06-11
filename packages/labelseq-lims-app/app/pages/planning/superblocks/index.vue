@@ -2,6 +2,9 @@
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '#shared/db/zod/zodSchemas'
 import _ from 'lodash'
+import { Icon } from '#components'
+
+const SequenceIcon = h(Icon, { name: 'token:sequence', class: 'text-2xl' })
 
 const route = useRoute()
 const router = useRouter()
@@ -10,6 +13,7 @@ const crudTable = useCrudTable()
 const tableKey = ref<string>(uuidv4())
 const whereClauses = ref()
 const readonlyValues = ref<Record<string, unknown>>({})
+
 
 watch(() => route.query, async (newValue, oldValue) => {
     whereClauses.value = queryParamsToJsonLogic(newValue)
@@ -76,6 +80,29 @@ const withClause = {
     },
 }
 
+interface SequenceDialogData {
+    name: string
+    refSeq: string
+    altSeq: string
+    startPos: number
+}
+
+const sequenceDialogVisible = ref(false)
+const sequenceDialog = ref<SequenceDialogData | null>(null)
+
+const openSequenceDialog = async (data: Record<string, any>) => {
+    const transcriptSeq: string = data.refseqTranscript?.cds ?? ''
+    const start: number = data.start ?? 1
+    const end: number = data.end ?? transcriptSeq.length
+    sequenceDialog.value = {
+        name: data.name,
+        refSeq: transcriptSeq.substring(start - 1, end),
+        altSeq: data.seq ?? '',
+        startPos: start,
+    }
+    sequenceDialogVisible.value = true
+}
+
 const rowActions = {
     viewTiles: {
         action: (data: Record<string, any>) => {
@@ -93,9 +120,30 @@ const rowActions = {
         tooltip: 'View tile oligos',
         label: '',
     },
+    viewSequenceAlignment: {
+        action: openSequenceDialog,
+        tooltip: 'View sequence alignment',
+        label: '',
+        iconComponent: SequenceIcon,
+    },
 }
 </script>
 <template>
+    <Dialog
+        v-model:visible="sequenceDialogVisible"
+        :header="sequenceDialog ? `Sequence alignment — ${sequenceDialog.name}` : ''"
+        modal
+        :style="{ width: '90vw', maxWidth: '1400px' }"
+        @hide="sequenceDialog = null"
+    >
+        <SequenceAlignmentViewer
+            v-if="sequenceDialog"
+            :reference-sequence="sequenceDialog.refSeq"
+            :alt-sequence="sequenceDialog.altSeq"
+            :show-codons="true"
+            :start-pos="sequenceDialog.startPos"
+        />
+    </Dialog>
     <Splitter class="h-full overflow-y-hidden">
         <SplitterPanel :size="50">
             <SmartTable
