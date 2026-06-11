@@ -1,8 +1,8 @@
 
-import { pgTable, uuid, varchar, text, integer, boolean, check, char, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, varchar, text, integer, boolean, check, pgEnum } from 'drizzle-orm/pg-core'
 import { projects } from './project'
 import { retrieverPrimers } from './primers'
-import { sql } from 'drizzle-orm/sql'
+import { SQL, sql } from 'drizzle-orm/sql'
 import { refseqTranscripts } from './transcripts'
 
 export const superblockClassificationEnum = pgEnum('superblock_classification', [
@@ -19,6 +19,7 @@ export const superblocks = pgTable('superblocks', {
     start: integer('start'),
     end: integer('end'),
     seq: text('seq'),
+    aaSeq: text('aa_seq').generatedAlwaysAs((): SQL => sql`translate_dna(${superblocks.seq})`),
 }, (t) => [
     check('seq_check', sql`${t.seq} ~* '^[actg]*$'`),
 ])
