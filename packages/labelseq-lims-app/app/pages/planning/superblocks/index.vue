@@ -2,9 +2,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '#shared/db/zod/zodSchemas'
 import _ from 'lodash'
-import { Icon } from '#components'
-
-const SequenceIcon = h(Icon, { name: 'token:sequence', class: 'text-2xl' })
 
 const route = useRoute()
 const router = useRouter()
@@ -70,6 +67,10 @@ const fieldConfigs: FormFieldConfigs = {
         inputType: 'textarea',
         label: 'Sequence (optimized)',
     },
+    aaSeq: {
+        inputType: 'textarea',
+        label: 'AA sequence',
+    },
 }
 
 const withClause = {
@@ -133,9 +134,9 @@ const rowActions = {
     },
     viewSequenceAlignment: {
         action: openSequenceDialog,
+        icon: 'pi pi-sliders-h',
         tooltip: 'View sequence alignment',
         label: '',
-        iconComponent: SequenceIcon,
     },
 }
 </script>
