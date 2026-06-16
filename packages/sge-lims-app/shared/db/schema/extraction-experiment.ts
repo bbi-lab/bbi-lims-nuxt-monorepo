@@ -6,8 +6,8 @@ import { lots } from './lots'
 export const extractionExperiments = pgTable('extraction_experiments', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),
   name: varchar('name', { length: 255 }).notNull().unique(),
-  technician: uuid('technician').references(() => users.id),
-  extractedOn: timestamp('extractedOn').defaultNow(),
+  technicianId: uuid('technician_id').references(() => users.id),
+  extractedOn: timestamp('extracted_on').defaultNow(),
 })
 
 export const extractionLotUsage = pgTable('extraction_lot_usage', {

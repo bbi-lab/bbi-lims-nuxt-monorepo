@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { schemas } from '#shared/db/zod/zodSchemas'
-import type { Dna, Rna } from '~/server/db/schema/sge/nucleic-acid'
+import type { Dna, Rna } from '~/shared/db/schema/nucleic-acid'
 
 const route = useRoute()
 const toast = useToast()

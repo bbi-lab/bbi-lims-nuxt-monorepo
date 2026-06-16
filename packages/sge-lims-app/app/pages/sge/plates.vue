@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import _ from 'lodash'
-import { ENUM_LOOKUPS } from '~/server/db/schema/sge/enum-lookups'
-import type { PlateType } from '~/server/db/schema/sge/plate'
 import { v4 as uuidv4 } from 'uuid'
 import { schemas } from '#shared/db/zod/zodSchemas'
+
+// plateType is a FK to plate_types.value (open lookup set) — just a string at the type level.
+type PlateType = string
+
+// Plate types come from the plate_types lookup table.
+const { data: plateTypes } = await useFetch('/api/plate-types', { default: () => [] })
+const plateTypeOptions = _.sortBy(_.map(plateTypes.value, (pt) => {
+    // disable PCR plate types that should only be generated on experiment creation
+    const pattern = /^preseq-|-pcr$|^[d|r]na-preseq-/
+    const disabled = pattern.test(pt.value) && !_.endsWith(pt.value, '-storage')
+    return { label: pt.label, code: pt.value, ...(disabled ? { disabled: true } : {}) }
+}), 'label')
 
 const router = useRouter()
 const route = useRoute()
@@ -71,15 +81,7 @@ const fieldConfigs: FormFieldConfigs = {
         index: 1,
         component: 'Select',
         props: {
-            options: _.sortBy(_.map(ENUM_LOOKUPS.plates.plateType, (value, key) => {
-                // disable PCR plate types that should only be generated on experiment creation
-                const pattern = /^preseq-|-pcr$|^[d|r]na-preseq-/
-                if (pattern.test(key) && !_.endsWith(key, '-storage')) {
-                    return { label: value.label, code: key, disabled: true }
-                } else {
-                    return { label: value.label, code: key }
-                }
-            }), 'label'),
+            options: plateTypeOptions,
             optionLabel: 'label',
             optionValue: 'code',
             optionDisabled: 'disabled',

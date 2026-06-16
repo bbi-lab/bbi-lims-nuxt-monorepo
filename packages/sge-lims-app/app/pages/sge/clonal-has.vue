@@ -35,33 +35,22 @@ const columnDefs: ColumnDefinitions = {
 }
 
 const fieldConfigs: FormFieldConfigs = {
-    'clonalHaTargets.*': {
-        label: 'Targets',
-        component: 'InputArray',
-        canDelete: true,
-        canUpdate: true,
-        props: {
-            components: [
-                {
-                    variableField: 'targetId',
+    clonalHaTargets: {
+        inputArray: {
+            fieldConfigs: {
+                targetId: {
                     label: 'Target',
-                    component: 'AutoCompleter',
-                    componentProps: {
+                    autoCompleter: {
                         searchBaseUrl: '/api/targets',
-                        searchFields: ['region.gene.symbol', 'region.name', 'name'],
+                        searchFields: ['name'],
                         valueField: 'id',
-                        inputClass: 'w-64',
-                        displayFormat: (x: any) => {
-                            return x.name ?? `${x.region?.gene?.symbol}: ${x.region?.name}`
-                        },
-                        searchWithClause: {region: {columns: {name: true}, with: {gene: {columns: {symbol:true}}}}},
-                    },
+                        displayFields: ['name'],
+                        dropdown: false,
+                    }
                 },
-            ]
+            }
         }
     },
-    snvLibCloningExperiments: {display: false},
-    snvLibGoldenGateProducts: {display: false},
 }
 const displayWithClause = {
     clonalHaTargets: {

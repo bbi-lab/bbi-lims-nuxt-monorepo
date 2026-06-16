@@ -220,7 +220,7 @@ const fieldConfigs: FormFieldConfigs = {
         label: 'LIN Product Vector Amount (ng)',
         index: 2,
     },
-    gibsonBy: {
+    gibsonById: {
         label: 'Gibson By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -230,7 +230,7 @@ const fieldConfigs: FormFieldConfigs = {
             dropdown: true,
         },
     },
-    transformedBy: {
+    transformedById: {
         label: 'Transformed By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -240,7 +240,7 @@ const fieldConfigs: FormFieldConfigs = {
             dropdown: true,
         },
     },
-    cleanedBy: {
+    cleanedById: {
         label: 'Cleaned By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -250,7 +250,7 @@ const fieldConfigs: FormFieldConfigs = {
             dropdown: true,
         },
     },
-    preppedBy: {
+    preppedById: {
         label: 'Prepped By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -312,7 +312,7 @@ const fieldConfigs: FormFieldConfigs = {
                 :readonlyValues="readonlyValues"
                 :initialValues="{
                     preppedOn: new Date(),
-                    preppedBy: _.get(user, 'id'),
+                    preppedById: _.get(user, 'id'),
                     puc19VectorAmount: 50,
                 }"
                 @cancel="crudTable.didClickCancelAddForm"

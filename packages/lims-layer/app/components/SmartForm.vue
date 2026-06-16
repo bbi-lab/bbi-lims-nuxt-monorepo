@@ -10,6 +10,7 @@ const smartFormComponents: Record<string, Component | string> = {
     SmartFormAutoCompleter: resolveComponent('SmartFormAutoCompleter'),
     SmartFormNestedSelect: resolveComponent('SmartFormNestedSelect'),
     SmartFormInputNumber: resolveComponent('SmartFormInputNumber'),
+    SmartFormDatePicker: resolveComponent('SmartFormDatePicker'),
 }
 
 const props = defineProps({
@@ -53,8 +54,10 @@ const emit = defineEmits([
 ])
 
 const zodResolverFn = zodResolver(props.zodSchema)
+const dateFieldNames = computed(() => getDateFieldNames(props.zodSchema))
 const resolver = (opts: { values: Record<string, any>, names?: string[] }) => {
-    return zodResolverFn({ ...opts, values: sanitizeFormValues(opts.values) })
+    const values = coerceDateFields(sanitizeFormValues(opts.values), dateFieldNames.value)
+    return zodResolverFn({ ...opts, values })
 }
 
 const formFields = computed(() => buildFormFields(props.zodSchema, props.fieldConfigs, smartFormComponents))

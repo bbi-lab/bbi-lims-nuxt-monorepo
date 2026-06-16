@@ -141,7 +141,7 @@ const fieldConfigs: FormFieldConfigs = {
         },
         index: 1,
     },
-    preppedBy: {
+    preppedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],
@@ -203,7 +203,7 @@ const fieldConfigs: FormFieldConfigs = {
                 :readonlyValues="readonlyValues"
                 :initialValues="{
                     preppedOn: new Date(),
-                    preppedBy: _.get(user, 'id'),
+                    preppedById: _.get(user, 'id'),
                     puc19VectorAmount: 50,
                 }"
                 @cancel="crudTable.didClickCancelAddForm"

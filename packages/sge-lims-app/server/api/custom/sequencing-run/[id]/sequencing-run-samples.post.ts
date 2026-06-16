@@ -1,5 +1,5 @@
 import { eq, type InferInsertModel } from 'drizzle-orm'
-import { sequencingRunSamples } from '#shared/db/schema/sge/sequencing-run'
+import { sequencingRunSamples } from '#shared/db/schema/sequencing-run'
 import _ from 'lodash'
 import { wellCoordinateToChar } from 'lims-layer/shared/lib/plate-diagram'
 

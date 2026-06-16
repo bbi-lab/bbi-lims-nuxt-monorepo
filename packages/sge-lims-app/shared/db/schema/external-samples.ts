@@ -1,6 +1,6 @@
 import { check, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
 import { type InferSelectModel } from 'drizzle-orm/table'
-import { users } from "../user"
+import { users } from "lims-layer/server/db/schema/user"
 import { indexPrimers } from "./primer"
 import { sql } from "drizzle-orm/sql"
 

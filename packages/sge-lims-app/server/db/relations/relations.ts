@@ -5,37 +5,38 @@ import { users, userGroups, userGroupMemberships, passwordResetTokens } from 'li
 import { plateTypes } from 'lims-layer/shared/db/schema/plateTypes'
 
 // sge tables
-import { genes } from '#shared/db/schema/sge/gene'
-import { targets } from '#shared/db/schema/sge/target'
-import { regions } from '#shared/db/schema/sge/region'
-import { cycles } from '#shared/db/schema/sge/cycle'
-import { projects } from '#shared/db/schema/sge/project'
-import { pellets } from '#shared/db/schema/sge/pellet'
-import { lots } from '#shared/db/schema/sge/lots'
-import { reagents } from '#shared/db/schema/sge/reagents'
-import { dna, rna } from '#shared/db/schema/sge/nucleic-acid'
-import { plates } from '#shared/db/schema/sge/plate'
-import { wellables, wellContents, wellContentSources, wells } from '#shared/db/schema/sge/well'
+import { genes } from 'lims-layer/shared/db/schema/gene'
+import { targets } from '#shared/db/schema/target'
+import { regions } from '#shared/db/schema/region'
+import { cycles } from '#shared/db/schema/cycle'
+import { projects } from '#shared/db/schema/project'
+import { pellets } from '#shared/db/schema/pellet'
+import { lots } from '#shared/db/schema/lots'
+import { reagents } from '#shared/db/schema/reagents'
+import { dna, rna } from '#shared/db/schema/nucleic-acid'
+import { plates } from 'lims-layer/shared/db/schema/plate'
+import { wellables, wellContents, wellContentSources, wells } from 'lims-layer/shared/db/schema/well'
 import {
   amplificationPrimers, homologyArmPrimers, homologyArmPrimerTargets,
   homologyArmPuc19Primers, indexPrimers, linearizationPrimers,
   preseq1Primers, preseq1PrimerTargets, preseq2Primers,
   rnaPreseq1Primers, rnaPreseq1PrimerTargets, rnaPreseq2Primers,
   rnaPreseq2PrimerTargets, rnaRtPrimers,
-} from '#shared/db/schema/sge/primer'
-import { haPuc19Plasmids, sgRnaPlasmids, sgRnaPlasmidTargets, snvLibPlasmids } from '#shared/db/schema/sge/plasmid'
+} from '#shared/db/schema/primer'
+import { haPuc19Plasmids, sgRnaPlasmids, sgRnaPlasmidTargets, snvLibPlasmids } from '#shared/db/schema/plasmid'
 import {
   clonalHas, clonalHaTargets, haPcrProducts, haPuc19GibsonProducts, haPuc19PcrProducts,
   sgeOligoLots, sgeOligos, sgRnaOligos, sgRnaOligoTargets,
   snvLibAmpProducts, snvLibGibsonProducts, snvLibGoldenGateProducts, snvLibLinProducts,
-} from '#shared/db/schema/sge/oligos'
-import { pcrExperiments, pcrExperimentTargets, pcr1ExperimentMasterMixVolumes, pcr2ExperimentMasterMixVolumes } from '#shared/db/schema/sge/pcr-experiment'
-import { haCloningExperiments, haCloningExperimentTargets, sgRnaCloningExperiments, snvLibCloningExperiments } from '#shared/db/schema/sge/plasmid-experiment'
-import { extractionExperiments, extractionLotUsage } from '#shared/db/schema/sge/extraction-experiment'
-import { transfectExperiments, transfectLotUsage, transfectTargets } from '#shared/db/schema/sge/transfect-experiment'
-import { sequencingRuns, sequencingRunSamples, sequencingRunExternalSamples } from '#shared/db/schema/sge/sequencing-run'
-import { externalSamples } from '#shared/db/schema/sge/external-samples'
-import { viewHaPuc19GibsonProductsWithCalcs, viewPlatesWithWellCounts, viewSequencingRunAllSamples, viewSnvLibGibsonProducts } from '#shared/db/schema/sge/views'
+} from '#shared/db/schema/oligos'
+import { pcrTypes } from '#shared/db/schema/pcrTypes'
+import { pcrExperiments, pcrExperimentTargets, pcr1ExperimentMasterMixVolumes, pcr2ExperimentMasterMixVolumes } from '#shared/db/schema/pcr-experiment'
+import { haCloningExperiments, haCloningExperimentTargets, sgRnaCloningExperiments, snvLibCloningExperiments } from '#shared/db/schema/plasmid-experiment'
+import { extractionExperiments, extractionLotUsage } from '#shared/db/schema/extraction-experiment'
+import { transfectExperiments, transfectLotUsage, transfectTargets } from '#shared/db/schema/transfect-experiment'
+import { sequencingRuns, sequencingRunSamples, sequencingRunExternalSamples } from '#shared/db/schema/sequencing-run'
+import { externalSamples } from '#shared/db/schema/external-samples'
+import { viewHaPuc19GibsonProductsWithCalcs, viewPlatesWithWellCounts, viewSequencingRunAllSamples, viewSnvLibGibsonProducts } from '#shared/db/schema/views'
 
 export const relations = defineRelations({
   // lims-layer tables
@@ -92,6 +93,7 @@ export const relations = defineRelations({
   snvLibGibsonProducts,
   snvLibGoldenGateProducts,
   snvLibLinProducts,
+  pcrTypes,
   pcrExperiments,
   pcrExperimentTargets,
   pcr1ExperimentMasterMixVolumes,
@@ -275,7 +277,7 @@ export const relations = defineRelations({
       from: r.wellContentSources.sourceWellId,
       to: r.wells.id,
     }),
-    createdBy: r.one.users({
+    createdByUser: r.one.users({
       from: r.wellContentSources.createdBy,
       to: r.users.id,
     }),
@@ -317,7 +319,7 @@ export const relations = defineRelations({
   },
   transfectExperiments: {
     technician: r.one.users({
-      from: r.transfectExperiments.technician,
+      from: r.transfectExperiments.technicianId,
       to: r.users.id,
     }),
     cycle: r.one.cycles({
@@ -357,14 +359,21 @@ export const relations = defineRelations({
       to: r.lots.id,
     }),
   },
+  pcrTypes: {
+    pcrExperiments: r.many.pcrExperiments(),
+  },
   pcrExperiments: {
     technician: r.one.users({
-      from: r.pcrExperiments.technician,
+      from: r.pcrExperiments.technicianId,
       to: r.users.id,
     }),
     plate: r.one.plates({
       from: r.pcrExperiments.plateId,
       to: r.plates.id,
+    }),
+    pcrTypeRef: r.one.pcrTypes({
+      from: r.pcrExperiments.pcrType,
+      to: r.pcrTypes.value,
     }),
     pcrExperimentTargets: r.many.pcrExperimentTargets(),
     pcr1ExperimentMasterMixVolumes: r.many.pcr1ExperimentMasterMixVolumes(),
@@ -394,7 +403,7 @@ export const relations = defineRelations({
   },
   extractionExperiments: {
     technician: r.one.users({
-      from: r.extractionExperiments.technician,
+      from: r.extractionExperiments.technicianId,
       to: r.users.id,
     }),
     dna: r.many.dna(),
@@ -413,7 +422,7 @@ export const relations = defineRelations({
   },
   pellets: {
     harvestedBy: r.one.users({
-      from: r.pellets.harvestedBy,
+      from: r.pellets.harvestedById,
       to: r.users.id,
     }),
     transfectTarget: r.one.transfectTargets({
@@ -457,7 +466,7 @@ export const relations = defineRelations({
   },
   lots: {
     reagent: r.one.reagents({
-      from: r.lots.reagent,
+      from: r.lots.reagentId,
       to: r.reagents.id,
     }),
     sgeOligoLots: r.many.sgeOligoLots(),
@@ -551,7 +560,7 @@ export const relations = defineRelations({
   },
   haPcrProducts: {
     performedBy: r.one.users({
-      from: r.haPcrProducts.performedBy,
+      from: r.haPcrProducts.performedById,
       to: r.users.id,
     }),
     haCloningExperiment: r.one.haCloningExperiments({
@@ -576,7 +585,7 @@ export const relations = defineRelations({
   },
   haPuc19PcrProducts: {
     cleanedBy: r.one.users({
-      from: r.haPuc19PcrProducts.cleanedBy,
+      from: r.haPuc19PcrProducts.cleanedById,
       to: r.users.id,
     }),
     haPcrProduct: r.one.haPcrProducts({
@@ -601,7 +610,7 @@ export const relations = defineRelations({
   },
   haPuc19GibsonProducts: {
     preppedBy: r.one.users({
-      from: r.haPuc19GibsonProducts.preppedBy,
+      from: r.haPuc19GibsonProducts.preppedById,
       to: r.users.id,
     }),
     haPuc19PcrProduct: r.one.haPuc19PcrProducts({
@@ -616,17 +625,17 @@ export const relations = defineRelations({
   },
   haPuc19Plasmids: {
     preppedBy: r.one.users({
-      from: r.haPuc19Plasmids.preppedBy,
+      from: r.haPuc19Plasmids.preppedById,
       to: r.users.id,
       alias: 'preppedBy',
     }),
     colonyPickedBy: r.one.users({
-      from: r.haPuc19Plasmids.colonyPickedBy,
+      from: r.haPuc19Plasmids.colonyPickedById,
       to: r.users.id,
       alias: 'colonyPickedBy',
     }),
     transformedBy: r.one.users({
-      from: r.haPuc19Plasmids.transformedBy,
+      from: r.haPuc19Plasmids.transformedById,
       to: r.users.id,
       alias: 'transformedBy',
     }),
@@ -691,7 +700,7 @@ export const relations = defineRelations({
   },
   sgRnaCloningExperiments: {
     technician: r.one.users({
-      from: r.sgRnaCloningExperiments.technician,
+      from: r.sgRnaCloningExperiments.technicianId,
       to: r.users.id,
     }),
     plate: r.one.plates({
@@ -716,7 +725,7 @@ export const relations = defineRelations({
   },
   snvLibAmpProducts: {
     cleanedBy: r.one.users({
-      from: r.snvLibAmpProducts.cleanedBy,
+      from: r.snvLibAmpProducts.cleanedById,
       to: r.users.id,
     }),
     snvLibCloningExperiment: r.one.snvLibCloningExperiments({
@@ -744,12 +753,12 @@ export const relations = defineRelations({
   },
   snvLibLinProducts: {
     dpn1DigestBy: r.one.users({
-      from: r.snvLibLinProducts.dpn1DigestBy,
+      from: r.snvLibLinProducts.dpn1DigestById,
       to: r.users.id,
       alias: 'dpn1DigestBy',
     }),
     gelExtractedBy: r.one.users({
-      from: r.snvLibLinProducts.gelExtractedBy,
+      from: r.snvLibLinProducts.gelExtractedById,
       to: r.users.id,
       alias: 'gelExtractedBy',
     }),
@@ -778,22 +787,22 @@ export const relations = defineRelations({
   },
   snvLibGibsonProducts: {
     gibsonBy: r.one.users({
-      from: r.snvLibGibsonProducts.gibsonBy,
+      from: r.snvLibGibsonProducts.gibsonById,
       to: r.users.id,
       alias: 'gibsonBy',
     }),
     cleanedBy: r.one.users({
-      from: r.snvLibGibsonProducts.cleanedBy,
+      from: r.snvLibGibsonProducts.cleanedById,
       to: r.users.id,
       alias: 'cleanedBy',
     }),
     transformedBy: r.one.users({
-      from: r.snvLibGibsonProducts.transformedBy,
+      from: r.snvLibGibsonProducts.transformedById,
       to: r.users.id,
       alias: 'transformedBy',
     }),
     preppedBy: r.one.users({
-      from: r.snvLibGibsonProducts.preppedBy,
+      from: r.snvLibGibsonProducts.preppedById,
       to: r.users.id,
       alias: 'preppedBy',
     }),

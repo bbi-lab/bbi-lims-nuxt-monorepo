@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { wellContents } from '#shared/db/schema/sge/well'
+import { wellContents } from 'lims-layer/shared/db/schema/well'
 
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params as { id: string }

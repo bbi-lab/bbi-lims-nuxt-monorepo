@@ -1,17 +1,16 @@
 import { eq, sql } from "drizzle-orm/sql"
 import { uuid, varchar, text, integer, timestamp, doublePrecision, pgView, boolean, smallint} from 'drizzle-orm/pg-core'
-import { users } from "../user"
+import { users } from "lims-layer/server/db/schema/user"
 import { haPcrProducts, haPuc19GibsonProducts, haPuc19PcrProducts, snvLibAmpProducts, snvLibGibsonProducts, snvLibLinProducts } from "./oligos"
 import { haPuc19Plasmids } from "./plasmid"
 import { haCloningExperiments, snvLibCloningExperiments, sgRnaCloningExperiments } from "./plasmid-experiment"
-import { plates } from "./plate"
-import { wellContents, wellContentSources, wells } from "./well"
+import { plates } from "lims-layer/shared/db/schema/plate"
+import { plateTypes } from "lims-layer/shared/db/schema/plateTypes"
+import { wellContents, wellContentSources, wells } from "lims-layer/shared/db/schema/well"
 import { pcrExperiments, pcrExperimentTargets } from "./pcr-experiment"
 import { transfectExperiments, transfectTargets } from "./transfect-experiment"
 import { targets } from "./target"
 import { cycles } from "./cycle"
-import { ENUM_LOOKUPS } from "./enum-lookups"
-import _ from 'lodash'
 
 export const viewHaPuc19GibsonProductsWithCalcs = pgView('view_ha_puc19_gibson_products_with_calcs', {
     id: uuid('id'),
@@ -95,7 +94,7 @@ export const viewHaPuc19GibsonProductsWithCalcs = pgView('view_ha_puc19_gibson_p
             FROM  ${haPcrProducts}
         ) AS t_ha_pcr_products ON t_ha_pcr_products.id = ${haPuc19PcrProducts.haPcrProductId}
         JOIN ${haCloningExperiments} ON ${haCloningExperiments.id} = t_ha_pcr_products.ha_cloning_experiment_id
-        LEFT JOIN ${users} ON ${users.id} = ${haPuc19GibsonProducts.preppedBy}) t1`)
+        LEFT JOIN ${users} ON ${users.id} = ${haPuc19GibsonProducts.preppedById}) t1`)
 
 export const viewSnvLibGibsonProducts = pgView('view_snv_lib_gibson_products', {
     id: uuid('id'),
@@ -199,10 +198,10 @@ FROM (
 	END AS amp_product_vector_amount
 FROM ${snvLibGibsonProducts}
 JOIN ${snvLibCloningExperiments} ON ${snvLibCloningExperiments.id} = ${snvLibGibsonProducts.snvLibCloningExperimentId}
-LEFT JOIN ${users} AS prepped_by_user ON prepped_by_user.id = ${snvLibGibsonProducts.preppedBy}
-LEFT JOIN ${users} AS transformed_by_user ON transformed_by_user.id = ${snvLibGibsonProducts.transformedBy}
-LEFT JOIN ${users} AS cleaned_by_user ON cleaned_by_user.id = ${snvLibGibsonProducts.cleanedBy}
-LEFT JOIN ${users} AS gibson_by_user ON gibson_by_user.id = ${snvLibGibsonProducts.gibsonBy}
+LEFT JOIN ${users} AS prepped_by_user ON prepped_by_user.id = ${snvLibGibsonProducts.preppedById}
+LEFT JOIN ${users} AS transformed_by_user ON transformed_by_user.id = ${snvLibGibsonProducts.transformedById}
+LEFT JOIN ${users} AS cleaned_by_user ON cleaned_by_user.id = ${snvLibGibsonProducts.cleanedById}
+LEFT JOIN ${users} AS gibson_by_user ON gibson_by_user.id = ${snvLibGibsonProducts.gibsonById}
 LEFT JOIN
 	(SELECT ${snvLibLinProducts.id} AS id,
 		${snvLibLinProducts.name} AS name,
@@ -236,12 +235,6 @@ LEFT JOIN (
 ) t2 ) t3`)
 
 
-// create a CTE for plate types from ENUM_LOOKUPSto use in view
-const plateTypesAsSqlValues = _.map(ENUM_LOOKUPS.plates.plateType, (value, key) => {
-  return `('${key}', '${value.label}', '${value.desc}')`
-})
-const plateTypesCte = `with plate_types(plate_type_value, plate_type_label, plate_type_desc) AS (VALUES ${plateTypesAsSqlValues.join(', ')})`
-
 export const viewPlatesWithWellCounts = pgView('view_plates_with_well_counts', {
   id: uuid('id'),
   name: varchar('name', { length: 255 }),
@@ -259,7 +252,7 @@ export const viewPlatesWithWellCounts = pgView('view_plates_with_well_counts', {
   wellsProcessedCount: smallint('wells_processed_count'),
   sgRnaCloningExperimentId: varchar('sg_rna_cloning_experiment_id'),
   pcrExperimentId: varchar('pcr_experiment_id'),
-}).as(sql`${sql.raw(plateTypesCte)} select
+}).as(sql`select
     ${plates.id},
     ${plates.name},
     ${plates.sizeX},
@@ -270,7 +263,7 @@ export const viewPlatesWithWellCounts = pgView('view_plates_with_well_counts', {
     ${cycles.id} as cycle_id,
     ${cycles.name} as cycle_name,
     string_agg(distinct ${targets.name}, ',') as targets,
-    (select distinct on (plate_type_value) plate_type_label from plate_types where plate_type_value = ${plates.plateType}) as plate_type_label,
+    ${plateTypes.label} as plate_type_label,
     count(distinct(${wells.id})) as wells_count,
     count(distinct(${wellContents.wellId})) as wells_with_content_count,
     count(distinct(${wellContentSources.sourceWellId})) as wells_processed_count,
@@ -278,6 +271,7 @@ export const viewPlatesWithWellCounts = pgView('view_plates_with_well_counts', {
     ${pcrExperiments.id} as pcr_experiment_id
     from ${plates}
     join ${wells} on ${eq(plates.id, wells.plateId)}
+    left join ${plateTypes} on ${eq(plateTypes.value, plates.plateType)}
     left join ${wellContentSources} on ${eq(wells.id, wellContentSources.sourceWellId)}
     left join ${wellContents} on ${eq(wells.id, wellContents.wellId)}
     left join ${pcrExperiments} on ${eq(plates.id, pcrExperiments.plateId)}
@@ -287,7 +281,7 @@ export const viewPlatesWithWellCounts = pgView('view_plates_with_well_counts', {
     left join ${transfectExperiments} on ${eq(transfectTargets.experimentId, transfectExperiments.id)}
     left join ${cycles} on ${eq(transfectExperiments.cycleId, cycles.id)}
     left join ${sgRnaCloningExperiments} on ${eq(plates.id, sgRnaCloningExperiments.plateId)}
-    group by ${plates.id}, ${cycles.id}, ${sgRnaCloningExperiments.id}, ${pcrExperiments.id}`
+    group by ${plates.id}, ${plateTypes.label}, ${cycles.id}, ${sgRnaCloningExperiments.id}, ${pcrExperiments.id}`
 )
 
 export const viewSequencingRunAllSamples = pgView('view_sequencing_run_all_samples', {

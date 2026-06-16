@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { genes } from '#shared/db/schema/sge/gene'
+import { genes } from 'lims-layer/shared/db/schema/gene'
 import { ilike, and, or, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {

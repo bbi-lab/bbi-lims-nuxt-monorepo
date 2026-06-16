@@ -3,11 +3,15 @@ import { and, eq, inArray } from 'drizzle-orm'
 import type { PgTable, PgTransaction } from 'drizzle-orm/pg-core'
 import { v4 as uuidv4 } from 'uuid'
 import { sgeDb } from './db'
-import { pcrExperiments } from '#shared/db/schema/sge/pcr-experiment'
-import { sgRnaCloningExperiments } from '#shared/db/schema/sge/plasmid-experiment'
-import { plates, type PlateType, type NewPlate } from '#shared/db/schema/sge/plate'
-import { targets } from '#shared/db/schema/sge/target'
-import { wells, wellContents, wellContentSources } from '#shared/db/schema/sge/well'
+import { pcrExperiments } from '#shared/db/schema/pcr-experiment'
+import { sgRnaCloningExperiments } from '#shared/db/schema/plasmid-experiment'
+import { plates } from 'lims-layer/shared/db/schema/plate'
+import { targets } from '#shared/db/schema/target'
+import { wells, wellContents, wellContentSources } from 'lims-layer/shared/db/schema/well'
+
+// plateType is a FK to plate_types.value (open lookup set), so it is just a string at the type level.
+type PlateType = string
+type NewPlate = typeof plates.$inferInsert
 
 export interface WellContentWithSource {
   id?: string

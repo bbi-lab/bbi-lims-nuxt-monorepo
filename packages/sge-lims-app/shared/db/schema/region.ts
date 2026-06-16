@@ -1,7 +1,7 @@
 import { pgTable, uuid, varchar, integer, uniqueIndex } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm/sql'
 import _ from 'lodash'
-import {genes} from './gene'
+import {genes} from 'lims-layer/shared/db/schema/gene'
 
 export const regions = pgTable('regions', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),

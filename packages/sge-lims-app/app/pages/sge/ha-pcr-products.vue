@@ -129,7 +129,7 @@ const fieldConfigs: FormFieldConfigs = {
     wtHap1DnaConcentration: {
         label: 'WT HAP1 DNA Concentration (ng/µL)',
     },
-    performedBy: {
+    performedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],

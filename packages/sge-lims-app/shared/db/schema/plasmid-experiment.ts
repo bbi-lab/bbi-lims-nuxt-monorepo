@@ -1,13 +1,13 @@
 import { pgTable, timestamp, unique, uuid, varchar, text } from 'drizzle-orm/pg-core'
 import { users } from 'lims-layer/server/db/schema/user'
 import { targets } from './target'
-import { plates } from './plate'
+import { plates } from 'lims-layer/shared/db/schema/plate'
 import { clonalHas } from './oligos'
 
 export const sgRnaCloningExperiments = pgTable('sg_rna_cloning_experiments', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),
   name: varchar('name', { length: 255 }),
-  technician: uuid('technician').references(() => users.id),
+  technicianId: uuid('technician_id').references(() => users.id),
   transformedOn: timestamp('transformed_on'),
   plateId: uuid('plate_id').references(() => plates.id),
   notes: text('notes'),

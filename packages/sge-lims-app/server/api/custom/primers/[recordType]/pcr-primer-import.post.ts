@@ -1,11 +1,10 @@
 import _ from 'lodash'
 import { v4 as uuid } from 'uuid'
-import { rnaPreseq2Primers, rnaPreseq1Primers, preseq2Primers, preseq1Primers, rnaPreseq1PrimerTargets, rnaPreseq2PrimerTargets, preseq1PrimerTargets } from '#shared/db/schema/sge/primer'
+import { rnaPreseq2Primers, rnaPreseq1Primers, preseq2Primers, preseq1Primers, rnaPreseq1PrimerTargets, rnaPreseq2PrimerTargets, preseq1PrimerTargets } from '#shared/db/schema/primer'
 import { schemas } from '#shared/db/zod/zodSchemas'
 import type { RecordValues } from 'lims-layer/server/utils/record'
-import { wellContents } from '#shared/db/schema/sge/well'
+import { wellContents } from 'lims-layer/shared/db/schema/well'
 import type { PgTable } from 'drizzle-orm/pg-core'
-import { ENUM_LOOKUPS } from '#shared/db/schema/sge/enum-lookups'
 
 const RECORD_TYPE_CONFIG_MAP: Record<string, any> = {
   'rna-preseq1-primers': {
@@ -68,7 +67,8 @@ export default defineEventHandler(async (event) => {
 
     const missingPlates = _.difference(plateNames, _.keys(plateIdsByName))
     if (missingPlates.length > 0) {
-      const plateTypeName = _.get(ENUM_LOOKUPS.plates.plateType, [recordTypeConfig.plateType, 'label'])
+      const plateType = await useSgeDrizzle().query.plateTypes.findFirst({ where: { value: recordTypeConfig.plateType } })
+      const plateTypeName = plateType?.label ?? recordTypeConfig.plateType
       throw createError({ statusCode: 400, statusMessage: `${plateTypeName} not found in database: ${missingPlates.join(', ')}` })
     }
 

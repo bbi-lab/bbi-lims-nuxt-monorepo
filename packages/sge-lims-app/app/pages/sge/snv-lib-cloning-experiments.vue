@@ -98,7 +98,7 @@ const columnDefs: ColumnDefinitions = {
                     snvLibCloningExperimentId: _.get(data, 'id'),
                 }
                 addFormInitialValues.value = {
-                    cleanedBy: _.get(user, 'value.id'),
+                    cleanedById: _.get(user, 'value.id'),
                     cleanedOn: new Date(),
                 }
                 addFormTableName.value = 'snv-lib-amp-products'
@@ -133,7 +133,7 @@ const columnDefs: ColumnDefinitions = {
                     snvLibCloningExperimentId: _.get(data, 'id'),
                 }
                 addFormInitialValues.value = {
-                    dpn1DigestBy: _.get(user, 'value.id'),
+                    dpn1DigestById: _.get(user, 'value.id'),
                     dpn1DigestOn: new Date(),
                 }
                 addFormTableName.value = 'snv-lib-lin-products'
@@ -174,7 +174,7 @@ const columnDefs: ColumnDefinitions = {
                     snvLibCloningExperimentId: _.get(data, 'id'),
                 }
                 addFormInitialValues.value = {
-                    gibsonBy: _.get(user, 'value.id'),
+                    gibsonById: _.get(user, 'value.id'),
                     gibsonOn: new Date(),
                 }
                 addFormTableName.value = 'snv-lib-gibson-products'
@@ -357,7 +357,7 @@ const ampProductFieldConfigs: FormFieldConfigs = {
         },
         index: 3,
     },
-    cleanedBy: {
+    cleanedById: {
         label: 'Cleaned By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -463,7 +463,7 @@ const linProductFieldConfigs: FormFieldConfigs = {
             },
         },
     },
-    dpn1DigestBy: {
+    dpn1DigestById: {
         label: 'DpnI Digest By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -477,7 +477,7 @@ const linProductFieldConfigs: FormFieldConfigs = {
         label: 'DpnI Digest On',
         type: 'date',
     },
-    gelExtractedBy: {
+    gelExtractedById: {
         label: 'Gel Extracted By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -514,7 +514,7 @@ const gibsonProductFieldConfigs: FormFieldConfigs = {
         },
         index: 2,
     },
-    gibsonBy: {
+    gibsonById: {
         label: 'Gibson By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -524,7 +524,7 @@ const gibsonProductFieldConfigs: FormFieldConfigs = {
             dropdown: true,
         },
     },
-    transformedBy: {
+    transformedById: {
         label: 'Transformed By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -534,7 +534,7 @@ const gibsonProductFieldConfigs: FormFieldConfigs = {
             dropdown: true,
         },
     },
-    cleanedBy: {
+    cleanedById: {
         label: 'Cleaned By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -544,7 +544,7 @@ const gibsonProductFieldConfigs: FormFieldConfigs = {
             dropdown: true,
         },
     },
-    preppedBy: {
+    preppedById: {
         label: 'Prepped By',
         autoCompleter: {
             searchBaseUrl: '/api/users',

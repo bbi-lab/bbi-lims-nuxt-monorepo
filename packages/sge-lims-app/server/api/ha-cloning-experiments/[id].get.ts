@@ -1,4 +1,4 @@
-import { haCloningExperiments } from '#shared/db/schema/sge/plasmid-experiment'
+import { haCloningExperiments } from '#shared/db/schema/plasmid-experiment'
 
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params as { id: string }

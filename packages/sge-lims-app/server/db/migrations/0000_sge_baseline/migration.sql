@@ -28,8 +28,8 @@ CREATE TABLE "external_samples" (
 CREATE TABLE "extraction_experiments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	"name" varchar(255) NOT NULL UNIQUE,
-	"technician" uuid,
-	"extractedOn" timestamp DEFAULT now()
+	"technician_id" uuid,
+	"extracted_on" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "extraction_lot_usage" (
@@ -125,7 +125,7 @@ CREATE TABLE "ha_pcr_products" (
 	"wt_hap1_dna_concentration" double precision,
 	"temperature_chosen" double precision,
 	"performed_on" timestamp,
-	"performed_by" uuid,
+	"performed_by_id" uuid,
 	"notes" text
 );
 --> statement-breakpoint
@@ -136,7 +136,7 @@ CREATE TABLE "ha_puc19_gibson_products" (
 	"puc19_vector_concentration" double precision,
 	"puc19_vector_amount" double precision DEFAULT 50,
 	"prepped_on" timestamp,
-	"prepped_by" uuid,
+	"prepped_by_id" uuid,
 	"quant" double precision,
 	"total_reaction_volume" double precision DEFAULT 10,
 	"notes" text
@@ -150,7 +150,7 @@ CREATE TABLE "ha_puc19_pcr_products" (
 	"ha_puc19_primer_reverse_id" uuid NOT NULL,
 	"temperature_used" double precision,
 	"cleaned_on" timestamp,
-	"cleaned_by" uuid,
+	"cleaned_by_id" uuid,
 	"quant" double precision,
 	"notes" text
 );
@@ -194,7 +194,7 @@ CREATE TABLE "snv_lib_amp_products" (
 	"amp_primer_forward_id" uuid NOT NULL,
 	"amp_primer_reverse_id" uuid NOT NULL,
 	"cleaned_on" timestamp,
-	"cleaned_by" uuid,
+	"cleaned_by_id" uuid,
 	"quant" double precision,
 	"start_position" integer,
 	"stop_position" integer,
@@ -207,13 +207,13 @@ CREATE TABLE "snv_lib_gibson_products" (
 	"snv_lib_cloning_experiment_id" uuid NOT NULL UNIQUE,
 	"lin_product_vector_amount" double precision DEFAULT 50,
 	"gibson_on" timestamp,
-	"gibson_by" uuid,
+	"gibson_by_id" uuid,
 	"cleaned_on" timestamp,
-	"cleaned_by" uuid,
+	"cleaned_by_id" uuid,
 	"transformed_on" timestamp,
-	"transformed_by" uuid,
+	"transformed_by_id" uuid,
 	"prepped_on" timestamp,
-	"prepped_by" uuid,
+	"prepped_by_id" uuid,
 	"quant" double precision,
 	"plasmidsaurus_checked" boolean DEFAULT false,
 	"ngs_checked" boolean DEFAULT false,
@@ -242,9 +242,9 @@ CREATE TABLE "snv_lib_lin_products" (
 	"lin_primer_forward_id" uuid NOT NULL,
 	"lin_primer_reverse_id" uuid NOT NULL,
 	"dpn1_digest_on" timestamp,
-	"dpn1_digest_by" uuid,
+	"dpn1_digest_by_id" uuid,
 	"gel_extracted_on" timestamp,
-	"gel_extracted_by" uuid,
+	"gel_extracted_by_id" uuid,
 	"quant" double precision,
 	"notes" text
 );
@@ -279,8 +279,8 @@ CREATE TABLE "pcr_experiment_targets" (
 CREATE TABLE "pcr_experiments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	"name" varchar(255) NOT NULL UNIQUE,
-	"pcr_type" varchar NOT NULL,
-	"technician" uuid,
+	"pcr_type" varchar(100) NOT NULL,
+	"technician_id" uuid,
 	"started_on" timestamp DEFAULT now(),
 	"plate_id" uuid,
 	"gel_images_link" text,
@@ -295,7 +295,7 @@ CREATE TABLE "pellets" (
 	"transfections" varchar(3)[],
 	"harvested_on" timestamp NOT NULL,
 	"harvest_day" integer NOT NULL,
-	"harvested_by" uuid,
+	"harvested_by_id" uuid,
 	"is_current" boolean,
 	"is_backup" boolean,
 	"d3_confluency" double precision,
@@ -322,7 +322,7 @@ CREATE TABLE "ha_cloning_experiments" (
 CREATE TABLE "sg_rna_cloning_experiments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	"name" varchar(255),
-	"technician" uuid,
+	"technician_id" uuid,
 	"transformed_on" timestamp,
 	"plate_id" uuid,
 	"notes" text
@@ -345,11 +345,11 @@ CREATE TABLE "ha_puc19_plasmids" (
 	"ha_puc19_gibson_product_id" uuid NOT NULL UNIQUE,
 	"e_coli_stellar_volume" double precision DEFAULT 20,
 	"transformed_on" timestamp,
-	"transformed_by" uuid,
+	"transformed_by_id" uuid,
 	"colony_picked_on" timestamp,
-	"colony_picked_by" uuid,
+	"colony_picked_by_id" uuid,
 	"prepped_on" timestamp,
-	"prepped_by" uuid,
+	"prepped_by_id" uuid,
 	"notes" text
 );
 --> statement-breakpoint
@@ -384,14 +384,86 @@ CREATE TABLE "snv_lib_plasmids" (
 	CONSTRAINT "external_link_check" CHECK ("external_link" ~* '^https?://.+$')
 );
 --> statement-breakpoint
+CREATE TABLE "plate_types" (
+	"value" varchar(100) NOT NULL,
+	"label" varchar(255) NOT NULL,
+	"desc" varchar(500),
+	CONSTRAINT "plate_types_pkey" PRIMARY KEY ("value")
+);
+--> statement-breakpoint
+INSERT INTO "plate_types" ("value", "label", "desc") VALUES
+	('pellet-storage', 'Pellet storage', 'Pellet storage'),
+	('lin-primer-storage', 'LIN primer storage', 'Linearization primer storage'),
+	('amp-primer-storage', 'AMP primer storage', 'Amplification primer storage'),
+	('ha-primer-storage', 'HA primer storage', 'Homology arm primer storage'),
+	('ha-puc19-primer-storage', 'HA pUC19 primer storage', 'Homology arm pUC19 arm primer storage'),
+	('sg-rna-oligo-storage', 'sgRNA oligo storage', 'sgRNA oligo storage'),
+	('sg-rna-oligo', 'sgRNA oligo', 'sgRNA oligo'),
+	('sg-rna-plasmid-storage', 'sgRNA plasmid storage', 'sgRNA plasmid storage'),
+	('sg-rna-plasmid', 'sgRNA plasmid', 'sgRNA plasmid'),
+	('lin-pcr', 'LIN PCR', 'Linearization primer PCR'),
+	('amp-pcr', 'AMP PCR', 'Amplification primer PCR'),
+	('ha-pcr', 'HA PCR', 'Homology arm primer PCR'),
+	('preseq-1', 'PreSeq 1', 'PreSeq 1'),
+	('preseq-2', 'PreSeq 2', 'PreSeq 2'),
+	('preseq-3', 'PreSeq 3', 'PreSeq 3'),
+	('dna-preseq-1', 'DNA PreSeq 1', 'DNA PreSeq 1'),
+	('dna-preseq-2', 'DNA PreSeq 2', 'DNA PreSeq 2'),
+	('dna-preseq-3', 'DNA PreSeq 3', 'DNA PreSeq 3'),
+	('rna-rt-storage', 'RNA RT storage', 'RNA Reverse Transcription storage'),
+	('rna-preseq-1', 'RNA PreSeq 1', 'RNA PreSeq 1'),
+	('rna-preseq-2', 'RNA PreSeq 2', 'RNA PreSeq 2'),
+	('rna-preseq-3', 'RNA PreSeq 3', 'RNA PreSeq 3'),
+	('snv-lib-preseq-2', 'SNVlib PreSeq 2', 'SNVlib PreSeq 2'),
+	('snv-lib-preseq-3', 'SNVlib PreSeq 3', 'SNVlib PreSeq 3'),
+	('seq-index', 'Seq index', 'Sequencing index plate'),
+	('clonal-ha', 'Clonal HA plate', 'Clonal HA plate'),
+	('dna-preseq-1-primer-storage', 'DNA PreSeq 1 primer storage', 'DNA PreSeq 1 primer storage'),
+	('dna-preseq-2-primer-storage', 'DNA PreSeq 2 primer storage', 'DNA PreSeq 2 primer storage'),
+	('rna-rt-primer-storage', 'RNA RT primer storage', 'RNA RT primer storage'),
+	('rna-preseq-1-primer-storage', 'RNA PreSeq 1 primer storage', 'RNA PreSeq 1 primer storage'),
+	('rna-preseq-2-primer-storage', 'RNA PreSeq 2 primer storage', 'RNA PreSeq 2 primer storage'),
+	('external-sample-indexing', 'External sample indexing', 'External sample indexing'),
+	('ha-pcr-product-storage', 'HA PCR product storage', 'HA PCR product storage'),
+	('ha-puc19-pcr-product-storage', 'HA pUC19 PCR product storage', 'HA pUC19 PCR product storage'),
+	('ha-puc19-gibson-product-storage', 'HA pUC19 Gibson product storage', 'HA pUC19 Gibson product storage'),
+	('ha-puc19-plasmid-storage', 'HA pUC19 plasmid storage', 'HA pUC19 plasmid storage'),
+	('snv-lib-amp-product-storage', 'SNVlib AMP product storage', 'SNVlib AMP product storage'),
+	('snv-lib-lin-product-storage', 'SNVlib LIN product storage', 'SNVlib LIN product storage'),
+	('snv-lib-gibson-product-storage', 'SNVlib Gibson product storage', 'SNVlib Gibson product storage'),
+	('snv-lib-plasmid-storage', 'SNVlib plasmid storage', 'SNVlib plasmid storage'),
+	('snv-lib-golden-gate-product-storage', 'SNVlib Golden Gate product storage', 'SNVlib Golden Gate product storage');
+--> statement-breakpoint
+CREATE TABLE "pcr_types" (
+	"value" varchar(100) NOT NULL,
+	"label" varchar(255) NOT NULL,
+	"desc" varchar(500),
+	CONSTRAINT "pcr_types_pkey" PRIMARY KEY ("value")
+);
+--> statement-breakpoint
+INSERT INTO "pcr_types" ("value", "label", "desc") VALUES
+	('lin-pcr', 'LIN PCR', 'Linearization primer PCR'),
+	('amp-pcr', 'AMP PCR', 'Amplification primer PCR'),
+	('ha-pcr', 'HA PCR', 'Homology arm primer PCR'),
+	('dna-preseq-1', 'DNA PreSeq 1', 'DNA PreSeq 1'),
+	('dna-preseq-2', 'DNA PreSeq 2', 'DNA PreSeq 2'),
+	('dna-preseq-3', 'DNA PreSeq 3', 'DNA PreSeq 3'),
+	('rna-rt', 'RNA RT', 'RNA Reverse Transcription'),
+	('rna-preseq-1', 'RNA PreSeq 1', 'RNA PreSeq 1'),
+	('rna-preseq-2', 'RNA PreSeq 2', 'RNA PreSeq 2'),
+	('rna-preseq-3', 'RNA PreSeq 3', 'RNA PreSeq 3'),
+	('snv-lib-preseq-2', 'SNVlib PreSeq 2', 'SNVlib PreSeq 2'),
+	('snv-lib-preseq-3', 'SNVlib PreSeq 3', 'SNVlib PreSeq 3');
+--> statement-breakpoint
 CREATE TABLE "plates" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-	"name" varchar(255) NOT NULL UNIQUE,
+	"name" varchar(255) NOT NULL,
 	"size_x" smallint DEFAULT 12 NOT NULL,
 	"size_y" smallint DEFAULT 8 NOT NULL,
-	"plate_type" varchar NOT NULL,
+	"plate_type" varchar(100) NOT NULL,
 	"discarded" boolean DEFAULT false,
-	"processed" boolean DEFAULT false
+	"processed" boolean DEFAULT false,
+	CONSTRAINT "plates_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE "amplification_primers" (
@@ -625,7 +697,7 @@ CREATE TABLE "targets" (
 CREATE TABLE "transfect_experiments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 	"cycle_id" uuid NOT NULL UNIQUE,
-	"technician" uuid,
+	"technician_id" uuid,
 	"started_on" timestamp DEFAULT now() NOT NULL,
 	"transfection_count" integer,
 	"replicates_count" integer NOT NULL
@@ -703,7 +775,6 @@ CREATE TABLE "wellables" (
       'snv_lib_amp_products',
       'snv_lib_lin_products',
       'snv_lib_gibson_products',
-      'snv_lib_plasmids',
       'snv_lib_clonal_dna_products',
       'snv_lib_golden_gate_products',
       'clonal_has'
@@ -777,7 +848,7 @@ CREATE INDEX "password_reset_tokens_user_id_idx" ON "users"."password_reset_toke
 ALTER TABLE "external_samples" ADD CONSTRAINT "external_samples_index_primer_1_id_index_primers_id_fkey" FOREIGN KEY ("index_primer_1_id") REFERENCES "index_primers"("id");--> statement-breakpoint
 ALTER TABLE "external_samples" ADD CONSTRAINT "external_samples_index_primer_2_id_index_primers_id_fkey" FOREIGN KEY ("index_primer_2_id") REFERENCES "index_primers"("id");--> statement-breakpoint
 ALTER TABLE "external_samples" ADD CONSTRAINT "external_samples_created_by_users_id_fkey" FOREIGN KEY ("created_by") REFERENCES "users"."users"("id");--> statement-breakpoint
-ALTER TABLE "extraction_experiments" ADD CONSTRAINT "extraction_experiments_technician_users_id_fkey" FOREIGN KEY ("technician") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "extraction_experiments" ADD CONSTRAINT "extraction_experiments_technician_id_users_id_fkey" FOREIGN KEY ("technician_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "extraction_lot_usage" ADD CONSTRAINT "extraction_lot_usage_8HCDWIuf3kzm_fkey" FOREIGN KEY ("experiment_id") REFERENCES "extraction_experiments"("id");--> statement-breakpoint
 ALTER TABLE "extraction_lot_usage" ADD CONSTRAINT "extraction_lot_usage_lot_id_lots_id_fkey" FOREIGN KEY ("lot_id") REFERENCES "lots"("id");--> statement-breakpoint
 ALTER TABLE "lots" ADD CONSTRAINT "lots_reagent_id_reagents_id_fkey" FOREIGN KEY ("reagent_id") REFERENCES "reagents"("id");--> statement-breakpoint
@@ -790,13 +861,13 @@ ALTER TABLE "clonal_ha_targets" ADD CONSTRAINT "clonal_ha_targets_target_id_targ
 ALTER TABLE "ha_pcr_products" ADD CONSTRAINT "ha_pcr_products_N0BQMrHhaLJR_fkey" FOREIGN KEY ("ha_cloning_experiment_id") REFERENCES "ha_cloning_experiments"("id");--> statement-breakpoint
 ALTER TABLE "ha_pcr_products" ADD CONSTRAINT "ha_pcr_products_LMGds6CBkKLH_fkey" FOREIGN KEY ("ha_primer_forward_id") REFERENCES "homology_arm_primers"("id");--> statement-breakpoint
 ALTER TABLE "ha_pcr_products" ADD CONSTRAINT "ha_pcr_products_GdUO28Z6hmPm_fkey" FOREIGN KEY ("ha_primer_reverse_id") REFERENCES "homology_arm_primers"("id");--> statement-breakpoint
-ALTER TABLE "ha_pcr_products" ADD CONSTRAINT "ha_pcr_products_performed_by_users_id_fkey" FOREIGN KEY ("performed_by") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "ha_pcr_products" ADD CONSTRAINT "ha_pcr_products_performed_by_id_users_id_fkey" FOREIGN KEY ("performed_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "ha_puc19_gibson_products" ADD CONSTRAINT "ha_puc19_gibson_products_HfYxnSQffpfX_fkey" FOREIGN KEY ("ha_puc19_pcr_product_id") REFERENCES "ha_puc19_pcr_products"("id");--> statement-breakpoint
-ALTER TABLE "ha_puc19_gibson_products" ADD CONSTRAINT "ha_puc19_gibson_products_prepped_by_users_id_fkey" FOREIGN KEY ("prepped_by") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "ha_puc19_gibson_products" ADD CONSTRAINT "ha_puc19_gibson_products_prepped_by_id_users_id_fkey" FOREIGN KEY ("prepped_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "ha_puc19_pcr_products" ADD CONSTRAINT "ha_puc19_pcr_products_ha_pcr_product_id_ha_pcr_products_id_fkey" FOREIGN KEY ("ha_pcr_product_id") REFERENCES "ha_pcr_products"("id");--> statement-breakpoint
 ALTER TABLE "ha_puc19_pcr_products" ADD CONSTRAINT "ha_puc19_pcr_products_Qsxc70jQGEpS_fkey" FOREIGN KEY ("ha_puc19_primer_forward_id") REFERENCES "homology_arm_puc19_primers"("id");--> statement-breakpoint
 ALTER TABLE "ha_puc19_pcr_products" ADD CONSTRAINT "ha_puc19_pcr_products_FmDGwBbTWbQH_fkey" FOREIGN KEY ("ha_puc19_primer_reverse_id") REFERENCES "homology_arm_puc19_primers"("id");--> statement-breakpoint
-ALTER TABLE "ha_puc19_pcr_products" ADD CONSTRAINT "ha_puc19_pcr_products_cleaned_by_users_id_fkey" FOREIGN KEY ("cleaned_by") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "ha_puc19_pcr_products" ADD CONSTRAINT "ha_puc19_pcr_products_cleaned_by_id_users_id_fkey" FOREIGN KEY ("cleaned_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "sg_rna_oligo_targets" ADD CONSTRAINT "sg_rna_oligo_targets_sg_rna_oligo_id_sg_rna_oligos_id_fkey" FOREIGN KEY ("sg_rna_oligo_id") REFERENCES "sg_rna_oligos"("id");--> statement-breakpoint
 ALTER TABLE "sg_rna_oligo_targets" ADD CONSTRAINT "sg_rna_oligo_targets_target_id_targets_id_fkey" FOREIGN KEY ("target_id") REFERENCES "targets"("id");--> statement-breakpoint
 ALTER TABLE "sge_oligo_lots" ADD CONSTRAINT "sge_oligo_lots_sge_oligo_id_sge_oligos_id_fkey" FOREIGN KEY ("sge_oligo_id") REFERENCES "sge_oligos"("id");--> statement-breakpoint
@@ -806,12 +877,12 @@ ALTER TABLE "snv_lib_amp_products" ADD CONSTRAINT "snv_lib_amp_products_8RYD4Ep3
 ALTER TABLE "snv_lib_amp_products" ADD CONSTRAINT "snv_lib_amp_products_sge_oligo_id_sge_oligos_id_fkey" FOREIGN KEY ("sge_oligo_id") REFERENCES "sge_oligos"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_amp_products" ADD CONSTRAINT "snv_lib_amp_products_ObXzeXvAlbhg_fkey" FOREIGN KEY ("amp_primer_forward_id") REFERENCES "amplification_primers"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_amp_products" ADD CONSTRAINT "snv_lib_amp_products_F4ts8LLSh0j3_fkey" FOREIGN KEY ("amp_primer_reverse_id") REFERENCES "amplification_primers"("id");--> statement-breakpoint
-ALTER TABLE "snv_lib_amp_products" ADD CONSTRAINT "snv_lib_amp_products_cleaned_by_users_id_fkey" FOREIGN KEY ("cleaned_by") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "snv_lib_amp_products" ADD CONSTRAINT "snv_lib_amp_products_cleaned_by_id_users_id_fkey" FOREIGN KEY ("cleaned_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_gibson_products" ADD CONSTRAINT "snv_lib_gibson_products_Hp10HodvisRS_fkey" FOREIGN KEY ("snv_lib_cloning_experiment_id") REFERENCES "snv_lib_cloning_experiments"("id");--> statement-breakpoint
-ALTER TABLE "snv_lib_gibson_products" ADD CONSTRAINT "snv_lib_gibson_products_gibson_by_users_id_fkey" FOREIGN KEY ("gibson_by") REFERENCES "users"."users"("id");--> statement-breakpoint
-ALTER TABLE "snv_lib_gibson_products" ADD CONSTRAINT "snv_lib_gibson_products_cleaned_by_users_id_fkey" FOREIGN KEY ("cleaned_by") REFERENCES "users"."users"("id");--> statement-breakpoint
-ALTER TABLE "snv_lib_gibson_products" ADD CONSTRAINT "snv_lib_gibson_products_transformed_by_users_id_fkey" FOREIGN KEY ("transformed_by") REFERENCES "users"."users"("id");--> statement-breakpoint
-ALTER TABLE "snv_lib_gibson_products" ADD CONSTRAINT "snv_lib_gibson_products_prepped_by_users_id_fkey" FOREIGN KEY ("prepped_by") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "snv_lib_gibson_products" ADD CONSTRAINT "snv_lib_gibson_products_gibson_by_id_users_id_fkey" FOREIGN KEY ("gibson_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "snv_lib_gibson_products" ADD CONSTRAINT "snv_lib_gibson_products_cleaned_by_id_users_id_fkey" FOREIGN KEY ("cleaned_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "snv_lib_gibson_products" ADD CONSTRAINT "snv_lib_gibson_products_transformed_by_id_users_id_fkey" FOREIGN KEY ("transformed_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "snv_lib_gibson_products" ADD CONSTRAINT "snv_lib_gibson_products_prepped_by_id_users_id_fkey" FOREIGN KEY ("prepped_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_golden_gate_products" ADD CONSTRAINT "snv_lib_golden_gate_products_Tdqj6QHIh5XZ_fkey" FOREIGN KEY ("snv_lib_cloning_experiment_id") REFERENCES "snv_lib_cloning_experiments"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_golden_gate_products" ADD CONSTRAINT "snv_lib_golden_gate_products_dNZMly2964Oj_fkey" FOREIGN KEY ("snv_lib_amp_product_id") REFERENCES "snv_lib_amp_products"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_golden_gate_products" ADD CONSTRAINT "snv_lib_golden_gate_products_clonal_ha_id_clonal_has_id_fkey" FOREIGN KEY ("clonal_ha_id") REFERENCES "clonal_has"("id");--> statement-breakpoint
@@ -819,26 +890,26 @@ ALTER TABLE "snv_lib_lin_products" ADD CONSTRAINT "snv_lib_lin_products_8RxRMMXf
 ALTER TABLE "snv_lib_lin_products" ADD CONSTRAINT "snv_lib_lin_products_sVGow5errdd1_fkey" FOREIGN KEY ("ha_puc19_plasmid_id") REFERENCES "ha_puc19_plasmids"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_lin_products" ADD CONSTRAINT "snv_lib_lin_products_rYuZvFrbITmR_fkey" FOREIGN KEY ("lin_primer_forward_id") REFERENCES "linearization_primers"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_lin_products" ADD CONSTRAINT "snv_lib_lin_products_iR0SptHtEIoE_fkey" FOREIGN KEY ("lin_primer_reverse_id") REFERENCES "linearization_primers"("id");--> statement-breakpoint
-ALTER TABLE "snv_lib_lin_products" ADD CONSTRAINT "snv_lib_lin_products_dpn1_digest_by_users_id_fkey" FOREIGN KEY ("dpn1_digest_by") REFERENCES "users"."users"("id");--> statement-breakpoint
-ALTER TABLE "snv_lib_lin_products" ADD CONSTRAINT "snv_lib_lin_products_gel_extracted_by_users_id_fkey" FOREIGN KEY ("gel_extracted_by") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "snv_lib_lin_products" ADD CONSTRAINT "snv_lib_lin_products_dpn1_digest_by_id_users_id_fkey" FOREIGN KEY ("dpn1_digest_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "snv_lib_lin_products" ADD CONSTRAINT "snv_lib_lin_products_gel_extracted_by_id_users_id_fkey" FOREIGN KEY ("gel_extracted_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "pcr1_experiment_master_mix_volumes" ADD CONSTRAINT "pcr1_experiment_master_mix_volumes_DocaxpxIhudf_fkey" FOREIGN KEY ("pcr_experiment_id") REFERENCES "pcr_experiments"("id");--> statement-breakpoint
 ALTER TABLE "pcr2_experiment_master_mix_volumes" ADD CONSTRAINT "pcr2_experiment_master_mix_volumes_DocaxpxIi6Wu_fkey" FOREIGN KEY ("pcr_experiment_id") REFERENCES "pcr_experiments"("id");--> statement-breakpoint
 ALTER TABLE "pcr_experiment_targets" ADD CONSTRAINT "pcr_experiment_targets_NagHZxYm9n0L_fkey" FOREIGN KEY ("pcr_experiment_id") REFERENCES "pcr_experiments"("id");--> statement-breakpoint
 ALTER TABLE "pcr_experiment_targets" ADD CONSTRAINT "pcr_experiment_targets_q3jHzAF42o0V_fkey" FOREIGN KEY ("transfect_target_id") REFERENCES "transfect_targets"("id");--> statement-breakpoint
-ALTER TABLE "pcr_experiments" ADD CONSTRAINT "pcr_experiments_technician_users_id_fkey" FOREIGN KEY ("technician") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "pcr_experiments" ADD CONSTRAINT "pcr_experiments_technician_id_users_id_fkey" FOREIGN KEY ("technician_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "pcr_experiments" ADD CONSTRAINT "pcr_experiments_plate_id_plates_id_fkey" FOREIGN KEY ("plate_id") REFERENCES "plates"("id");--> statement-breakpoint
 ALTER TABLE "pellets" ADD CONSTRAINT "pellets_transfect_target_id_transfect_targets_id_fkey" FOREIGN KEY ("transfect_target_id") REFERENCES "transfect_targets"("id");--> statement-breakpoint
-ALTER TABLE "pellets" ADD CONSTRAINT "pellets_harvested_by_users_id_fkey" FOREIGN KEY ("harvested_by") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "pellets" ADD CONSTRAINT "pellets_harvested_by_id_users_id_fkey" FOREIGN KEY ("harvested_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "ha_cloning_experiment_targets" ADD CONSTRAINT "ha_cloning_experiment_targets_xHXrLqF270zA_fkey" FOREIGN KEY ("ha_cloning_experiment_id") REFERENCES "ha_cloning_experiments"("id");--> statement-breakpoint
 ALTER TABLE "ha_cloning_experiment_targets" ADD CONSTRAINT "ha_cloning_experiment_targets_target_id_targets_id_fkey" FOREIGN KEY ("target_id") REFERENCES "targets"("id");--> statement-breakpoint
-ALTER TABLE "sg_rna_cloning_experiments" ADD CONSTRAINT "sg_rna_cloning_experiments_technician_users_id_fkey" FOREIGN KEY ("technician") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "sg_rna_cloning_experiments" ADD CONSTRAINT "sg_rna_cloning_experiments_technician_id_users_id_fkey" FOREIGN KEY ("technician_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "sg_rna_cloning_experiments" ADD CONSTRAINT "sg_rna_cloning_experiments_plate_id_plates_id_fkey" FOREIGN KEY ("plate_id") REFERENCES "plates"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_cloning_experiments" ADD CONSTRAINT "snv_lib_cloning_experiments_target_id_targets_id_fkey" FOREIGN KEY ("target_id") REFERENCES "targets"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_cloning_experiments" ADD CONSTRAINT "snv_lib_cloning_experiments_clonal_ha_id_clonal_has_id_fkey" FOREIGN KEY ("clonal_ha_id") REFERENCES "clonal_has"("id");--> statement-breakpoint
 ALTER TABLE "ha_puc19_plasmids" ADD CONSTRAINT "ha_puc19_plasmids_06d9giLZpKr9_fkey" FOREIGN KEY ("ha_puc19_gibson_product_id") REFERENCES "ha_puc19_gibson_products"("id");--> statement-breakpoint
-ALTER TABLE "ha_puc19_plasmids" ADD CONSTRAINT "ha_puc19_plasmids_transformed_by_users_id_fkey" FOREIGN KEY ("transformed_by") REFERENCES "users"."users"("id");--> statement-breakpoint
-ALTER TABLE "ha_puc19_plasmids" ADD CONSTRAINT "ha_puc19_plasmids_colony_picked_by_users_id_fkey" FOREIGN KEY ("colony_picked_by") REFERENCES "users"."users"("id");--> statement-breakpoint
-ALTER TABLE "ha_puc19_plasmids" ADD CONSTRAINT "ha_puc19_plasmids_prepped_by_users_id_fkey" FOREIGN KEY ("prepped_by") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "ha_puc19_plasmids" ADD CONSTRAINT "ha_puc19_plasmids_transformed_by_id_users_id_fkey" FOREIGN KEY ("transformed_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "ha_puc19_plasmids" ADD CONSTRAINT "ha_puc19_plasmids_colony_picked_by_id_users_id_fkey" FOREIGN KEY ("colony_picked_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "ha_puc19_plasmids" ADD CONSTRAINT "ha_puc19_plasmids_prepped_by_id_users_id_fkey" FOREIGN KEY ("prepped_by_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "sg_rna_plasmid_targets" ADD CONSTRAINT "sg_rna_plasmid_targets_ldQRkYAm8W5z_fkey" FOREIGN KEY ("sg_rna_plasmid_id") REFERENCES "sg_rna_plasmids"("id");--> statement-breakpoint
 ALTER TABLE "sg_rna_plasmid_targets" ADD CONSTRAINT "sg_rna_plasmid_targets_target_id_targets_id_fkey" FOREIGN KEY ("target_id") REFERENCES "targets"("id");--> statement-breakpoint
 ALTER TABLE "snv_lib_plasmids" ADD CONSTRAINT "snv_lib_plasmids_target_id_targets_id_fkey" FOREIGN KEY ("target_id") REFERENCES "targets"("id");--> statement-breakpoint
@@ -871,7 +942,7 @@ ALTER TABLE "sequencing_run_samples" ADD CONSTRAINT "sequencing_run_samples_sour
 ALTER TABLE "targets" ADD CONSTRAINT "targets_project_id_projects_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects"("id");--> statement-breakpoint
 ALTER TABLE "targets" ADD CONSTRAINT "targets_region_id_regions_id_fkey" FOREIGN KEY ("region_id") REFERENCES "regions"("id");--> statement-breakpoint
 ALTER TABLE "transfect_experiments" ADD CONSTRAINT "transfect_experiments_cycle_id_cycles_id_fkey" FOREIGN KEY ("cycle_id") REFERENCES "cycles"("id");--> statement-breakpoint
-ALTER TABLE "transfect_experiments" ADD CONSTRAINT "transfect_experiments_technician_users_id_fkey" FOREIGN KEY ("technician") REFERENCES "users"."users"("id");--> statement-breakpoint
+ALTER TABLE "transfect_experiments" ADD CONSTRAINT "transfect_experiments_technician_id_users_id_fkey" FOREIGN KEY ("technician_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "transfect_lot_usage" ADD CONSTRAINT "transfect_lot_usage_experiment_id_transfect_experiments_id_fkey" FOREIGN KEY ("experiment_id") REFERENCES "transfect_experiments"("id");--> statement-breakpoint
 ALTER TABLE "transfect_lot_usage" ADD CONSTRAINT "transfect_lot_usage_lot_id_lots_id_fkey" FOREIGN KEY ("lot_id") REFERENCES "lots"("id");--> statement-breakpoint
 ALTER TABLE "transfect_targets" ADD CONSTRAINT "transfect_targets_experiment_id_transfect_experiments_id_fkey" FOREIGN KEY ("experiment_id") REFERENCES "transfect_experiments"("id");--> statement-breakpoint
@@ -884,6 +955,8 @@ ALTER TABLE "well_content_sources" ADD CONSTRAINT "well_content_sources_created_
 ALTER TABLE "well_contents" ADD CONSTRAINT "well_contents_well_id_wells_id_fkey" FOREIGN KEY ("well_id") REFERENCES "wells"("id");--> statement-breakpoint
 ALTER TABLE "well_contents" ADD CONSTRAINT "well_contents_wellable_id_wellables_id_fkey" FOREIGN KEY ("wellable_id") REFERENCES "wellables"("id");--> statement-breakpoint
 ALTER TABLE "wells" ADD CONSTRAINT "wells_plate_id_plates_id_fkey" FOREIGN KEY ("plate_id") REFERENCES "plates"("id");--> statement-breakpoint
+ALTER TABLE "plates" ADD CONSTRAINT "plates_plate_type_plate_types_value_fkey" FOREIGN KEY ("plate_type") REFERENCES "plate_types"("value");--> statement-breakpoint
+ALTER TABLE "pcr_experiments" ADD CONSTRAINT "pcr_experiments_pcr_type_pcr_types_value_fkey" FOREIGN KEY ("pcr_type") REFERENCES "pcr_types"("value");--> statement-breakpoint
 ALTER TABLE "users"."password_reset_tokens" ADD CONSTRAINT "password_reset_tokens_user_id_users_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"."users"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "users"."user_group_memberships" ADD CONSTRAINT "user_group_memberships_user_id_users_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"."users"("id");--> statement-breakpoint
 ALTER TABLE "users"."user_group_memberships" ADD CONSTRAINT "user_group_memberships_user_group_id_user_groups_id_fkey" FOREIGN KEY ("user_group_id") REFERENCES "users"."user_groups"("id");--> statement-breakpoint
@@ -946,9 +1019,8 @@ CREATE VIEW "view_ha_puc19_gibson_products_with_calcs" AS (SELECT
             FROM  "ha_pcr_products"
         ) AS t_ha_pcr_products ON t_ha_pcr_products.id = "ha_puc19_pcr_products"."ha_pcr_product_id"
         JOIN "ha_cloning_experiments" ON "ha_cloning_experiments"."id" = t_ha_pcr_products.ha_cloning_experiment_id
-        LEFT JOIN "users"."users" ON "users"."users"."id" = "ha_puc19_gibson_products"."prepped_by") t1);--> statement-breakpoint
-CREATE VIEW "view_plates_with_well_counts" AS (with plate_types(plate_type_value, plate_type_label, plate_type_desc) AS (VALUES ('pellet-storage', 'Pellet storage', 'Pellet storage'), ('lin-primer-storage', 'LIN primer storage', 'Linearization primer storage'), ('amp-primer-storage', 'AMP primer storage', 'Amplification primer storage'), ('ha-primer-storage', 'HA primer storage', 'Homology arm primer storage'), ('ha-puc19-primer-storage', 'HA pUC19 primer storage', 'Homology arm pUC19 arm primer storage'), ('sg-rna-oligo-storage', 'sgRNA oligo storage', 'sgRNA oligo storage'), ('sg-rna-oligo', 'sgRNA oligo', 'sgRNA oligo'), ('sg-rna-plasmid-storage', 'sgRNA plasmid storage', 'sgRNA plasmid storage'), ('sg-rna-plasmid', 'sgRNA plasmid', 'sgRNA plasmid'), ('lin-pcr', 'LIN PCR', 'Linearization primer PCR'), ('amp-pcr', 'AMP PCR', 'Amplification primer PCR'), ('ha-pcr', 'HA PCR', 'Homology arm primer PCR'), ('preseq-1', 'PreSeq 1', 'PreSeq 1'), ('preseq-2', 'PreSeq 2', 'PreSeq 2'), ('preseq-3', 'PreSeq 3', 'PreSeq 3'), ('dna-preseq-1', 'DNA PreSeq 1', 'DNA PreSeq 1'), ('dna-preseq-2', 'DNA PreSeq 2', 'DNA PreSeq 2'), ('dna-preseq-3', 'DNA PreSeq 3', 'DNA PreSeq 3'), ('rna-rt-storage', 'RNA RT storage', 'RNA Reverse Transcription storage'), ('rna-preseq-1', 'RNA PreSeq 1', 'RNA PreSeq 1'), ('rna-preseq-2', 'RNA PreSeq 2', 'RNA PreSeq 2'), ('rna-preseq-3', 'RNA PreSeq 3', 'RNA PreSeq 3'), ('snv-lib-preseq-2', 'SNVlib PreSeq 2', 'SNVlib PreSeq 2'), ('snv-lib-preseq-3', 'SNVlib PreSeq 3', 'SNVlib PreSeq 3'), ('seq-index', 'Seq index', 'Sequencing index plate'), ('clonal-ha', 'Clonal HA plate', 'Clonal HA plate'), ('dna-preseq-1-primer-storage', 'DNA PreSeq 1 primer storage', 'DNA PreSeq 1 primer storage'), ('dna-preseq-2-primer-storage', 'DNA PreSeq 2 primer storage', 'DNA PreSeq 2 primer storage'), ('rna-rt-primer-storage', 'RNA RT primer storage', 'RNA RT primer storage'), ('rna-preseq-1-primer-storage', 'RNA PreSeq 1 primer storage', 'RNA PreSeq 1 primer storage'), ('rna-preseq-2-primer-storage', 'RNA PreSeq 2 primer storage', 'RNA PreSeq 2 primer storage'), ('external-sample-indexing', 'External sample indexing', 'External sample indexing'), ('ha-pcr-product-storage', 'HA PCR product storage', 'HA PCR product storage'), ('ha-puc19-pcr-product-storage', 'HA pUC19 PCR product storage', 'HA pUC19 PCR product storage'), ('ha-puc19-gibson-product-storage', 'HA pUC19 Gibson product storage', 'HA pUC19 Gibson product storage'), ('ha-puc19-plasmid-storage', 'HA pUC19 plasmid storage', 'HA pUC19 plasmid storage'), ('snv-lib-amp-product-storage', 'SNVlib AMP product storage', 'SNVlib AMP product storage'), ('snv-lib-lin-product-storage', 'SNVlib LIN product storage', 'SNVlib LIN product storage'), ('snv-lib-gibson-product-storage', 'SNVlib Gibson product storage', 'SNVlib Gibson product storage'), ('snv-lib-plasmid-storage', 'SNVlib plasmid storage', 'SNVlib plasmid storage'), ('snv-lib-golden-gate-product-storage', 'SNVlib Golden Gate product storage', 'SNVlib Golden Gate product storage')) select
-    "plates"."id",
+        LEFT JOIN "users"."users" ON "users"."users"."id" = "ha_puc19_gibson_products"."prepped_by_id") t1);--> statement-breakpoint
+CREATE VIEW "view_plates_with_well_counts" AS (select    "plates"."id",
     "plates"."name",
     "plates"."size_x",
     "plates"."size_y",
@@ -958,7 +1030,7 @@ CREATE VIEW "view_plates_with_well_counts" AS (with plate_types(plate_type_value
     "cycles"."id" as cycle_id,
     "cycles"."name" as cycle_name,
     string_agg(distinct "targets"."name", ',') as targets,
-    (select distinct on (plate_type_value) plate_type_label from plate_types where plate_type_value = "plates"."plate_type") as plate_type_label,
+    "plate_types"."label" as plate_type_label,
     count(distinct("wells"."id")) as wells_count,
     count(distinct("well_contents"."well_id")) as wells_with_content_count,
     count(distinct("well_content_sources"."source_well_id")) as wells_processed_count,
@@ -966,6 +1038,7 @@ CREATE VIEW "view_plates_with_well_counts" AS (with plate_types(plate_type_value
     "pcr_experiments"."id" as pcr_experiment_id
     from "plates"
     join "wells" on "plates"."id" = "wells"."plate_id"
+    left join "plate_types" on "plate_types"."value" = "plates"."plate_type"
     left join "well_content_sources" on "wells"."id" = "well_content_sources"."source_well_id"
     left join "well_contents" on "wells"."id" = "well_contents"."well_id"
     left join "pcr_experiments" on "plates"."id" = "pcr_experiments"."plate_id"
@@ -975,7 +1048,7 @@ CREATE VIEW "view_plates_with_well_counts" AS (with plate_types(plate_type_value
     left join "transfect_experiments" on "transfect_targets"."experiment_id" = "transfect_experiments"."id"
     left join "cycles" on "transfect_experiments"."cycle_id" = "cycles"."id"
     left join "sg_rna_cloning_experiments" on "plates"."id" = "sg_rna_cloning_experiments"."plate_id"
-    group by "plates"."id", "cycles"."id", "sg_rna_cloning_experiments"."id", "pcr_experiments"."id");--> statement-breakpoint
+    group by "plates"."id", "plate_types"."label", "cycles"."id", "sg_rna_cloning_experiments"."id", "pcr_experiments"."id");--> statement-breakpoint
 CREATE VIEW "view_sequencing_run_all_samples" AS (
 WITH index_plate_well (source_well_id, index_plate_well_label) AS (
     SELECT
@@ -1141,10 +1214,10 @@ FROM (
 	END AS amp_product_vector_amount
 FROM "snv_lib_gibson_products"
 JOIN "snv_lib_cloning_experiments" ON "snv_lib_cloning_experiments"."id" = "snv_lib_gibson_products"."snv_lib_cloning_experiment_id"
-LEFT JOIN "users"."users" AS prepped_by_user ON prepped_by_user.id = "snv_lib_gibson_products"."prepped_by"
-LEFT JOIN "users"."users" AS transformed_by_user ON transformed_by_user.id = "snv_lib_gibson_products"."transformed_by"
-LEFT JOIN "users"."users" AS cleaned_by_user ON cleaned_by_user.id = "snv_lib_gibson_products"."cleaned_by"
-LEFT JOIN "users"."users" AS gibson_by_user ON gibson_by_user.id = "snv_lib_gibson_products"."gibson_by"
+LEFT JOIN "users"."users" AS prepped_by_user ON prepped_by_user.id = "snv_lib_gibson_products"."prepped_by_id"
+LEFT JOIN "users"."users" AS transformed_by_user ON transformed_by_user.id = "snv_lib_gibson_products"."transformed_by_id"
+LEFT JOIN "users"."users" AS cleaned_by_user ON cleaned_by_user.id = "snv_lib_gibson_products"."cleaned_by_id"
+LEFT JOIN "users"."users" AS gibson_by_user ON gibson_by_user.id = "snv_lib_gibson_products"."gibson_by_id"
 LEFT JOIN
 	(SELECT "snv_lib_lin_products"."id" AS id,
 		"snv_lib_lin_products"."name" AS name,

@@ -76,7 +76,7 @@ const columnDefs: ColumnDefinitions = {
                     haCloningExperimentId: _.get(data, 'id'),
                 }
                 addFormInitialValues.value = {
-                    performedBy: _.get(user, 'value.id'),
+                    performedById: _.get(user, 'value.id'),
                     performedOn: new Date(),
                 }
                 addFormTableName.value = 'ha-pcr-products'
@@ -106,7 +106,7 @@ const columnDefs: ColumnDefinitions = {
                     haPcrProductId: _.get(data, 'haPcrProducts.0.id'),
                 }
                 addFormInitialValues.value = {
-                    cleanedBy: _.get(user, 'id'),
+                    cleanedById: _.get(user, 'id'),
                     cleanedOn: new Date(),
                 }
                 addFormTableName.value = 'ha-puc-19-pcr-products'
@@ -137,7 +137,7 @@ const columnDefs: ColumnDefinitions = {
                 }
                 addFormInitialValues.value = {
                     preppedOn: new Date(),
-                    preppedBy: _.get(user.value, 'id'),
+                    preppedById: _.get(user.value, 'id'),
                     puc19VectorAmount: 50,
                 }
                 addFormTableName.value = 'ha-puc-19-gibson-products'
@@ -168,7 +168,7 @@ const columnDefs: ColumnDefinitions = {
                 }
                 addFormInitialValues.value = {
                     transformedOn: new Date(),
-                    transformedBy: _.get(user.value, 'id'),
+                    transformedById: _.get(user.value, 'id'),
                     eColiStellarVolume: 20,
                 }
                 addFormTableName.value = 'ha-puc-19-plasmids'
@@ -307,7 +307,7 @@ const haPcrProductFieldConfigs: FormFieldConfigs = {
     temperatureChosen: {
         label: 'Temperature Chosen (°C)',
     },
-    performedBy: {
+    performedById: {
         label: 'Performed By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -365,7 +365,7 @@ const haPuc19PcrProductFieldConfigs: FormFieldConfigs = {
     temperatureUsed: {
         label: 'Temperature Used (°C)',
     },
-    cleanedBy: {
+    cleanedById: {
         label: 'Cleaned By',
         autoCompleter: {
             searchBaseUrl: '/api/users',
@@ -395,7 +395,7 @@ const haPuc19GibsonProductFieldConfigs: FormFieldConfigs = {
         },
         index: 1,
     },
-    preppedBy: {
+    preppedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],
@@ -440,7 +440,7 @@ const haPuc19PlasmidFieldConfigs: FormFieldConfigs = {
             defaultValue: 20,
         }
     },
-    transformedBy: {
+    transformedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],
@@ -449,7 +449,7 @@ const haPuc19PlasmidFieldConfigs: FormFieldConfigs = {
             dropdown: true,
         }
     },
-    preppedBy: {
+    preppedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],
@@ -458,7 +458,7 @@ const haPuc19PlasmidFieldConfigs: FormFieldConfigs = {
             dropdown: true,
         }
     },
-    colonyPickedBy: {
+    colonyPickedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],

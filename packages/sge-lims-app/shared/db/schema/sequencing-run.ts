@@ -1,5 +1,5 @@
 import { pgTable, timestamp, uuid, varchar, uniqueIndex, doublePrecision, text, check } from "drizzle-orm/pg-core"
-import { wells } from "./well"
+import { wells } from "lims-layer/shared/db/schema/well"
 import { dna, rna } from "./nucleic-acid"
 import { indexPrimers } from "./primer"
 import { sql } from "drizzle-orm/sql"

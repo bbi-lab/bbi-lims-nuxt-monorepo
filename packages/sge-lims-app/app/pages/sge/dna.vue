@@ -126,12 +126,11 @@ const fieldConfigs: FormFieldConfigs = {
         label: 'Pellet',
         autoCompleter: {
             searchBaseUrl: '/api/pellets',
-            searchFields: ['name'],
             valueField: 'id',
-            displayFields: ['name', 'isBackup'],
-            displayFormat: (x: any) => x.isBackup ? `${x.name} (backup)` : x.name,
-            inputClass: 'w-80',
-        }
+            displayFields: ['name'],
+            searchFields: ['name'],
+            dropdown: true,
+        },
     },
     concentration: {
         label: 'Concentration (ng/μL)',

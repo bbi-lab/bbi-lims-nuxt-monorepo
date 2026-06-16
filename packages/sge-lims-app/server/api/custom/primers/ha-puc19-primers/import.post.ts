@@ -1,10 +1,10 @@
 import _ from 'lodash'
 import { v4 as uuid } from 'uuid'
 import { inArray } from 'drizzle-orm'
-import { homologyArmPrimers, homologyArmPuc19Primers } from '#shared/db/schema/sge/primer'
+import { homologyArmPrimers, homologyArmPuc19Primers } from '#shared/db/schema/primer'
 import { schemas } from '#shared/db/zod/zodSchemas'
 import type { RecordValues } from 'lims-layer/server/utils/record'
-import { wellContents } from '#shared/db/schema/sge/well'
+import { wellContents } from 'lims-layer/shared/db/schema/well'
 
 export default defineEventHandler(async (event) => {
   try {

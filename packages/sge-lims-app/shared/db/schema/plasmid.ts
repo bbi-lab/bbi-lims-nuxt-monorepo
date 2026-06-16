@@ -47,11 +47,11 @@ export const haPuc19Plasmids = pgTable('ha_puc19_plasmids', {
   haPuc19GibsonProductId: uuid('ha_puc19_gibson_product_id').references(() => haPuc19GibsonProducts.id).notNull().unique(),
   eColiStellarVolume: doublePrecision('e_coli_stellar_volume').default(20),
   transformedOn: timestamp('transformed_on'),
-  transformedBy: uuid('transformed_by').references(() => users.id),
+  transformedById: uuid('transformed_by_id').references(() => users.id),
   colonyPickedOn: timestamp('colony_picked_on'),
-  colonyPickedBy: uuid('colony_picked_by').references(() => users.id),
+  colonyPickedById: uuid('colony_picked_by_id').references(() => users.id),
   preppedOn: timestamp('prepped_on'),
-  preppedBy: uuid('prepped_by').references(() => users.id),
+  preppedById: uuid('prepped_by_id').references(() => users.id),
   notes: text('notes'),
 })
 

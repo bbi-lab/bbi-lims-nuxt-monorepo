@@ -78,7 +78,7 @@ const fieldConfigs: FormFieldConfigs = {
             defaultValue: 20,
         }
     },
-    transformedBy: {
+    transformedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],
@@ -87,7 +87,7 @@ const fieldConfigs: FormFieldConfigs = {
             dropdown: true,
         }
     },
-    preppedBy: {
+    preppedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],
@@ -96,7 +96,7 @@ const fieldConfigs: FormFieldConfigs = {
             dropdown: true,
         }
     },
-    colonyPickedBy: {
+    colonyPickedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],

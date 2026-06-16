@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { wellContents, wellContentSources } from '#shared/db/schema/sge/well'
+import { wellContents, wellContentSources } from 'lims-layer/shared/db/schema/well'
 
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params as { id: string }

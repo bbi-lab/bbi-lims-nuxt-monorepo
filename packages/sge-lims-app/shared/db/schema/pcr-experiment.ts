@@ -2,17 +2,15 @@ import { sql } from 'drizzle-orm/sql'
 import { pgTable, timestamp, uuid, varchar, text, check, doublePrecision } from 'drizzle-orm/pg-core'
 import _ from 'lodash'
 import { users } from 'lims-layer/server/db/schema/user'
-import { ENUM_LOOKUPS } from './enum-lookups'
+import { plates } from 'lims-layer/shared/db/schema/plate'
+import { pcrTypes } from './pcrTypes'
 import { transfectTargets } from './transfect-experiment'
-import { plates } from './plate'
-
-export type PcrType = 'amp-pcr' | 'lin-pcr' | 'ha-pcr' | 'preseq-1' | 'preseq-2' | 'preseq-3' | 'dna-preseq-1' | 'dna-preseq-2' | 'dna-preseq-3'| 'rna-rt' | 'rna-preseq-1' | 'rna-preseq-2' | 'rna-preseq-3'| 'snv-lib-preseq-2' | 'snv-lib-preseq-3'
 
 export const pcrExperiments = pgTable('pcr_experiments', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),
   name: varchar('name', { length: 255 }).notNull().unique(),
-  pcrType: varchar('pcr_type', { enum: Object.keys(ENUM_LOOKUPS.pcrExperiments.pcrType) as [PcrType, ...PcrType[]] }).notNull(),
-  technician: uuid('technician').references(() => users.id),
+  pcrType: varchar('pcr_type', { length: 100 }).notNull().references(() => pcrTypes.value),
+  technicianId: uuid('technician_id').references(() => users.id),
   startedOn: timestamp('started_on').defaultNow(),
   plateId: uuid('plate_id').references(() => plates.id),
   gelImagesLink: text('gel_images_link'),

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { wellCoordinateToChar } from '~/lib/plate-diagram'
-import type { Dna, Rna } from '#shared/db/schema/sge/nucleic-acid'
-import type { Pellet } from '#shared/db/schema/sge/pellet'
-import type { IndexPrimer } from '#shared/db/schema/sge/primer'
+import type { Dna, Rna } from '#shared/db/schema/nucleic-acid'
+import type { Pellet } from '#shared/db/schema/pellet'
+import type { IndexPrimer } from '#shared/db/schema/primer'
 import _ from 'lodash'
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { schemas } from '#shared/db/zod/zodSchemas'

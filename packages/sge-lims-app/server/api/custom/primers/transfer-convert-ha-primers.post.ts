@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import { homologyArmPuc19Primers } from '#shared/db/schema/sge/primer'
-import { wellContents } from '#shared/db/schema/sge/well'
+import { homologyArmPuc19Primers } from '#shared/db/schema/primer'
+import { wellContents } from 'lims-layer/shared/db/schema/well'
 import { schemas } from '#shared/db/zod/zodSchemas'
 
 export default defineEventHandler(async (event) => {

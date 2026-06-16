@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
-import { haCloningExperiments, haCloningExperimentTargets } from '#shared/db/schema/sge/plasmid-experiment'
-import { haPcrProducts } from '#shared/db/schema/sge/oligos'
+import { haCloningExperiments, haCloningExperimentTargets } from '#shared/db/schema/plasmid-experiment'
+import { haPcrProducts } from '#shared/db/schema/oligos'
 
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params as { id: string }

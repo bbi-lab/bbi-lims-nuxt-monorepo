@@ -144,7 +144,7 @@ const fieldConfigs: ComputedRef<FormFieldConfigs> = computed(() => {
         quant: {
             label: 'Quant (ng/µL)',
         },
-        cleanedBy: {
+        cleanedById: {
             autoCompleter: {
                 searchBaseUrl: '/api/users',
                 searchFields: ['name'],

@@ -11,7 +11,7 @@ export const pellets = pgTable('pellets', {
   transfections: varchar('transfections', { length: 3 }).array(),
   harvestedOn: timestamp('harvested_on').notNull(),
   harvestDay: integer('harvest_day').notNull(),
-  harvestedBy: uuid('harvested_by').references(() => users.id),
+  harvestedById: uuid('harvested_by_id').references(() => users.id),
   isCurrent: boolean('is_current'),
   isBackup: boolean('is_backup'),
   d3Confluency: doublePrecision('d3_confluency'),

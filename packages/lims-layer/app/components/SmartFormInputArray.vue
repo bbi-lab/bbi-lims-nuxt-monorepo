@@ -5,6 +5,7 @@ import type { z } from 'zod'
 const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
 const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')
 const SmartFormInputNumber = resolveComponent('SmartFormInputNumber')
+const SmartFormDatePicker = resolveComponent('SmartFormDatePicker')
 
 const props = defineProps({
     name: { type: String, required: true },
@@ -102,6 +103,8 @@ const subFields = computed(() => {
                 ? SmartFormNestedSelect
                 : fieldDefinition.primeVueComponent === 'SmartFormInputNumber'
                 ? SmartFormInputNumber
+                : fieldDefinition.primeVueComponent === 'SmartFormDatePicker'
+                ? SmartFormDatePicker
                 : fieldDefinition.primeVueComponent,
             label: fieldDefinition.label || _.startCase(fieldName),
             vBindObject: fieldDefinition.vBindObject,

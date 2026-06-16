@@ -2,10 +2,10 @@ import _ from 'lodash'
 import { schemas } from '#shared/db/zod/zodSchemas'
 import type { ZodObject } from 'zod'
 import { eq } from 'drizzle-orm'
-import { homologyArmPrimerTargets, preseq1PrimerTargets, rnaPreseq1PrimerTargets, rnaPreseq2PrimerTargets } from '#shared/db/schema/sge/primer'
-import { pcrExperimentTargets } from '#shared/db/schema/sge/pcr-experiment'
-import { clonalHaTargets, sgeOligoLots, sgRnaOligoTargets } from '#shared/db/schema/sge/oligos'
-import { sgRnaPlasmidTargets } from '#shared/db/schema/sge/plasmid'
+import { homologyArmPrimerTargets, preseq1PrimerTargets, rnaPreseq1PrimerTargets, rnaPreseq2PrimerTargets } from '#shared/db/schema/primer'
+import { pcrExperimentTargets } from '#shared/db/schema/pcr-experiment'
+import { clonalHaTargets, sgeOligoLots, sgRnaOligoTargets } from '#shared/db/schema/oligos'
+import { sgRnaPlasmidTargets } from '#shared/db/schema/plasmid'
 
 export default defineEventHandler(async (event) => {
   const { recordType, id } = event.context.params as { recordType: string, id: string }

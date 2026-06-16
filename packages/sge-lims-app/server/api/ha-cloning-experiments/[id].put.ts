@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { schemas } from '#shared/db/zod/zodSchemas'
 import type { ZodObject } from 'zod'
 import { eq, inArray } from 'drizzle-orm'
-import { haCloningExperiments, haCloningExperimentTargets } from '#shared/db/schema/sge/plasmid-experiment'
+import { haCloningExperiments, haCloningExperimentTargets } from '#shared/db/schema/plasmid-experiment'
 
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params as { id: string }

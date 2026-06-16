@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import _ from 'lodash'
-import { ENUM_LOOKUPS } from '~/server/db/schema/sge/enum-lookups'
 import { wellCoordinateToChar } from '~/lib/plate-diagram'
 
 const route = useRoute()
@@ -77,6 +76,13 @@ onMounted(async () => {
                                                         id: true,
                                                         name: true,
                                                         plateType: true,
+                                                    },
+                                                    with: {
+                                                        plateTypeRef: {
+                                                            columns: {
+                                                                label: true,
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -114,6 +120,13 @@ onMounted(async () => {
                                                         id: true,
                                                         name: true,
                                                         plateType: true,
+                                                    },
+                                                    with: {
+                                                        plateTypeRef: {
+                                                            columns: {
+                                                                label: true,
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -158,7 +171,7 @@ onMounted(async () => {
             _.set(acc, plateId, {
                 plateName: wellContent.well.plate.name,
                 plateType: wellContent.well.plate.plateType,
-                plateTypeLabel: ENUM_LOOKUPS.plates.plateType[wellContent.well.plate.plateType].label,
+                plateTypeLabel: wellContent.well.plate.plateTypeRef?.label,
                 wells: [_.pick(wellContent.well, ['x', 'y'])]
             })
         } else {
@@ -173,7 +186,7 @@ onMounted(async () => {
             _.set(acc, plateId, {
                 plateName: wellContent.well.plate.name,
                 plateType: wellContent.well.plate.plateType,
-                plateTypeLabel: ENUM_LOOKUPS.plates.plateType[wellContent.well.plate.plateType].label,
+                plateTypeLabel: wellContent.well.plate.plateTypeRef?.label,
                 wells: [_.pick(wellContent.well, ['x', 'y'])]
             })
         } else {

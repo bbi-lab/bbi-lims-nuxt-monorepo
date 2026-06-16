@@ -1,9 +1,9 @@
 import { inArray, eq } from 'drizzle-orm'
 import _ from 'lodash'
 import { wellCharToCoordinate } from 'lims-layer/shared/lib/plate-diagram'
-import { sgRnaOligos, sgRnaOligoTargets } from '#shared/db/schema/sge/oligos'
-import { targets } from '#shared/db/schema/sge/target'
-import { wellContents, wells } from '#shared/db/schema/sge/well'
+import { sgRnaOligos, sgRnaOligoTargets } from '#shared/db/schema/oligos'
+import { targets } from '#shared/db/schema/target'
+import { wellContents, wells } from 'lims-layer/shared/db/schema/well'
 import { v4 as uuid } from 'uuid'
 
 export default defineEventHandler(async (event) => {

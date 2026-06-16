@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import { v4 as uuid } from 'uuid'
 import { inArray } from 'drizzle-orm'
-import { externalSamples } from '#shared/db/schema/sge/external-samples'
-import { indexPrimers } from '#shared/db/schema/sge/primer'
+import { externalSamples } from '#shared/db/schema/external-samples'
+import { indexPrimers } from '#shared/db/schema/primer'
 import { schemas } from '#shared/db/zod/zodSchemas'
 
 export default defineEventHandler(async (event) => {

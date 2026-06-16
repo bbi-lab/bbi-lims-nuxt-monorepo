@@ -1,9 +1,9 @@
 import { eq, inArray } from 'drizzle-orm'
-import { wellContents, wellContentSources, wells } from '#shared/db/schema/sge/well'
+import { wellContents, wellContentSources, wells } from 'lims-layer/shared/db/schema/well'
 import _ from 'lodash'
 import { wellCoordinateToChar } from 'lims-layer/shared/lib/plate-diagram'
-import { sgRnaPlasmids, sgRnaPlasmidTargets } from '#shared/db/schema/sge/plasmid'
-import { plates } from '#shared/db/schema/sge/plate'
+import { sgRnaPlasmids, sgRnaPlasmidTargets } from '#shared/db/schema/plasmid'
+import { plates } from 'lims-layer/shared/db/schema/plate'
 
 interface PlasmidToCreate {
   name: string

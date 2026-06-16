@@ -48,13 +48,10 @@ const columnDefs: ColumnDefinitions = {
         header: 'Temp. Used (°C)',
     },
     cleanedBy: {
-        path: 'performedBy.name'
+        path: 'cleanedBy.name'
     },
 }
 const fieldConfigs: FormFieldConfigs = {
-    name: {
-        index: 0,
-    },
     haPcrProductId: {
         label: 'HA PCR Product',
         autoCompleter: {
@@ -64,7 +61,6 @@ const fieldConfigs: FormFieldConfigs = {
             displayFields: ['name'],
             dropdown: true,
         },
-        index: 1,
     },
     haPuc19PrimerForwardId: {
         label: 'HA pUC19 Primer Forward',
@@ -75,7 +71,6 @@ const fieldConfigs: FormFieldConfigs = {
             displayFields: ['name'],
             searchWhereClause: {"==": [{"var": "sequenceType"}, "forward"]},
         },
-        index: 2,
     },
     haPuc19PrimerReverseId: {
         label: 'HA pUC19 Primer Reverse',
@@ -86,12 +81,11 @@ const fieldConfigs: FormFieldConfigs = {
             displayFields: ['name'],
             searchWhereClause: {"==": [{"var": "sequenceType"}, "reverse"]},
         },
-        index: 3,
     },
     wtHap1DnaConcentration: {
         label: 'WT HAP1 DNA Concentration (ng/µL)',
     },
-    performedBy: {
+    cleanedById: {
         autoCompleter: {
             searchBaseUrl: '/api/users',
             searchFields: ['name'],

@@ -231,6 +231,150 @@
     },
     {
       "isRlsEnabled": false,
+      "name": "plate_types",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plate_types"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "label",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plate_types"
+    },
+    {
+      "type": "varchar(500)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "desc",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plate_types"
+    },
+    {
+      "columns": [
+        "value"
+      ],
+      "nameExplicit": true,
+      "name": "plate_types_pkey",
+      "schema": "public",
+      "table": "plate_types",
+      "entityType": "pks"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "plate_type"
+      ],
+      "schemaTo": "public",
+      "tableTo": "plate_types",
+      "columnsTo": [
+        "value"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "plates_plate_type_plate_types_value_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "pcr_types",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pcr_types"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "label",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pcr_types"
+    },
+    {
+      "type": "varchar(500)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "desc",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "pcr_types"
+    },
+    {
+      "columns": [
+        "value"
+      ],
+      "nameExplicit": true,
+      "name": "pcr_types_pkey",
+      "schema": "public",
+      "table": "pcr_types",
+      "entityType": "pks"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "pcr_type"
+      ],
+      "schemaTo": "public",
+      "tableTo": "pcr_types",
+      "columnsTo": [
+        "value"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "pcr_experiments_pcr_type_pcr_types_value_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "pcr_experiments"
+    },
+    {
+      "isRlsEnabled": false,
       "name": "amplification_primers",
       "entityType": "tables",
       "schema": "public"
@@ -630,7 +774,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "technician",
+      "name": "technician_id",
       "entityType": "columns",
       "schema": "public",
       "table": "extraction_experiments"
@@ -643,7 +787,7 @@
       "default": "now()",
       "generated": null,
       "identity": null,
-      "name": "extractedOn",
+      "name": "extracted_on",
       "entityType": "columns",
       "schema": "public",
       "table": "extraction_experiments"
@@ -1579,7 +1723,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "performed_by",
+      "name": "performed_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "ha_pcr_products"
@@ -1683,7 +1827,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "prepped_by",
+      "name": "prepped_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "ha_puc19_gibson_products"
@@ -1826,7 +1970,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "cleaned_by",
+      "name": "cleaned_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "ha_puc19_pcr_products"
@@ -2177,7 +2321,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "cleaned_by",
+      "name": "cleaned_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "snv_lib_amp_products"
@@ -2307,7 +2451,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "gibson_by",
+      "name": "gibson_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "snv_lib_gibson_products"
@@ -2333,7 +2477,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "cleaned_by",
+      "name": "cleaned_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "snv_lib_gibson_products"
@@ -2359,7 +2503,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "transformed_by",
+      "name": "transformed_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "snv_lib_gibson_products"
@@ -2385,7 +2529,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "prepped_by",
+      "name": "prepped_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "snv_lib_gibson_products"
@@ -2671,7 +2815,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "dpn1_digest_by",
+      "name": "dpn1_digest_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "snv_lib_lin_products"
@@ -2697,7 +2841,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "gel_extracted_by",
+      "name": "gel_extracted_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "snv_lib_lin_products"
@@ -2989,7 +3133,7 @@
       "table": "pcr_experiments"
     },
     {
-      "type": "varchar",
+      "type": "varchar(100)",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -3009,7 +3153,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "technician",
+      "name": "technician_id",
       "entityType": "columns",
       "schema": "public",
       "table": "pcr_experiments"
@@ -3152,7 +3296,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "harvested_by",
+      "name": "harvested_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "pellets"
@@ -3373,7 +3517,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "technician",
+      "name": "technician_id",
       "entityType": "columns",
       "schema": "public",
       "table": "sg_rna_cloning_experiments"
@@ -3594,7 +3738,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "transformed_by",
+      "name": "transformed_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "ha_puc19_plasmids"
@@ -3620,7 +3764,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "colony_picked_by",
+      "name": "colony_picked_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "ha_puc19_plasmids"
@@ -3646,7 +3790,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "prepped_by",
+      "name": "prepped_by_id",
       "entityType": "columns",
       "schema": "public",
       "table": "ha_puc19_plasmids"
@@ -3977,7 +4121,7 @@
       "table": "plates"
     },
     {
-      "type": "varchar",
+      "type": "varchar(100)",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -5960,7 +6104,7 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "technician",
+      "name": "technician_id",
       "entityType": "columns",
       "schema": "public",
       "table": "transfect_experiments"
@@ -7349,7 +7493,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "technician"
+        "technician_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -7358,7 +7502,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "extraction_experiments_technician_users_id_fkey",
+      "name": "extraction_experiments_technician_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "extraction_experiments"
@@ -7570,7 +7714,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "performed_by"
+        "performed_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -7579,7 +7723,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "ha_pcr_products_performed_by_users_id_fkey",
+      "name": "ha_pcr_products_performed_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "ha_pcr_products"
@@ -7604,7 +7748,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "prepped_by"
+        "prepped_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -7613,7 +7757,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "ha_puc19_gibson_products_prepped_by_users_id_fkey",
+      "name": "ha_puc19_gibson_products_prepped_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "ha_puc19_gibson_products"
@@ -7672,7 +7816,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "cleaned_by"
+        "cleaned_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -7681,7 +7825,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "ha_puc19_pcr_products_cleaned_by_users_id_fkey",
+      "name": "ha_puc19_pcr_products_cleaned_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "ha_puc19_pcr_products"
@@ -7842,7 +7986,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "cleaned_by"
+        "cleaned_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -7851,7 +7995,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "snv_lib_amp_products_cleaned_by_users_id_fkey",
+      "name": "snv_lib_amp_products_cleaned_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "snv_lib_amp_products"
@@ -7876,7 +8020,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "gibson_by"
+        "gibson_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -7885,7 +8029,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "snv_lib_gibson_products_gibson_by_users_id_fkey",
+      "name": "snv_lib_gibson_products_gibson_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "snv_lib_gibson_products"
@@ -7893,7 +8037,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "cleaned_by"
+        "cleaned_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -7902,7 +8046,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "snv_lib_gibson_products_cleaned_by_users_id_fkey",
+      "name": "snv_lib_gibson_products_cleaned_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "snv_lib_gibson_products"
@@ -7910,7 +8054,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "transformed_by"
+        "transformed_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -7919,7 +8063,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "snv_lib_gibson_products_transformed_by_users_id_fkey",
+      "name": "snv_lib_gibson_products_transformed_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "snv_lib_gibson_products"
@@ -7927,7 +8071,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "prepped_by"
+        "prepped_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -7936,7 +8080,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "snv_lib_gibson_products_prepped_by_users_id_fkey",
+      "name": "snv_lib_gibson_products_prepped_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "snv_lib_gibson_products"
@@ -8063,7 +8207,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "dpn1_digest_by"
+        "dpn1_digest_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -8072,7 +8216,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "snv_lib_lin_products_dpn1_digest_by_users_id_fkey",
+      "name": "snv_lib_lin_products_dpn1_digest_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "snv_lib_lin_products"
@@ -8080,7 +8224,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "gel_extracted_by"
+        "gel_extracted_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -8089,7 +8233,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "snv_lib_lin_products_gel_extracted_by_users_id_fkey",
+      "name": "snv_lib_lin_products_gel_extracted_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "snv_lib_lin_products"
@@ -8165,7 +8309,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "technician"
+        "technician_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -8174,7 +8318,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "pcr_experiments_technician_users_id_fkey",
+      "name": "pcr_experiments_technician_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "pcr_experiments"
@@ -8216,7 +8360,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "harvested_by"
+        "harvested_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -8225,7 +8369,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "pellets_harvested_by_users_id_fkey",
+      "name": "pellets_harvested_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "pellets"
@@ -8267,7 +8411,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "technician"
+        "technician_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -8276,7 +8420,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "sg_rna_cloning_experiments_technician_users_id_fkey",
+      "name": "sg_rna_cloning_experiments_technician_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "sg_rna_cloning_experiments"
@@ -8352,7 +8496,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "transformed_by"
+        "transformed_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -8361,7 +8505,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "ha_puc19_plasmids_transformed_by_users_id_fkey",
+      "name": "ha_puc19_plasmids_transformed_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "ha_puc19_plasmids"
@@ -8369,7 +8513,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "colony_picked_by"
+        "colony_picked_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -8378,7 +8522,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "ha_puc19_plasmids_colony_picked_by_users_id_fkey",
+      "name": "ha_puc19_plasmids_colony_picked_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "ha_puc19_plasmids"
@@ -8386,7 +8530,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "prepped_by"
+        "prepped_by_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -8395,7 +8539,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "ha_puc19_plasmids_prepped_by_users_id_fkey",
+      "name": "ha_puc19_plasmids_prepped_by_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "ha_puc19_plasmids"
@@ -8947,7 +9091,7 @@
     {
       "nameExplicit": false,
       "columns": [
-        "technician"
+        "technician_id"
       ],
       "schemaTo": "users",
       "tableTo": "users",
@@ -8956,7 +9100,7 @@
       ],
       "onUpdate": "NO ACTION",
       "onDelete": "NO ACTION",
-      "name": "transfect_experiments_technician_users_id_fkey",
+      "name": "transfect_experiments_technician_id_users_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "transfect_experiments"
@@ -10356,12 +10500,12 @@
       "entityType": "uniques"
     },
     {
-      "nameExplicit": false,
+      "nameExplicit": true,
       "columns": [
         "name"
       ],
       "nullsNotDistinct": false,
-      "name": "plates_name_key",
+      "name": "plates_name_unique",
       "schema": "public",
       "table": "plates",
       "entityType": "uniques"
@@ -10682,14 +10826,14 @@
       "table": "targets"
     },
     {
-      "value": "\"table_name\" IN (\n      'amplification_primers',\n      'linearization_primers',\n      'homology_arm_primers',\n      'homology_arm_puc19_primers',\n      'preseq_1_primers',\n      'preseq_2_primers',\n      'rna_rt_primers',\n      'rna_preseq_1_primers',\n      'rna_preseq_2_primers',\n      'index_primers',\n      'dna',\n      'rna',\n      'pellets',\n      'sg_rna_plasmids',\n      'snv_lib_plasmids',\n      'sg_rna_oligos',\n      'external_samples',\n      'ha_pcr_products',\n      'ha_puc19_pcr_products',\n      'ha_puc19_gibson_products',\n      'ha_puc19_plasmids',\n      'snv_lib_amp_products',\n      'snv_lib_lin_products',\n      'snv_lib_gibson_products',\n      'snv_lib_plasmids',\n      'snv_lib_clonal_dna_products',\n      'snv_lib_golden_gate_products',\n      'clonal_has'\n    )",
+      "value": "\"table_name\" IN ('amplification_primers', 'linearization_primers', 'homology_arm_primers', 'homology_arm_puc19_primers', 'preseq_1_primers', 'preseq_2_primers', 'rna_rt_primers', 'rna_preseq_1_primers', 'rna_preseq_2_primers', 'index_primers', 'dna', 'rna', 'pellets', 'sg_rna_plasmids', 'snv_lib_plasmids', 'sg_rna_oligos', 'external_samples', 'ha_pcr_products', 'ha_puc19_pcr_products', 'ha_puc19_gibson_products', 'ha_puc19_plasmids', 'snv_lib_amp_products', 'snv_lib_lin_products', 'snv_lib_gibson_products', 'snv_lib_clonal_dna_products', 'snv_lib_golden_gate_products', 'clonal_has')",
       "name": "wellable_table_name",
       "entityType": "checks",
       "schema": "public",
       "table": "wellables"
     },
     {
-      "definition": "SELECT\n        *,\n        CASE WHEN two_x_nebuilder_reagent_volume IS NOT NULL AND insert_volume IS NOT NULL AND vector_volume IS NOT NULL\n            THEN two_x_nebuilder_reagent_volume - (insert_volume + vector_volume)\n            ELSE NULL\n        END AS h2o_volume\n    FROM (SELECT\n        \"ha_puc19_gibson_products\".\"id\" AS id,\n        \"ha_puc19_gibson_products\".\"name\" AS name,\n        \"ha_puc19_pcr_products\".\"id\" AS ha_puc19_pcr_product_id,\n        \"ha_puc19_pcr_products\".\"name\" AS ha_puc19_pcr_product_name,\n        \"ha_puc19_gibson_products\".\"puc19_vector_amount\" AS puc19_vector_amount,\n        \"ha_puc19_gibson_products\".\"puc19_vector_concentration\" AS puc19_vector_concentration,\n        \"ha_puc19_gibson_products\".\"quant\" AS quant,\n        \"ha_puc19_gibson_products\".\"prepped_on\" AS prepped_on,\n        \"ha_puc19_gibson_products\".\"total_reaction_volume\" AS total_reaction_volume,\n        CASE WHEN \"ha_puc19_gibson_products\".\"total_reaction_volume\" IS NOT NULL THEN \"ha_puc19_gibson_products\".\"total_reaction_volume\"/2 ELSE NULL END AS two_x_nebuilder_reagent_volume,\n        \"users\".\"users\".\"name\" AS prepped_by_name,\n        \"ha_cloning_experiments\".\"id\" AS ha_cloning_experiment_id,\n        \"ha_cloning_experiments\".\"name\" AS ha_cloning_experiment_name,\n        t_ha_pcr_products.id AS ha_pcr_product_id,\n        t_ha_pcr_products.name AS ha_pcr_product_name,\n        t_ha_pcr_products.ha_pcr_product_length AS ha_pcr_product_length,\n        CASE\n            WHEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" IS NOT NULL AND t_ha_pcr_products.ha_pcr_product_length IS NOT NULL\n                THEN t_ha_pcr_products.ha_pcr_product_length / 2649.0 * \"ha_puc19_gibson_products\".\"puc19_vector_amount\" * 2.0\n            ELSE NULL\n        END AS insert_dna_mass,\n        CASE\n            WHEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" IS NOT NULL AND t_ha_pcr_products.ha_pcr_product_length IS NOT NULL AND \"ha_puc19_gibson_products\".\"quant\" IS NOT NULL\n                THEN t_ha_pcr_products.ha_pcr_product_length / 2649.0 * \"ha_puc19_gibson_products\".\"puc19_vector_amount\" * 2.0 / \"ha_puc19_gibson_products\".\"quant\"\n            ELSE NULL\n        END AS insert_volume,\n        CASE\n            WHEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" IS NOT NULL AND \"ha_puc19_gibson_products\".\"puc19_vector_concentration\" IS NOT NULL\n                THEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" / \"ha_puc19_gibson_products\".\"puc19_vector_concentration\"\n            ELSE NULL\n        END AS vector_volume,\n        CASE\n            WHEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" IS NOT NULL AND t_ha_pcr_products.ha_pcr_product_length IS NOT NULL AND \"ha_puc19_gibson_products\".\"quant\" IS NOT NULL AND \"ha_puc19_gibson_products\".\"puc19_vector_concentration\" IS NOT NULL\n                THEN (t_ha_pcr_products.ha_pcr_product_length / 2649.0 * \"ha_puc19_gibson_products\".\"puc19_vector_amount\" * 2.0 / \"ha_puc19_gibson_products\".\"quant\") + (\"ha_puc19_gibson_products\".\"puc19_vector_amount\" / \"ha_puc19_gibson_products\".\"puc19_vector_concentration\")\n            ELSE NULL\n        END AS total_volume,\n        \"ha_puc19_gibson_products\".\"notes\" AS notes\n    FROM \"ha_puc19_gibson_products\"\n        JOIN \"ha_puc19_pcr_products\" ON \"ha_puc19_pcr_products\".\"id\" = \"ha_puc19_gibson_products\".\"ha_puc19_pcr_product_id\"\n        JOIN (\n            SELECT\n                \"ha_pcr_products\".\"id\" AS id,\n                \"ha_pcr_products\".\"name\" AS name,\n                \"ha_pcr_products\".\"ha_cloning_experiment_id\" AS ha_cloning_experiment_id,\n                CASE\n                    WHEN \"ha_pcr_products\".\"start_position\" IS NOT NULL AND \"ha_pcr_products\".\"stop_position\" IS NOT NULL\n                        THEN \"ha_pcr_products\".\"stop_position\" - \"ha_pcr_products\".\"start_position\" + 1\n                    ELSE NULL\n                END AS ha_pcr_product_length\n            FROM  \"ha_pcr_products\"\n        ) AS t_ha_pcr_products ON t_ha_pcr_products.id = \"ha_puc19_pcr_products\".\"ha_pcr_product_id\"\n        JOIN \"ha_cloning_experiments\" ON \"ha_cloning_experiments\".\"id\" = t_ha_pcr_products.ha_cloning_experiment_id\n        LEFT JOIN \"users\".\"users\" ON \"users\".\"users\".\"id\" = \"ha_puc19_gibson_products\".\"prepped_by\") t1",
+      "definition": "SELECT\n        *,\n        CASE WHEN two_x_nebuilder_reagent_volume IS NOT NULL AND insert_volume IS NOT NULL AND vector_volume IS NOT NULL\n            THEN two_x_nebuilder_reagent_volume - (insert_volume + vector_volume)\n            ELSE NULL\n        END AS h2o_volume\n    FROM (SELECT\n        \"ha_puc19_gibson_products\".\"id\" AS id,\n        \"ha_puc19_gibson_products\".\"name\" AS name,\n        \"ha_puc19_pcr_products\".\"id\" AS ha_puc19_pcr_product_id,\n        \"ha_puc19_pcr_products\".\"name\" AS ha_puc19_pcr_product_name,\n        \"ha_puc19_gibson_products\".\"puc19_vector_amount\" AS puc19_vector_amount,\n        \"ha_puc19_gibson_products\".\"puc19_vector_concentration\" AS puc19_vector_concentration,\n        \"ha_puc19_gibson_products\".\"quant\" AS quant,\n        \"ha_puc19_gibson_products\".\"prepped_on\" AS prepped_on,\n        \"ha_puc19_gibson_products\".\"total_reaction_volume\" AS total_reaction_volume,\n        CASE WHEN \"ha_puc19_gibson_products\".\"total_reaction_volume\" IS NOT NULL THEN \"ha_puc19_gibson_products\".\"total_reaction_volume\"/2 ELSE NULL END AS two_x_nebuilder_reagent_volume,\n        \"users\".\"users\".\"name\" AS prepped_by_name,\n        \"ha_cloning_experiments\".\"id\" AS ha_cloning_experiment_id,\n        \"ha_cloning_experiments\".\"name\" AS ha_cloning_experiment_name,\n        t_ha_pcr_products.id AS ha_pcr_product_id,\n        t_ha_pcr_products.name AS ha_pcr_product_name,\n        t_ha_pcr_products.ha_pcr_product_length AS ha_pcr_product_length,\n        CASE\n            WHEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" IS NOT NULL AND t_ha_pcr_products.ha_pcr_product_length IS NOT NULL\n                THEN t_ha_pcr_products.ha_pcr_product_length / 2649.0 * \"ha_puc19_gibson_products\".\"puc19_vector_amount\" * 2.0\n            ELSE NULL\n        END AS insert_dna_mass,\n        CASE\n            WHEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" IS NOT NULL AND t_ha_pcr_products.ha_pcr_product_length IS NOT NULL AND \"ha_puc19_gibson_products\".\"quant\" IS NOT NULL\n                THEN t_ha_pcr_products.ha_pcr_product_length / 2649.0 * \"ha_puc19_gibson_products\".\"puc19_vector_amount\" * 2.0 / \"ha_puc19_gibson_products\".\"quant\"\n            ELSE NULL\n        END AS insert_volume,\n        CASE\n            WHEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" IS NOT NULL AND \"ha_puc19_gibson_products\".\"puc19_vector_concentration\" IS NOT NULL\n                THEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" / \"ha_puc19_gibson_products\".\"puc19_vector_concentration\"\n            ELSE NULL\n        END AS vector_volume,\n        CASE\n            WHEN \"ha_puc19_gibson_products\".\"puc19_vector_amount\" IS NOT NULL AND t_ha_pcr_products.ha_pcr_product_length IS NOT NULL AND \"ha_puc19_gibson_products\".\"quant\" IS NOT NULL AND \"ha_puc19_gibson_products\".\"puc19_vector_concentration\" IS NOT NULL\n                THEN (t_ha_pcr_products.ha_pcr_product_length / 2649.0 * \"ha_puc19_gibson_products\".\"puc19_vector_amount\" * 2.0 / \"ha_puc19_gibson_products\".\"quant\") + (\"ha_puc19_gibson_products\".\"puc19_vector_amount\" / \"ha_puc19_gibson_products\".\"puc19_vector_concentration\")\n            ELSE NULL\n        END AS total_volume,\n        \"ha_puc19_gibson_products\".\"notes\" AS notes\n    FROM \"ha_puc19_gibson_products\"\n        JOIN \"ha_puc19_pcr_products\" ON \"ha_puc19_pcr_products\".\"id\" = \"ha_puc19_gibson_products\".\"ha_puc19_pcr_product_id\"\n        JOIN (\n            SELECT\n                \"ha_pcr_products\".\"id\" AS id,\n                \"ha_pcr_products\".\"name\" AS name,\n                \"ha_pcr_products\".\"ha_cloning_experiment_id\" AS ha_cloning_experiment_id,\n                CASE\n                    WHEN \"ha_pcr_products\".\"start_position\" IS NOT NULL AND \"ha_pcr_products\".\"stop_position\" IS NOT NULL\n                        THEN \"ha_pcr_products\".\"stop_position\" - \"ha_pcr_products\".\"start_position\" + 1\n                    ELSE NULL\n                END AS ha_pcr_product_length\n            FROM  \"ha_pcr_products\"\n        ) AS t_ha_pcr_products ON t_ha_pcr_products.id = \"ha_puc19_pcr_products\".\"ha_pcr_product_id\"\n        JOIN \"ha_cloning_experiments\" ON \"ha_cloning_experiments\".\"id\" = t_ha_pcr_products.ha_cloning_experiment_id\n        LEFT JOIN \"users\".\"users\" ON \"users\".\"users\".\"id\" = \"ha_puc19_gibson_products\".\"prepped_by_id\") t1",
       "with": null,
       "withNoData": null,
       "using": null,
@@ -10700,7 +10844,7 @@
       "schema": "public"
     },
     {
-      "definition": "with plate_types(plate_type_value, plate_type_label, plate_type_desc) AS (VALUES ('pellet-storage', 'Pellet storage', 'Pellet storage'), ('lin-primer-storage', 'LIN primer storage', 'Linearization primer storage'), ('amp-primer-storage', 'AMP primer storage', 'Amplification primer storage'), ('ha-primer-storage', 'HA primer storage', 'Homology arm primer storage'), ('ha-puc19-primer-storage', 'HA pUC19 primer storage', 'Homology arm pUC19 arm primer storage'), ('sg-rna-oligo-storage', 'sgRNA oligo storage', 'sgRNA oligo storage'), ('sg-rna-oligo', 'sgRNA oligo', 'sgRNA oligo'), ('sg-rna-plasmid-storage', 'sgRNA plasmid storage', 'sgRNA plasmid storage'), ('sg-rna-plasmid', 'sgRNA plasmid', 'sgRNA plasmid'), ('lin-pcr', 'LIN PCR', 'Linearization primer PCR'), ('amp-pcr', 'AMP PCR', 'Amplification primer PCR'), ('ha-pcr', 'HA PCR', 'Homology arm primer PCR'), ('preseq-1', 'PreSeq 1', 'PreSeq 1'), ('preseq-2', 'PreSeq 2', 'PreSeq 2'), ('preseq-3', 'PreSeq 3', 'PreSeq 3'), ('dna-preseq-1', 'DNA PreSeq 1', 'DNA PreSeq 1'), ('dna-preseq-2', 'DNA PreSeq 2', 'DNA PreSeq 2'), ('dna-preseq-3', 'DNA PreSeq 3', 'DNA PreSeq 3'), ('rna-rt-storage', 'RNA RT storage', 'RNA Reverse Transcription storage'), ('rna-preseq-1', 'RNA PreSeq 1', 'RNA PreSeq 1'), ('rna-preseq-2', 'RNA PreSeq 2', 'RNA PreSeq 2'), ('rna-preseq-3', 'RNA PreSeq 3', 'RNA PreSeq 3'), ('snv-lib-preseq-2', 'SNVlib PreSeq 2', 'SNVlib PreSeq 2'), ('snv-lib-preseq-3', 'SNVlib PreSeq 3', 'SNVlib PreSeq 3'), ('seq-index', 'Seq index', 'Sequencing index plate'), ('clonal-ha', 'Clonal HA plate', 'Clonal HA plate'), ('dna-preseq-1-primer-storage', 'DNA PreSeq 1 primer storage', 'DNA PreSeq 1 primer storage'), ('dna-preseq-2-primer-storage', 'DNA PreSeq 2 primer storage', 'DNA PreSeq 2 primer storage'), ('rna-rt-primer-storage', 'RNA RT primer storage', 'RNA RT primer storage'), ('rna-preseq-1-primer-storage', 'RNA PreSeq 1 primer storage', 'RNA PreSeq 1 primer storage'), ('rna-preseq-2-primer-storage', 'RNA PreSeq 2 primer storage', 'RNA PreSeq 2 primer storage'), ('external-sample-indexing', 'External sample indexing', 'External sample indexing'), ('ha-pcr-product-storage', 'HA PCR product storage', 'HA PCR product storage'), ('ha-puc19-pcr-product-storage', 'HA pUC19 PCR product storage', 'HA pUC19 PCR product storage'), ('ha-puc19-gibson-product-storage', 'HA pUC19 Gibson product storage', 'HA pUC19 Gibson product storage'), ('ha-puc19-plasmid-storage', 'HA pUC19 plasmid storage', 'HA pUC19 plasmid storage'), ('snv-lib-amp-product-storage', 'SNVlib AMP product storage', 'SNVlib AMP product storage'), ('snv-lib-lin-product-storage', 'SNVlib LIN product storage', 'SNVlib LIN product storage'), ('snv-lib-gibson-product-storage', 'SNVlib Gibson product storage', 'SNVlib Gibson product storage'), ('snv-lib-plasmid-storage', 'SNVlib plasmid storage', 'SNVlib plasmid storage'), ('snv-lib-golden-gate-product-storage', 'SNVlib Golden Gate product storage', 'SNVlib Golden Gate product storage')) select\n    \"plates\".\"id\",\n    \"plates\".\"name\",\n    \"plates\".\"size_x\",\n    \"plates\".\"size_y\",\n    \"plates\".\"plate_type\",\n    \"plates\".\"discarded\",\n    \"plates\".\"processed\",\n    \"cycles\".\"id\" as cycle_id,\n    \"cycles\".\"name\" as cycle_name,\n    string_agg(distinct \"targets\".\"name\", ',') as targets,\n    (select distinct on (plate_type_value) plate_type_label from plate_types where plate_type_value = \"plates\".\"plate_type\") as plate_type_label,\n    count(distinct(\"wells\".\"id\")) as wells_count,\n    count(distinct(\"well_contents\".\"well_id\")) as wells_with_content_count,\n    count(distinct(\"well_content_sources\".\"source_well_id\")) as wells_processed_count,\n    \"sg_rna_cloning_experiments\".\"id\" as sg_rna_cloning_experiment_id,\n    \"pcr_experiments\".\"id\" as pcr_experiment_id\n    from \"plates\"\n    join \"wells\" on \"plates\".\"id\" = \"wells\".\"plate_id\"\n    left join \"well_content_sources\" on \"wells\".\"id\" = \"well_content_sources\".\"source_well_id\"\n    left join \"well_contents\" on \"wells\".\"id\" = \"well_contents\".\"well_id\"\n    left join \"pcr_experiments\" on \"plates\".\"id\" = \"pcr_experiments\".\"plate_id\"\n    left join \"pcr_experiment_targets\" on \"pcr_experiments\".\"id\" = \"pcr_experiment_targets\".\"pcr_experiment_id\"\n    left join \"transfect_targets\" on \"pcr_experiment_targets\".\"transfect_target_id\" = \"transfect_targets\".\"id\"\n    left join \"targets\" on \"targets\".\"id\" = \"transfect_targets\".\"target_id\"\n    left join \"transfect_experiments\" on \"transfect_targets\".\"experiment_id\" = \"transfect_experiments\".\"id\"\n    left join \"cycles\" on \"transfect_experiments\".\"cycle_id\" = \"cycles\".\"id\"\n    left join \"sg_rna_cloning_experiments\" on \"plates\".\"id\" = \"sg_rna_cloning_experiments\".\"plate_id\"\n    group by \"plates\".\"id\", \"cycles\".\"id\", \"sg_rna_cloning_experiments\".\"id\", \"pcr_experiments\".\"id\"",
+      "definition": "select\n    \"plates\".\"id\",\n    \"plates\".\"name\",\n    \"plates\".\"size_x\",\n    \"plates\".\"size_y\",\n    \"plates\".\"plate_type\",\n    \"plates\".\"discarded\",\n    \"plates\".\"processed\",\n    \"cycles\".\"id\" as cycle_id,\n    \"cycles\".\"name\" as cycle_name,\n    string_agg(distinct \"targets\".\"name\", ',') as targets,\n    \"plate_types\".\"label\" as plate_type_label,\n    count(distinct(\"wells\".\"id\")) as wells_count,\n    count(distinct(\"well_contents\".\"well_id\")) as wells_with_content_count,\n    count(distinct(\"well_content_sources\".\"source_well_id\")) as wells_processed_count,\n    \"sg_rna_cloning_experiments\".\"id\" as sg_rna_cloning_experiment_id,\n    \"pcr_experiments\".\"id\" as pcr_experiment_id\n    from \"plates\"\n    join \"wells\" on \"plates\".\"id\" = \"wells\".\"plate_id\"\n    left join \"plate_types\" on \"plate_types\".\"value\" = \"plates\".\"plate_type\"\n    left join \"well_content_sources\" on \"wells\".\"id\" = \"well_content_sources\".\"source_well_id\"\n    left join \"well_contents\" on \"wells\".\"id\" = \"well_contents\".\"well_id\"\n    left join \"pcr_experiments\" on \"plates\".\"id\" = \"pcr_experiments\".\"plate_id\"\n    left join \"pcr_experiment_targets\" on \"pcr_experiments\".\"id\" = \"pcr_experiment_targets\".\"pcr_experiment_id\"\n    left join \"transfect_targets\" on \"pcr_experiment_targets\".\"transfect_target_id\" = \"transfect_targets\".\"id\"\n    left join \"targets\" on \"targets\".\"id\" = \"transfect_targets\".\"target_id\"\n    left join \"transfect_experiments\" on \"transfect_targets\".\"experiment_id\" = \"transfect_experiments\".\"id\"\n    left join \"cycles\" on \"transfect_experiments\".\"cycle_id\" = \"cycles\".\"id\"\n    left join \"sg_rna_cloning_experiments\" on \"plates\".\"id\" = \"sg_rna_cloning_experiments\".\"plate_id\"\n    group by \"plates\".\"id\", \"plate_types\".\"label\", \"cycles\".\"id\", \"sg_rna_cloning_experiments\".\"id\", \"pcr_experiments\".\"id\"",
       "with": null,
       "withNoData": null,
       "using": null,
@@ -10722,7 +10866,7 @@
       "schema": "public"
     },
     {
-      "definition": "SELECT\n    *,\n    CASE WHEN total_reaction_volume IS NOT NULL THEN total_reaction_volume/2 ELSE NULL END AS two_x_nebuilder_reagent_volume,\n\tCASE WHEN total_reaction_volume IS NOT NULL AND lin_volume IS NOT NULL THEN total_reaction_volume/2 - lin_volume ELSE NULL END AS nc_water_volume,\n    CASE WHEN total_reaction_volume IS NOT NULL AND amp_volume IS NOT NULL AND lin_volume IS NOT NULL THEN total_reaction_volume/2 - (amp_volume + lin_volume) ELSE NULL END AS h2o_volume,\n\tCASE\n\t\tWHEN amp_volume IS NOT NULL AND lin_volume IS NOT NULL\n\t\tTHEN amp_volume + lin_volume\n\t\tELSE NULL\n\tEND AS total_volume\nFROM (\n\tSELECT *,\n\tCASE\n\t\tWHEN amp_product_vector_amount IS NOT NULL AND amp_product_concentration != 0\n\t\tTHEN amp_product_vector_amount / amp_product_concentration\n\t\tELSE NULL\n\tEND AS amp_volume,\n\tCASE\n\t\tWHEN lin_product_vector_amount IS NOT NULL AND lin_product_concentration != 0\n\t\tTHEN lin_product_vector_amount / lin_product_concentration\n\t\tELSE NULL\n\tEND AS lin_volume\nFROM (\n\tSELECT\n\t\"snv_lib_gibson_products\".\"id\" AS id,\n    \"snv_lib_gibson_products\".\"name\" AS name,\n    \"snv_lib_gibson_products\".\"snv_lib_cloning_experiment_id\" AS snv_lib_cloning_experiment_id,\n    \"snv_lib_gibson_products\".\"lin_product_vector_amount\" AS lin_product_vector_amount,\n    \"snv_lib_gibson_products\".\"gibson_on\" AS gibson_on,\n    \"snv_lib_gibson_products\".\"cleaned_on\" AS cleaned_on,\n    \"snv_lib_gibson_products\".\"transformed_on\" AS transformed_on,\n    \"snv_lib_gibson_products\".\"prepped_on\" AS prepped_on,\n    \"snv_lib_gibson_products\".\"quant\" AS quant,\n    \"snv_lib_gibson_products\".\"plasmidsaurus_checked\" AS plasmidsaurus_checked,\n    \"snv_lib_gibson_products\".\"ngs_checked\" AS ngs_checked,\n    \"snv_lib_gibson_products\".\"passed_qc\" AS passed_qc,\n    \"snv_lib_gibson_products\".\"benchling_link\" AS benchling_link,\n    \"snv_lib_gibson_products\".\"notes\" AS notes,\n    \"snv_lib_gibson_products\".\"total_reaction_volume\" AS total_reaction_volume,\n    \"snv_lib_cloning_experiments\".\"name\" AS snv_lib_cloning_experiment_name,\n\tamp_products.id AS amp_product_id,\n\tamp_products.name AS amp_product_name,\n\tamp_products.amp_product_size AS amp_product_size,\n\tamp_products.quant AS amp_product_concentration,\n\tlin_products.id AS lin_product_id,\n\tlin_products.name AS lin_product_name,\n\tlin_products.quant AS lin_product_concentration,\n\tlin_products.ha_pcr_product_size AS ha_pcr_product_size,\n    gibson_by_user.name AS gibson_by_name,\n    cleaned_by_user.name AS cleaned_by_name,\n    transformed_by_user.name AS transformed_by_name,\n    prepped_by_user.name AS prepped_by_name,\n\tCASE\n\t\tWHEN lin_products.ha_pcr_product_size IS NOT NULL AND amp_products.amp_product_size IS NOT NULL\n\t \tTHEN lin_products.ha_pcr_product_size - amp_products.amp_product_size + 2649\n\t \tELSE NULL\n\tEND AS lin_product_size,\n\tCASE\n\t\tWHEN lin_products.ha_pcr_product_size IS NOT NULL AND amp_products.amp_product_size IS NOT NULL\n\t\tAND amp_products.amp_product_size IS NOT NULL AND snv_lib_gibson_products.lin_product_vector_amount IS NOT NULL\n\t\tAND amp_products.amp_product_size - lin_products.ha_pcr_product_size != 2649\n\t\tTHEN 7.0 * amp_products.amp_product_size / (lin_products.ha_pcr_product_size - amp_products.amp_product_size + 2649) * snv_lib_gibson_products.lin_product_vector_amount\n\t\tELSE NULL\n\tEND AS amp_product_vector_amount\nFROM \"snv_lib_gibson_products\"\nJOIN \"snv_lib_cloning_experiments\" ON \"snv_lib_cloning_experiments\".\"id\" = \"snv_lib_gibson_products\".\"snv_lib_cloning_experiment_id\"\nLEFT JOIN \"users\".\"users\" AS prepped_by_user ON prepped_by_user.id = \"snv_lib_gibson_products\".\"prepped_by\"\nLEFT JOIN \"users\".\"users\" AS transformed_by_user ON transformed_by_user.id = \"snv_lib_gibson_products\".\"transformed_by\"\nLEFT JOIN \"users\".\"users\" AS cleaned_by_user ON cleaned_by_user.id = \"snv_lib_gibson_products\".\"cleaned_by\"\nLEFT JOIN \"users\".\"users\" AS gibson_by_user ON gibson_by_user.id = \"snv_lib_gibson_products\".\"gibson_by\"\nLEFT JOIN\n\t(SELECT \"snv_lib_lin_products\".\"id\" AS id,\n\t\t\"snv_lib_lin_products\".\"name\" AS name,\n\t\t\"snv_lib_lin_products\".\"snv_lib_cloning_experiment_id\" AS snv_lib_cloning_experiment_id,\n\t\t\"snv_lib_lin_products\".\"quant\" AS quant,\n\t\tCASE\n\t\t\t WHEN \"ha_pcr_products\".\"start_position\" IS NOT NULL AND \"ha_pcr_products\".\"stop_position\" IS NOT NULL\n\t\t\t THEN\n\t\t\t \t\"ha_pcr_products\".\"stop_position\" - \"ha_pcr_products\".\"start_position\" + 1\n\t\t\t ELSE NULL\n\t\tEND AS ha_pcr_product_size\n\t\tFROM \"snv_lib_lin_products\"\n\t\t\tLEFT JOIN \"ha_puc19_plasmids\" ON \"ha_puc19_plasmids\".\"id\" = \"snv_lib_lin_products\".\"ha_puc19_plasmid_id\"\n\t\t\tLEFT JOIN \"ha_puc19_gibson_products\" ON \"ha_puc19_plasmids\".\"ha_puc19_gibson_product_id\" = \"ha_puc19_gibson_products\".\"id\"\n\t\t\tLEFT JOIN \"ha_puc19_pcr_products\" ON \"ha_puc19_gibson_products\".\"ha_puc19_pcr_product_id\" = \"ha_puc19_pcr_products\".\"id\"\n\t\t\tLEFT JOIN \"ha_pcr_products\" ON \"ha_puc19_pcr_products\".\"ha_pcr_product_id\" = \"ha_pcr_products\".\"id\"\n\t) lin_products ON lin_products.snv_lib_cloning_experiment_id = \"snv_lib_gibson_products\".\"snv_lib_cloning_experiment_id\"\nLEFT JOIN (\n\tSELECT\n        \"snv_lib_amp_products\".\"id\" AS id,\n\t\t\"snv_lib_amp_products\".\"name\" AS name,\n\t\t\"snv_lib_amp_products\".\"snv_lib_cloning_experiment_id\" AS snv_lib_cloning_experiment_id,\n\t\t\"snv_lib_amp_products\".\"quant\" AS quant,\n\t\tCASE\n\t\t\t WHEN \"snv_lib_amp_products\".\"start_position\" IS NOT NULL AND \"snv_lib_amp_products\".\"stop_position\" IS NOT NULL\n\t\t\t THEN \"snv_lib_amp_products\".\"stop_position\" - \"snv_lib_amp_products\".\"start_position\" + 1\n\t\t\t ELSE NULL\n\t\tEND AS amp_product_size\n\tFROM \"snv_lib_amp_products\"\n    ) amp_products ON amp_products.snv_lib_cloning_experiment_id = \"snv_lib_gibson_products\".\"snv_lib_cloning_experiment_id\"\n) t2 ) t3",
+      "definition": "SELECT\n    *,\n    CASE WHEN total_reaction_volume IS NOT NULL THEN total_reaction_volume/2 ELSE NULL END AS two_x_nebuilder_reagent_volume,\n\tCASE WHEN total_reaction_volume IS NOT NULL AND lin_volume IS NOT NULL THEN total_reaction_volume/2 - lin_volume ELSE NULL END AS nc_water_volume,\n    CASE WHEN total_reaction_volume IS NOT NULL AND amp_volume IS NOT NULL AND lin_volume IS NOT NULL THEN total_reaction_volume/2 - (amp_volume + lin_volume) ELSE NULL END AS h2o_volume,\n\tCASE\n\t\tWHEN amp_volume IS NOT NULL AND lin_volume IS NOT NULL\n\t\tTHEN amp_volume + lin_volume\n\t\tELSE NULL\n\tEND AS total_volume\nFROM (\n\tSELECT *,\n\tCASE\n\t\tWHEN amp_product_vector_amount IS NOT NULL AND amp_product_concentration != 0\n\t\tTHEN amp_product_vector_amount / amp_product_concentration\n\t\tELSE NULL\n\tEND AS amp_volume,\n\tCASE\n\t\tWHEN lin_product_vector_amount IS NOT NULL AND lin_product_concentration != 0\n\t\tTHEN lin_product_vector_amount / lin_product_concentration\n\t\tELSE NULL\n\tEND AS lin_volume\nFROM (\n\tSELECT\n\t\"snv_lib_gibson_products\".\"id\" AS id,\n    \"snv_lib_gibson_products\".\"name\" AS name,\n    \"snv_lib_gibson_products\".\"snv_lib_cloning_experiment_id\" AS snv_lib_cloning_experiment_id,\n    \"snv_lib_gibson_products\".\"lin_product_vector_amount\" AS lin_product_vector_amount,\n    \"snv_lib_gibson_products\".\"gibson_on\" AS gibson_on,\n    \"snv_lib_gibson_products\".\"cleaned_on\" AS cleaned_on,\n    \"snv_lib_gibson_products\".\"transformed_on\" AS transformed_on,\n    \"snv_lib_gibson_products\".\"prepped_on\" AS prepped_on,\n    \"snv_lib_gibson_products\".\"quant\" AS quant,\n    \"snv_lib_gibson_products\".\"plasmidsaurus_checked\" AS plasmidsaurus_checked,\n    \"snv_lib_gibson_products\".\"ngs_checked\" AS ngs_checked,\n    \"snv_lib_gibson_products\".\"passed_qc\" AS passed_qc,\n    \"snv_lib_gibson_products\".\"benchling_link\" AS benchling_link,\n    \"snv_lib_gibson_products\".\"notes\" AS notes,\n    \"snv_lib_gibson_products\".\"total_reaction_volume\" AS total_reaction_volume,\n    \"snv_lib_cloning_experiments\".\"name\" AS snv_lib_cloning_experiment_name,\n\tamp_products.id AS amp_product_id,\n\tamp_products.name AS amp_product_name,\n\tamp_products.amp_product_size AS amp_product_size,\n\tamp_products.quant AS amp_product_concentration,\n\tlin_products.id AS lin_product_id,\n\tlin_products.name AS lin_product_name,\n\tlin_products.quant AS lin_product_concentration,\n\tlin_products.ha_pcr_product_size AS ha_pcr_product_size,\n    gibson_by_user.name AS gibson_by_name,\n    cleaned_by_user.name AS cleaned_by_name,\n    transformed_by_user.name AS transformed_by_name,\n    prepped_by_user.name AS prepped_by_name,\n\tCASE\n\t\tWHEN lin_products.ha_pcr_product_size IS NOT NULL AND amp_products.amp_product_size IS NOT NULL\n\t \tTHEN lin_products.ha_pcr_product_size - amp_products.amp_product_size + 2649\n\t \tELSE NULL\n\tEND AS lin_product_size,\n\tCASE\n\t\tWHEN lin_products.ha_pcr_product_size IS NOT NULL AND amp_products.amp_product_size IS NOT NULL\n\t\tAND amp_products.amp_product_size IS NOT NULL AND snv_lib_gibson_products.lin_product_vector_amount IS NOT NULL\n\t\tAND amp_products.amp_product_size - lin_products.ha_pcr_product_size != 2649\n\t\tTHEN 7.0 * amp_products.amp_product_size / (lin_products.ha_pcr_product_size - amp_products.amp_product_size + 2649) * snv_lib_gibson_products.lin_product_vector_amount\n\t\tELSE NULL\n\tEND AS amp_product_vector_amount\nFROM \"snv_lib_gibson_products\"\nJOIN \"snv_lib_cloning_experiments\" ON \"snv_lib_cloning_experiments\".\"id\" = \"snv_lib_gibson_products\".\"snv_lib_cloning_experiment_id\"\nLEFT JOIN \"users\".\"users\" AS prepped_by_user ON prepped_by_user.id = \"snv_lib_gibson_products\".\"prepped_by_id\"\nLEFT JOIN \"users\".\"users\" AS transformed_by_user ON transformed_by_user.id = \"snv_lib_gibson_products\".\"transformed_by_id\"\nLEFT JOIN \"users\".\"users\" AS cleaned_by_user ON cleaned_by_user.id = \"snv_lib_gibson_products\".\"cleaned_by_id\"\nLEFT JOIN \"users\".\"users\" AS gibson_by_user ON gibson_by_user.id = \"snv_lib_gibson_products\".\"gibson_by_id\"\nLEFT JOIN\n\t(SELECT \"snv_lib_lin_products\".\"id\" AS id,\n\t\t\"snv_lib_lin_products\".\"name\" AS name,\n\t\t\"snv_lib_lin_products\".\"snv_lib_cloning_experiment_id\" AS snv_lib_cloning_experiment_id,\n\t\t\"snv_lib_lin_products\".\"quant\" AS quant,\n\t\tCASE\n\t\t\t WHEN \"ha_pcr_products\".\"start_position\" IS NOT NULL AND \"ha_pcr_products\".\"stop_position\" IS NOT NULL\n\t\t\t THEN\n\t\t\t \t\"ha_pcr_products\".\"stop_position\" - \"ha_pcr_products\".\"start_position\" + 1\n\t\t\t ELSE NULL\n\t\tEND AS ha_pcr_product_size\n\t\tFROM \"snv_lib_lin_products\"\n\t\t\tLEFT JOIN \"ha_puc19_plasmids\" ON \"ha_puc19_plasmids\".\"id\" = \"snv_lib_lin_products\".\"ha_puc19_plasmid_id\"\n\t\t\tLEFT JOIN \"ha_puc19_gibson_products\" ON \"ha_puc19_plasmids\".\"ha_puc19_gibson_product_id\" = \"ha_puc19_gibson_products\".\"id\"\n\t\t\tLEFT JOIN \"ha_puc19_pcr_products\" ON \"ha_puc19_gibson_products\".\"ha_puc19_pcr_product_id\" = \"ha_puc19_pcr_products\".\"id\"\n\t\t\tLEFT JOIN \"ha_pcr_products\" ON \"ha_puc19_pcr_products\".\"ha_pcr_product_id\" = \"ha_pcr_products\".\"id\"\n\t) lin_products ON lin_products.snv_lib_cloning_experiment_id = \"snv_lib_gibson_products\".\"snv_lib_cloning_experiment_id\"\nLEFT JOIN (\n\tSELECT\n        \"snv_lib_amp_products\".\"id\" AS id,\n\t\t\"snv_lib_amp_products\".\"name\" AS name,\n\t\t\"snv_lib_amp_products\".\"snv_lib_cloning_experiment_id\" AS snv_lib_cloning_experiment_id,\n\t\t\"snv_lib_amp_products\".\"quant\" AS quant,\n\t\tCASE\n\t\t\t WHEN \"snv_lib_amp_products\".\"start_position\" IS NOT NULL AND \"snv_lib_amp_products\".\"stop_position\" IS NOT NULL\n\t\t\t THEN \"snv_lib_amp_products\".\"stop_position\" - \"snv_lib_amp_products\".\"start_position\" + 1\n\t\t\t ELSE NULL\n\t\tEND AS amp_product_size\n\tFROM \"snv_lib_amp_products\"\n    ) amp_products ON amp_products.snv_lib_cloning_experiment_id = \"snv_lib_gibson_products\".\"snv_lib_cloning_experiment_id\"\n) t2 ) t3",
       "with": null,
       "withNoData": null,
       "using": null,

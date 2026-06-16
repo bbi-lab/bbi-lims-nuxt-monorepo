@@ -1,11 +1,11 @@
 import _ from 'lodash'
 import { eq } from 'drizzle-orm'
-import { transfectTargets } from '#shared/db/schema/sge/transfect-experiment'
-import { homologyArmPrimerTargets, preseq1PrimerTargets, rnaPreseq1PrimerTargets, rnaPreseq2PrimerTargets } from '#shared/db/schema/sge/primer'
-import { clonalHaTargets, sgRnaOligoTargets, sgeOligoLots } from '#shared/db/schema/sge/oligos'
+import { transfectTargets } from '#shared/db/schema/transfect-experiment'
+import { homologyArmPrimerTargets, preseq1PrimerTargets, rnaPreseq1PrimerTargets, rnaPreseq2PrimerTargets } from '#shared/db/schema/primer'
+import { clonalHaTargets, sgRnaOligoTargets, sgeOligoLots } from '#shared/db/schema/oligos'
 import { deleteEmptyPlate } from '../../utils/sge'
-import { pcr1ExperimentMasterMixVolumes, pcr2ExperimentMasterMixVolumes, pcrExperimentTargets } from '#shared/db/schema/sge/pcr-experiment'
-import { sgRnaPlasmidTargets } from '#shared/db/schema/sge/plasmid'
+import { pcr1ExperimentMasterMixVolumes, pcr2ExperimentMasterMixVolumes, pcrExperimentTargets } from '#shared/db/schema/pcr-experiment'
+import { sgRnaPlasmidTargets } from '#shared/db/schema/plasmid'
 
 export default defineEventHandler(async (event) => {
   const { recordType, id } = event.context.params as { recordType: string, id: string }

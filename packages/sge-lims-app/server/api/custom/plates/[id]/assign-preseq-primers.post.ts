@@ -1,6 +1,6 @@
 import { inArray } from 'drizzle-orm'
 import _ from 'lodash'
-import { wellContents } from '#shared/db/schema/sge/well'
+import { wellContents } from 'lims-layer/shared/db/schema/well'
 
 type PrimerType = 'dna-preseq-1' | 'dna-preseq-2' | 'rna-preseq-1' | 'rna-preseq-2'
 

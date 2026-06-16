@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import _ from 'lodash'
-import { ENUM_LOOKUPS } from '~/server/db/schema/sge/enum-lookups'
 import { schemas } from '#shared/db/zod/zodSchemas'
 
 const router = useRouter()
@@ -41,7 +40,7 @@ const columnDefs: ColumnDefinitions = {
     pcrTypeLabel: {
         header: 'Type',
         format: (x: any) => {
-            return _.get(ENUM_LOOKUPS.pcrExperiments.pcrType, [x.pcrType, 'label'])
+            return _.get(x, 'pcrTypeRef.label')
         },
         path: 'pcrTypeLabel.displayValue',
         index: 1,
@@ -94,11 +93,18 @@ const addFieldConfigs: FormFieldConfigs = {
     name: {
         index: 1,
     },
-    technician: {
+    technicianId: {
         index: 2,
     },
     pcrType: {
         index: 3,
+        autoCompleter: {
+            searchBaseUrl: '/api/pcr-types',
+            valueField: 'value',
+            displayFields: ['label'],
+            searchFields: ['label'],
+            dropdown: true,
+        },
     },
     plateId: {
         // only display with widget for RNA RT experiments, all other PCR experiments have 96-well plates created automatically
@@ -174,6 +180,7 @@ const editFieldConfigs: FormFieldConfigs = {
 const withClause = {
     plate: {columns: {id: true}},
     technician: {columns: {name: true}},
+    pcrTypeRef: {columns: {label: true}},
     pcrExperimentTargets: {
         with: {
             transfectTarget: {

@@ -48,7 +48,7 @@ const columnDefs: ColumnDefinitions = {
 }
 
 const fieldConfigs: FormFieldConfigs = {
-    reagent: {
+    reagentId: {
         label: 'Reagent',
         autoCompleter: {
             searchBaseUrl: '/api/reagents',

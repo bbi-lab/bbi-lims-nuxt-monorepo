@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { wellCoordinateToChar } from '~/lib/plate-diagram'
-import type { SgRnaOligo } from '~/server/db/schema/sge/oligos'
-import type { SgRnaPlasmid } from '~/server/db/schema/sge/plasmid'
+import type { SgRnaOligo } from '~/shared/db/schema/oligos'
+import type { SgRnaPlasmid } from '~/shared/db/schema/plasmid'
 import type { User } from '~/server/db/schema/user'
 import { schemas } from '#shared/db/zod/zodSchemas'
 

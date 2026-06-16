@@ -3,7 +3,7 @@ import { pgTable, uuid, varchar, text, check, smallint, uniqueIndex, timestamp, 
 import _ from 'lodash'
 import { targets } from './target'
 import { type InferSelectModel } from 'drizzle-orm/table'
-import { genes } from './gene'
+import { genes } from 'lims-layer/shared/db/schema/gene'
 
 export const linearizationPrimers = pgTable('linearization_primers', {
     id: uuid('id').notNull().primaryKey().defaultRandom(),

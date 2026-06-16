@@ -4,7 +4,7 @@ import { reagents } from './reagents'
 export const lots = pgTable('lots', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),
   lotNumber: varchar('lot_number', { length: 50 }).notNull().unique(),
-  reagent: uuid('reagent_id').references(() => reagents.id).notNull(),
+  reagentId: uuid('reagent_id').references(() => reagents.id).notNull(),
   inHouse: boolean('in_house'),
   status: text('status', {
     enum: [

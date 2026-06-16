@@ -133,7 +133,7 @@ const fieldConfigs: ComputedRef<FormFieldConfigs> = computed(() => {
                 dropdown: true,
             },
         },
-        dpn1DigestBy: {
+        dpn1DigestById: {
             autoCompleter: {
                 searchBaseUrl: '/api/users',
                 searchFields: ['name'],
@@ -142,7 +142,7 @@ const fieldConfigs: ComputedRef<FormFieldConfigs> = computed(() => {
                 dropdown: true,
             }
         },
-        gelExtractedBy: {
+        gelExtractedById: {
             autoCompleter: {
                 searchBaseUrl: '/api/users',
                 searchFields: ['name'],
