@@ -69,6 +69,8 @@ const columnDefs: ColumnDefinitions = {
     gelExtractedBy: {
         path: 'gelExtractedBy.name'
     },
+    dpn1DigestById: { display: false },
+    gelExtractedById: { display: false },
 }
 // fieldConfigs is computed so we can access crudTable.state.editingRecord and crudTable.state.editingMultipleRecordsIds
 // to apply additional logic to certain properties (e.g. readonly, searchWhereClause)

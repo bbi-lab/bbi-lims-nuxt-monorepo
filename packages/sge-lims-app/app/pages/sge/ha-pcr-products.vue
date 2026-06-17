@@ -76,6 +76,7 @@ const columnDefs: ColumnDefinitions = {
     performedBy: {
         path: 'performedBy.name'
     },
+    performedById: { display: false },
     haPuc19PcrProducts: {
         header: 'HA pUC19 PCR Product',
         type: 'element',
@@ -154,23 +155,6 @@ const displayWithClause = {
     },
     haPuc19PcrProducts: {
         columns: {id: true, name: true},
-    },
-    wellable: {
-        with: {
-            wellContents: {
-                columns: {id: true, name: true},
-                with: {
-                    well: {
-                        columns: {id: true, name: true},
-                        with: {
-                            plate: {
-                                columns: {id: true, name: true},
-                            }
-                        }
-                    }
-                }
-            },
-        }
     },
 }
 

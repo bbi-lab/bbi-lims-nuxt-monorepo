@@ -17,46 +17,25 @@ watch(() => route.query, async (newValue, oldValue) => {
 }, { immediate: true })
 
 const displayWithClause = Object.freeze({
-    harvestedBy: {
-        columns: {
-            name: true
-        },
-    },
     transfectTarget: {
         columns: {},
         with: {
             target: {
-                columns: {
-                    id: true,
-                    name: true
-                },
+                columns: { id: true, name: true },
                 with: {
                     region: {
-                        columns: {
-                            name: true
-                        },
+                        columns: { name: true },
                         with: {
-                            gene: {
-                                columns: {
-                                    symbol: true
-                                }
-                            }
+                            gene: { columns: { symbol: true } }
                         }
                     }
                 }
             },
             experiment: {
-                columns: {
-                    id: true,
-                    name: true
-                },
+                columns: { id: true },
                 with: {
-                    cycle: {
-                        columns: {
-                            name: true
-                        }
-                    }
-                },
+                    cycle: { columns: { name: true } }
+                }
             }
         }
     },
@@ -69,30 +48,6 @@ const displayWithClause = Object.freeze({
         columns: {
             id: true
         },
-    },
-    wellable: {
-        with: {
-            wellContents: {
-                with: {
-                    well: {
-                        columns: {
-                            id: true,
-                            x: true,
-                            y: true,
-                        },
-                        with: {
-                            plate: {
-                                columns: {
-                                    id: true,
-                                    name: true,
-                                    plateType: true,
-                                }
-                            }
-                        }
-                    },
-                },
-            },
-        }
     },
 })
 
@@ -136,12 +91,7 @@ const columnDefs: ColumnDefinitions = {
     },
     wellContents: {
         header: 'Location',
-        format: (x: any) => {
-            return combinedWellLocations(x) as string
-        },
-        path: 'wellContents.displayValue',
-        type: 'string',
-        index: 6,
+        display: false,
     },
     transfectTarget: {
         header: 'Target',
@@ -153,9 +103,7 @@ const columnDefs: ColumnDefinitions = {
     transfectTargetId: {
         display: false,
     },
-    harvestedBy: {
-        path: 'harvestedBy.name',
-    },
+    harvestedById: { display: false },
 }
 const rowActions = {
     summary: {

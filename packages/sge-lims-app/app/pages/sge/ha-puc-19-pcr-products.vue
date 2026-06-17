@@ -50,6 +50,7 @@ const columnDefs: ColumnDefinitions = {
     cleanedBy: {
         path: 'cleanedBy.name'
     },
+    cleanedById: { display: false },
 }
 const fieldConfigs: FormFieldConfigs = {
     haPcrProductId: {
@@ -115,23 +116,6 @@ const displayWithClause = {
     },
     haPuc19PrimerReverse: {
         columns: {id: true, name: true},
-    },
-    wellable: {
-        with: {
-            wellContents: {
-                columns: {id: true, name: true},
-                with: {
-                    well: {
-                        columns: {id: true, name: true},
-                        with: {
-                            plate: {
-                                columns: {id: true, name: true},
-                            }
-                        }
-                    }
-                }
-            },
-        }
     },
 }
 

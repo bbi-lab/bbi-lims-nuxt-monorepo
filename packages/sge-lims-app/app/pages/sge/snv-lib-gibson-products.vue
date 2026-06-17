@@ -200,6 +200,10 @@ const columnDefs: ColumnDefinitions = {
             return data?.h2oVolume
         },
     },
+    gibsonById: { display: false },
+    cleanedById: { display: false },
+    transformedById: { display: false },
+    preppedById: { display: false },
 }
 const fieldConfigs: FormFieldConfigs = {
     name: {

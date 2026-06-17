@@ -267,7 +267,12 @@ defineExpose({
                 :placeholder="placeholderValue"
                 :dropdown="dropdown"
                 :disabled="disabled"
-            />
+            >
+                <template #empty>
+                    <span v-if="!currentValue">Type to search…</span>
+                    <span v-else>No results found</span>
+                </template>
+            </AutoComplete>
             <label v-if="!_.isEmpty(iftaLabel)" :for="inputId">{{ iftaLabel }}</label>
         </component>
 

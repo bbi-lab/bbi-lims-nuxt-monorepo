@@ -2,7 +2,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import _ from 'lodash'
 import { schemas } from '#shared/db/zod/zodSchemas'
-import { wellCoordinateToChar } from '~/lib/plate-diagram'
+import { wellCoordinateToChar } from 'lims-layer/shared/lib/plate-diagram'
 
 const crudTable = useCrudTable()
 const route = useRoute()

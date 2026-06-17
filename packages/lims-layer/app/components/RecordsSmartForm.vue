@@ -24,6 +24,11 @@ const props = defineProps({
         required: false,
         default: () => ({}),
     },
+    initialValues: {
+        type: Object as () => Record<string, unknown>,
+        required: false,
+        default: () => ({}),
+    },
     withClause: {
         type: Object as () => Record<string, unknown>,
         required: false,
@@ -95,7 +100,7 @@ async function loadRecord() {
             const empty: Record<string, unknown> = {}
             _.keys(zodShape.value).forEach((key) => { empty[key] = null })
             // Apply readonly values
-            initialValues.value = coerceDateFields({ ...empty, ...getBlankFormInitialValues(props.zodSchema, props.fieldConfigs), ...props.readonlyValues }, dateFieldNames.value)
+            initialValues.value = coerceDateFields({ ...empty, ...getBlankFormInitialValues(props.zodSchema, props.fieldConfigs), ...props.readonlyValues, ...props.initialValues }, dateFieldNames.value)
         }
     } catch (error: any) {
         toast.add({

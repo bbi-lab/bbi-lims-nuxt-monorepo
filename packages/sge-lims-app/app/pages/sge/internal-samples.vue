@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { schemas } from '#shared/db/zod/zodSchemas'
-import { wellCoordinateToChar } from '~/lib/plate-diagram'
+import { wellCoordinateToChar } from 'lims-layer/shared/lib/plate-diagram'
 
 const router = useRouter()
 const crudTable = useCrudTable()

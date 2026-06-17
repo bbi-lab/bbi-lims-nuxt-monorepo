@@ -59,6 +59,7 @@ const columnDefs: ColumnDefinitions = {
     pcrExperimentTargets: {
         display: false,
     },
+    technicianId: { display: false },
 }
 
 const rowActions = {

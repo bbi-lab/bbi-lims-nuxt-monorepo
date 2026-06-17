@@ -30,6 +30,7 @@ const columnDefs: ColumnDefinitions = {
     notes: {
         display: false
     },
+    technicianId: { display: false },
 }
 
 const fieldConfigs: FormFieldConfigs = {

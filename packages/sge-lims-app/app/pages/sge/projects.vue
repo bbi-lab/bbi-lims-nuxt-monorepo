@@ -6,7 +6,7 @@ const crudTable = useCrudTable()
 
 const columnDefs: ColumnDefinitions = {
     startedOn: {
-        format: 'date-time'
+        format: 'date'
     },
     targets: {
         display: false,
@@ -14,6 +14,7 @@ const columnDefs: ColumnDefinitions = {
 }
 const rowActions = {
     targets: {
+        header: 'Targets',
         label: (data: any) => { return `${data.targets?.length || 0}`},
         action: (data: any) => {
             router.push({path:'/sge/targets', query: {'projectId': data.id}})

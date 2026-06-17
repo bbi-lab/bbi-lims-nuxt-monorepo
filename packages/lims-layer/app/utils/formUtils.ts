@@ -108,7 +108,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     } else if (zodType == 'array') {
         primeVueComponent = 'SmartFormInputArray'
         // Pass the element schema so SmartFormInputArray can determine sub-fields
-        const itemSchema = _.get(zodSchema, `shape.${fieldName}.def.element`)
+        const itemSchema = zodFieldDef?.element
         _.set(vBindObject, 'itemSchema', itemSchema)
 
         _.assign(vBindObject, fieldConfig?.inputArray)

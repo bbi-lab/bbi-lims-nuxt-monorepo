@@ -11,13 +11,14 @@ const columnDefs: ColumnDefinitions = {
     endedOn: {
         format: 'date-time'
     },
-    transfectionExperiments: {
+    transfectExperiments: {
         display: false,
     }
 }
 const rowActions = {
     targets: {
-        label: (data: any) => { return `${data.transfectionExperiments?.length || 0}`},
+        header: 'Experiments',
+        label: (data: any) => { return `${data.transfectExperiments?.length || 0}`},
         action: (data: any) => {
             router.push({path:'/sge/transfect-experiments', query: {'cycleId': data.id}})
         },
@@ -27,7 +28,7 @@ const rowActions = {
     }
 }
 const fieldConfigs: FormFieldConfigs = {
-    transfectionExperiments: {
+    transfectExperiments: {
         display: false,
     },
     startedOn: {
@@ -47,7 +48,7 @@ const fieldConfigs: FormFieldConfigs = {
                 :zodSchema="schemas.cycles.select"
                 title="SGE Cycles"
                 :row-actions="rowActions"
-                :with-clause="{transfectionExperiments: true}"
+                :with-clause="{transfectExperiments: true}"
                 :column-defs="columnDefs"
                 :can-edit-multiple="true"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"

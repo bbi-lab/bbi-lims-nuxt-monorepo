@@ -88,6 +88,7 @@ const columnDefs: ColumnDefinitions = {
     cleanedBy: {
         path: 'cleanedBy.name'
     },
+    cleanedById: { display: false },
 }
 // fieldConfigs is computed so we can access crudTable.state.editingRecord and crudTable.state.editingMultipleRecordsIds
 // to apply additional logic to certain properties (e.g. readonly, searchWhereClause)

@@ -59,6 +59,9 @@ const columnDefs: ColumnDefinitions = {
     preppedBy: {
         path: 'preppedBy.name'
     },
+    transformedById: { display: false },
+    colonyPickedById: { display: false },
+    preppedById: { display: false },
 }
 const fieldConfigs: FormFieldConfigs = {
     haPuc19GibsonProductId: {

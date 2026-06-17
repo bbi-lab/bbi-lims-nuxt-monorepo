@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { wellCoordinateToChar } from '~/lib/plate-diagram'
+import { wellCoordinateToChar } from 'lims-layer/shared/lib/plate-diagram'
 import type { Dna, Rna } from '#shared/db/schema/nucleic-acid'
 import type { Pellet } from '#shared/db/schema/pellet'
 import type { IndexPrimer } from '#shared/db/schema/primer'

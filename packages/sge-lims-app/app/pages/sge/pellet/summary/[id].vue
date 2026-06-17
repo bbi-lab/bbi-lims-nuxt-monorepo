@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import _ from 'lodash'
-import { wellCoordinateToChar } from '~/lib/plate-diagram'
+import { wellCoordinateToChar } from 'lims-layer/shared/lib/plate-diagram'
 
 const route = useRoute()
 type PcrEntry = Record<string, {plateName: string, plateType: string, plateTypeLabel: string, wells: {x: number, y: number}[]}>

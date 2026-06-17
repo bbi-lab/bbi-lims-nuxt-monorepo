@@ -264,6 +264,7 @@ const fieldConfigs: FormFieldConfigs = {
     startedOn: {
         type: 'date',
     },
+    technicianId: { display: false },
 }
 
 </script>

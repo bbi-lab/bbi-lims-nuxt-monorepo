@@ -42,6 +42,9 @@ const columnDefs: ColumnDefinitions = {
     endPosition: {
         header: 'End'
     },
+    proteinAcccession: {
+        header: 'Protein Accession'
+    },
     regions: { display: false },
 }
 </script>
