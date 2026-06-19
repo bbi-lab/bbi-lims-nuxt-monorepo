@@ -9,6 +9,7 @@ export default defineNuxtConfig({
       include: [
         'drizzle-orm/pg-core',
         'drizzle-orm',
+        'drizzle-orm/table',
         'drizzle-orm/sql',
         'drizzle-orm/zod',
         'lodash',
