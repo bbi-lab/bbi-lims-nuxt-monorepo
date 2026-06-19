@@ -1,13 +1,11 @@
 import { projects } from '../schema/project'
 import { targets } from '../schema/target'
-import { genes } from 'lims-layer/shared/db/schema/gene'
 import { regions } from '../schema/region'
 import { cycles } from '../schema/cycle'
 import { transfectExperiments, transfectLotUsage, transfectTargets } from '../schema/transfect-experiment'
 import { haCloningExperiments, sgRnaCloningExperiments, snvLibCloningExperiments } from '../schema/plasmid-experiment'
 import { extractionExperiments, extractionLotUsage } from '../schema/extraction-experiment'
 import { pcr1ExperimentMasterMixVolumes, pcr2ExperimentMasterMixVolumes, pcrExperiments } from '../schema/pcr-experiment'
-import { plates } from 'lims-layer/shared/db/schema/plate'
 import { pcrTypes } from '../schema/pcrTypes'
 import { pellets } from '../schema/pellet'
 import { createSchemaFactory } from 'drizzle-orm/zod'
@@ -24,7 +22,6 @@ import { reagents } from '../schema/reagents'
 import { haPuc19Plasmids, sgRnaPlasmids, snvLibPlasmids } from '../schema/plasmid'
 import { dna, rna } from '../schema/nucleic-acid'
 import { amplificationPrimers, homologyArmPrimers, homologyArmPuc19Primers, indexPrimers, linearizationPrimers, preseq1Primers, preseq2Primers, rnaRtPrimers, rnaPreseq1Primers, rnaPreseq2Primers } from '../schema/primer'
-import { wellContents, wellContentSources, wells } from 'lims-layer/shared/db/schema/well'
 import { sequencingRuns, sequencingRunSamples, sequencingRunExternalSamples } from '../schema/sequencing-run'
 import { clonalHas, haPcrProducts, haPuc19GibsonProducts, haPuc19PcrProducts, sgeOligoLots, sgeOligos, sgRnaOligos, snvLibAmpProducts, snvLibGibsonProducts, snvLibGoldenGateProducts, snvLibLinProducts } from '../schema/oligos'
 import { externalSamples } from '../schema/external-samples'
@@ -44,14 +41,6 @@ const insertTargetSchema = selectTargetSchema.omit({id: true}).merge(
 ))
 const updateTargetSchema = insertTargetSchema
 
-const selectGeneSchema = createSelectSchema(genes)
-const updateGeneSchema = createSelectSchema(genes, {
-    startPosition: z.bigint({ coerce: true }),
-    endPosition: z.bigint({ coerce: true }),
-    ncbiGeneId: z.bigint({ coerce: true }),
-    proteinLength: z.bigint({ coerce: true }),
-}).omit({id: true}).partial()
-
 const selectRegionSchema = createSelectSchema(regions)
 const insertRegionSchema = createSelectSchema(regions, {
     ampliconStart: z.bigint({ coerce: true }).nullable(),
@@ -66,7 +55,7 @@ const insertCycleSchema = selectCycleSchema.omit({id: true})
 const updateCycleSchema = insertCycleSchema
 
 const selectTransfectExperimentsSchema = createSelectSchema(transfectExperiments)
-const insertTransfectExperimentsSchema = selectTransfectExperimentsSchema.omit({id: true})
+const insertTransfectExperimentsSchema = selectTransfectExperimentsSchema.omit({id: true, transfectionCount: true, technicianId: true})
 const updateTransfectExperimentsSchema = insertTransfectExperimentsSchema
 
 const selectTransfectTargetsSchema = createSelectSchema(transfectTargets)
@@ -146,10 +135,14 @@ const updatePcrExperimentsSchema = insertPcrExperimentsSchema
 const pcr1ExperimentMasterMixVolumesSchema = createSelectSchema(pcr1ExperimentMasterMixVolumes)
 const insertPcr1ExperimentMasterMixVolumesSchema = pcr1ExperimentMasterMixVolumesSchema.omit({id: true})
 const updatePcr1ExperimentMasterMixVolumesSchema = insertPcr1ExperimentMasterMixVolumesSchema
+// For the preseq-1 volume-calcs sub-page where pcrExperimentId is set by context
+const updatePcr1ExperimentMasterMixVolumesInExperimentSchema = insertPcr1ExperimentMasterMixVolumesSchema.omit({pcrExperimentId: true})
 
 const pcr2ExperimentMasterMixVolumesSchema = createSelectSchema(pcr2ExperimentMasterMixVolumes)
 const insertPcr2ExperimentMasterMixVolumesSchema = pcr2ExperimentMasterMixVolumesSchema.omit({id: true})
 const updatePcr2ExperimentMasterMixVolumesSchema = insertPcr2ExperimentMasterMixVolumesSchema
+// For the preseq-2 volume-calcs sub-page where pcrExperimentId is set by context
+const updatePcr2ExperimentMasterMixVolumesInExperimentSchema = insertPcr2ExperimentMasterMixVolumesSchema.omit({pcrExperimentId: true})
 
 const selectExtractionExperimentsSchema = createSelectSchema(extractionExperiments)
 const insertExtractionExperimentsSchema = selectExtractionExperimentsSchema.omit({id: true})
@@ -159,29 +152,15 @@ const selectExtractionLotUsageSchema = createSelectSchema(extractionLotUsage)
 const insertExtractionLotUsageSchema = selectExtractionLotUsageSchema.omit({id: true}).partial()
 const updateExtractionLotUsageSchema = insertExtractionLotUsageSchema
 
-const selectPlatesSchema = createSelectSchema(plates)
-const insertPlatesSchema = selectPlatesSchema.omit({id: true}).partial()
-const updatePlatesSchema = insertPlatesSchema
-
-const selectWellsSchema = createSelectSchema(wells)
-const insertWellsSchema = selectWellsSchema.omit({id: true}).partial()
-const updateWellsSchema = insertWellsSchema.omit({plateId: true, x: true, y: true})
-
-const selectWellContentsSchema = createSelectSchema(wellContents)
-const insertWellContentsSchema = selectWellContentsSchema.omit({id: true}).partial()
-const updateWellContentsSchema = insertWellContentsSchema
-
-const selectWellContentSourcesSchema = createSelectSchema(wellContentSources)
-const insertWellContentSourcesSchema = selectWellContentSourcesSchema.omit({id: true}).partial()
-const updateWellContentSourcesSchema = insertWellContentSourcesSchema
-
 const selectSequencingRunsSchema = createSelectSchema(sequencingRuns)
 const insertSequencingRunsSchema = selectSequencingRunsSchema.omit({id: true}).partial()
 const updateSequencingRunsSchema = insertSequencingRunsSchema
 
 const selectSequencingRunSamples = createSelectSchema(sequencingRunSamples)
-const insertSequencingRunSamples = selectSequencingRunSamples.omit({id: true, createdAt: true}).partial()
+const insertSequencingRunSamples = selectSequencingRunSamples.omit({id: true, createdAt: true, indexPrimer1Id: true, indexPrimer2Id: true, sourceWellId: true}).partial()
 const updateSequencingRunSamples = insertSequencingRunSamples
+// For the sequencing-run detail sub-page where sequencingRunId/dnaId/rnaId are set by context
+const updateSequencingRunSamplesInRunSchema = insertSequencingRunSamples.omit({sequencingRunId: true, dnaId: true, rnaId: true})
 
 const selectExternalSamples = createSelectSchema(externalSamples)
 const insertExternalSamples = createSelectSchema(externalSamples, {
@@ -193,6 +172,11 @@ const insertExternalSamples = createSelectSchema(externalSamples, {
 const updateExternalSamples = insertExternalSamples
 
 const selectSequencingRunExternalSamples = createSelectSchema(sequencingRunExternalSamples)
+// For the sequencing-run detail sub-page where sequencingRunId and index fields are set by context
+const updateSequencingRunExternalSamplesInRunSchema = createSelectSchema(sequencingRunExternalSamples, {
+    customIndexSeq1: z.string().regex(new RegExp(/^[ACGT]*$/i)).nullable(),
+    customIndexSeq2: z.string().regex(new RegExp(/^[ACGT]*$/i)).nullable(),
+}).omit({id: true, sequencingRunId: true, customIndexSeq1: true, customIndexSeq2: true, createdAt: true, externalSampleId: true, indexPrimer1Id: true, indexPrimer2Id: true, sourceWellId: true}).partial()
 const insertSequencingRunExternalSamples = createSelectSchema(sequencingRunExternalSamples, {
     customIndexSeq1: z.string().regex(new RegExp(/^[ACGT]*$/i)).nullable(),
     customIndexSeq2: z.string().regex(new RegExp(/^[ACGT]*$/i)).nullable(),
@@ -226,10 +210,16 @@ const updateSgRnaOligosSchema = insertSgRnaOligosSchema
 const selectDnaSchema = createSelectSchema(dna)
 const insertDnaSchema = createSelectSchema(dna).omit({id: true}).partial()
 const updateDnaSchema = insertDnaSchema
+// For the extraction-experiment detail sub-page where extractionExperimentId is set by context
+const insertDnaInExperimentSchema = insertDnaSchema.omit({extractionExperimentId: true})
+const updateDnaInExperimentSchema = insertDnaInExperimentSchema
 
 const selectRnaSchema = createSelectSchema(rna)
 const insertRnaSchema = createSelectSchema(rna).omit({id: true}).partial()
 const updateRnaSchema = insertRnaSchema
+// For the extraction-experiment detail sub-page where extractionExperimentId is set by context
+const insertRnaInExperimentSchema = insertRnaSchema.omit({extractionExperimentId: true})
+const updateRnaInExperimentSchema = insertRnaInExperimentSchema
 
 const selectAmplificationPrimerSchema = createSelectSchema(amplificationPrimers)
 const insertAmplificationPrimerSchema = createSelectSchema(amplificationPrimers, {sequence: z.string().regex(new RegExp(/^[ACGT]+$/i))}).omit({id: true})
@@ -272,7 +262,6 @@ const insertRnaPreseq2PrimerSchema = createInsertSchema(rnaPreseq2Primers, {sequ
 const updateRnaPreseq2PrimerSchema = insertRnaPreseq2PrimerSchema
 
 // views
-const selectViewPlatesWithWellCountsSchema = createSelectSchema(viewPlatesWithWellCounts)
 const selectViewSequencingRunAllSamplesSchema = createSelectSchema(viewSequencingRunAllSamples)
 const selectViewHaPuc19GibsonProductsWithCalcsSchema = createSelectSchema(viewHaPuc19GibsonProductsWithCalcs)
 const selectViewSnvLibGibsonProductsSchema = createSelectSchema(viewSnvLibGibsonProducts)
@@ -289,10 +278,6 @@ export const schemas = {
         select: selectTargetSchema,
         insert: insertTargetSchema,
         update: updateTargetSchema,
-    },
-    genes: {
-        select: selectGeneSchema,
-        update: updateGeneSchema,
     },
     regions: {
         select: selectRegionSchema,
@@ -401,31 +386,13 @@ export const schemas = {
         select: pcr1ExperimentMasterMixVolumesSchema,
         insert: insertPcr1ExperimentMasterMixVolumesSchema,
         update: updatePcr1ExperimentMasterMixVolumesSchema,
+        updateInExperiment: updatePcr1ExperimentMasterMixVolumesInExperimentSchema,
     },
     pcr2ExperimentMasterMixVolumes: {
         select: pcr2ExperimentMasterMixVolumesSchema,
         insert: insertPcr2ExperimentMasterMixVolumesSchema,
         update: updatePcr2ExperimentMasterMixVolumesSchema,
-    },
-    plates: {
-        select: selectPlatesSchema,
-        insert: insertPlatesSchema,
-        update: updatePlatesSchema,
-    },
-    wells: {
-        select: selectWellsSchema,
-        insert: insertWellsSchema,
-        update: updateWellsSchema,
-    },
-    wellContents: {
-        select: selectWellContentsSchema,
-        insert: insertWellContentsSchema,
-        update: updateWellContentsSchema,
-    },
-    wellContentSources: {
-        select: selectWellContentSourcesSchema,
-        insert: insertWellContentSourcesSchema,
-        update: updateWellContentSourcesSchema,
+        updateInExperiment: updatePcr2ExperimentMasterMixVolumesInExperimentSchema,
     },
     sequencingRuns: {
         select: selectSequencingRunsSchema,
@@ -436,6 +403,7 @@ export const schemas = {
         select: selectSequencingRunSamples,
         insert: insertSequencingRunSamples,
         update: updateSequencingRunSamples,
+        updateInRun: updateSequencingRunSamplesInRunSchema,
     },
     externalSamples: {
         select: selectExternalSamples,
@@ -446,6 +414,7 @@ export const schemas = {
         select: selectSequencingRunExternalSamples,
         insert: insertSequencingRunExternalSamples,
         update: updateSequencingRunExternalSamples,
+        updateInRun: updateSequencingRunExternalSamplesInRunSchema,
     },
     extractionExperiments: {
         select: selectExtractionExperimentsSchema,
@@ -471,11 +440,15 @@ export const schemas = {
         select: selectDnaSchema,
         insert: insertDnaSchema,
         update: updateDnaSchema,
+        insertInExperiment: insertDnaInExperimentSchema,
+        updateInExperiment: updateDnaInExperimentSchema,
     },
     rna: {
         select: selectRnaSchema,
         insert: insertRnaSchema,
         update: updateRnaSchema,
+        insertInExperiment: insertRnaInExperimentSchema,
+        updateInExperiment: updateRnaInExperimentSchema,
     },
     sgRnaOligos: {
         select: selectSgRnaOligosSchema,
@@ -548,9 +521,6 @@ export const schemas = {
         update: updateRnaPreseq2PrimerSchema,
     },
     // views
-    viewPlatesWithWellCounts: {
-        select: selectViewPlatesWithWellCountsSchema,
-    },
     viewSequencingRunAllSamples: {
         select: selectViewSequencingRunAllSamplesSchema
     },

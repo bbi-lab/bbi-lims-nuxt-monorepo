@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { schemas } from '#shared/db/zod/zodSchemas'
 import type { ZodObject } from 'zod'
-import { insertPlate } from '../utils/sge'
+import { insertPlate } from 'lims-layer/server/utils/plate'
 import { homologyArmPrimerTargets, preseq1PrimerTargets, rnaPreseq1PrimerTargets, rnaPreseq2PrimerTargets } from '#shared/db/schema/primer'
 import { clonalHaTargets, sgRnaOligoTargets, sgeOligoLots } from '#shared/db/schema/oligos'
 import { pcr1ExperimentMasterMixVolumes, pcr2ExperimentMasterMixVolumes, pcrExperimentTargets } from '#shared/db/schema/pcr-experiment'

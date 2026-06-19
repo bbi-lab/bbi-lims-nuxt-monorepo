@@ -6,7 +6,6 @@ export default defineEventHandler(async (event) => {
     const { id } = event.context.params as {id: string}
 
     try {
-
         const nonEmptyWells = await db.select()
             .from(wells)
             .innerJoin(wellContents, eq(wells.id, wellContents.wellId))

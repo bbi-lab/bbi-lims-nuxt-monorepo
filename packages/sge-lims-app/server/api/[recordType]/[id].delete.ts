@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 import { transfectTargets } from '#shared/db/schema/transfect-experiment'
 import { homologyArmPrimerTargets, preseq1PrimerTargets, rnaPreseq1PrimerTargets, rnaPreseq2PrimerTargets } from '#shared/db/schema/primer'
 import { clonalHaTargets, sgRnaOligoTargets, sgeOligoLots } from '#shared/db/schema/oligos'
-import { deleteEmptyPlate } from '../../utils/sge'
+import { deleteEmptySgePlate } from '../../utils/sge'
 import { pcr1ExperimentMasterMixVolumes, pcr2ExperimentMasterMixVolumes, pcrExperimentTargets } from '#shared/db/schema/pcr-experiment'
 import { sgRnaPlasmidTargets } from '#shared/db/schema/plasmid'
 
@@ -59,7 +59,7 @@ export default defineEventHandler(async (event) => {
 
       if (_.camelCase(recordType) == 'pcrExperiments') {
         const plateId = _.get(deleteResult, '0.plateId')
-        if (plateId) await deleteEmptyPlate(plateId, tx)
+        if (plateId) await deleteEmptySgePlate(plateId, tx)
       }
 
       return _.get(deleteResult, '0')

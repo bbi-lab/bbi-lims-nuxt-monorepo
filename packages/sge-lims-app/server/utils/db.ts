@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
 
 // Reuse the lims-layer pool — avoids a second connection pool to the same DB.
-import { pool, schema as baseSchema } from '../../../lims-layer/server/utils/db'
+import { pool, schema as baseSchema } from 'lims-layer/server/utils/db'
 
 // The lims-layer exports a generic `view_plates_with_well_counts`; sge defines its
 // own richer version under the same name (see below). Drop the layer's so only the

@@ -15,91 +15,92 @@ const MagicIcon = h(Icon, { name: 'mdi:magic', class: 'm-1' })
 
 const model = ref([
     {
-        label: 'Home',
+        label: 'Menu',
         items: [
-            { label: 'Projects', icon: 'pi pi-fw pi-home', to: '/sge/projects' },
-            { label: 'Cycles', icon: 'pi pi-fw pi-spinner-dotted', to: '/sge/cycles' },
-            { label: 'Targets', icon: 'pi pi-fw pi-bullseye', to: '/sge/targets' },
-            { label: 'Genes', iconComponent: DnaIcon, to: '/sge/genes' },
-            { label: 'Regions', icon: 'pi pi-fw pi-map', to: '/sge/regions' },
+            { label: 'Home', icon: 'pi pi-fw pi-home', to: '/' },
+            { label: 'Projects', icon: 'pi pi-fw pi-briefcase', to: '/projects' },
+            { label: 'Cycles', icon: 'pi pi-fw pi-spinner-dotted', to: '/cycles' },
+            { label: 'Targets', icon: 'pi pi-fw pi-bullseye', to: '/targets' },
+            { label: 'Genes', iconComponent: DnaIcon, to: '/genes' },
+            { label: 'Regions', icon: 'pi pi-fw pi-map', to: '/regions' },
             {
                 label: 'Plasmids',
                 icon: 'pi pi-fw pi-spinner',
                 items: [
-                    { label: 'sgRNA', to: '/sge/sg-rna-plasmids' },
-                    { label: 'SNV Library', to: '/sge/snv-lib-plasmids' },
-                    { label: 'HA pUC19', to: '/sge/ha-puc-19-plasmids' },
+                    { label: 'sgRNA', to: '/sg-rna-plasmids' },
+                    { label: 'SNV Library', to: '/snv-lib-plasmids' },
+                    { label: 'HA pUC19', to: '/ha-puc-19-plasmids' },
                 ]
             },
-            { label: 'Pellets', iconComponent: DotsTriangleIcon, to: '/sge/pellets' },
+            { label: 'Pellets', iconComponent: DotsTriangleIcon, to: '/pellets' },
             {
                 label: 'Nucleic Acids',
                 iconComponent: MoleculeIcon,
                 items: [
-                    { label: 'DNA', to: '/sge/dna' },
-                    { label: 'RNA', to: '/sge/rna' },
+                    { label: 'DNA', to: '/dna' },
+                    { label: 'RNA', to: '/rna' },
                 ]
             },
             {
                 label: 'Oligos',
                 iconComponent: OligosIcon,
                 items: [
-                    { label: 'sgRNA', to: '/sge/sg-rna-oligos' },
-                    { label: 'SGE Oligos', to: '/sge/sge-oligos' },
-                    { label: 'Clonal HA', to: '/sge/clonal-has' },
+                    { label: 'sgRNA', to: '/sg-rna-oligos' },
+                    { label: 'SGE Oligos', to: '/sge-oligos' },
+                    { label: 'Clonal HA', to: '/clonal-has' },
                     { label: 'HA products', items: [
-                        { label: 'HA PCR products', to: '/sge/ha-pcr-products' },
-                        { label: 'HA pUC19 PCR products', to: '/sge/ha-puc-19-pcr-products' },
-                        { label: 'HA pUC19 Gibson products', to: '/sge/ha-puc-19-gibson-products' },
+                        { label: 'HA PCR products', to: '/ha-pcr-products' },
+                        { label: 'HA pUC19 PCR products', to: '/ha-puc-19-pcr-products' },
+                        { label: 'HA pUC19 Gibson products', to: '/ha-puc-19-gibson-products' },
                     ]},
                     { label: 'SNVlib products', items: [
-                        { label: 'SNVlib AMP products', to: '/sge/snv-lib-amp-products' },
-                        { label: 'SNVlib LIN products', to: '/sge/snv-lib-lin-products' },
-                        { label: 'SNVlib Gibson products', to: '/sge/snv-lib-gibson-products' },
-                        { label: 'SNVlib Golden Gate products', to: '/sge/snv-lib-golden-gate-products' },
+                        { label: 'SNVlib AMP products', to: '/snv-lib-amp-products' },
+                        { label: 'SNVlib LIN products', to: '/snv-lib-lin-products' },
+                        { label: 'SNVlib Gibson products', to: '/snv-lib-gibson-products' },
+                        { label: 'SNVlib Golden Gate products', to: '/snv-lib-golden-gate-products' },
                     ]},
                     { label: 'Primers', items: [
-                        { label: 'Amplification primers', to: '/sge/amplification-primers' },
-                        { label: 'Linearization primers', to: '/sge/linearization-primers' },
-                        { label: 'Homology Arm primers', to: '/sge/homology-arm-primers' },
-                        { label: 'Homology Arm pUC19 primers', to: '/sge/homology-arm-puc-19-primers' },
-                        { label: 'DNA PreSeq 1 primers', to: '/sge/preseq-1-primers' },
-                        { label: 'DNA PreSeq 2 primers', to: '/sge/preseq-2-primers' },
-                        { label: 'RNA RT primers', to: '/sge/rna-rt-primers' },
-                        { label: 'RNA PreSeq 1 primers', to: '/sge/rna-preseq-1-primers' },
-                        { label: 'RNA PreSeq 2 primers', to: '/sge/rna-preseq-2-primers' },
-                        { label: 'Index primers', to: '/sge/index-primers' },
+                        { label: 'Amplification primers', to: '/amplification-primers' },
+                        { label: 'Linearization primers', to: '/linearization-primers' },
+                        { label: 'Homology Arm primers', to: '/homology-arm-primers' },
+                        { label: 'Homology Arm pUC19 primers', to: '/homology-arm-puc-19-primers' },
+                        { label: 'DNA PreSeq 1 primers', to: '/preseq-1-primers' },
+                        { label: 'DNA PreSeq 2 primers', to: '/preseq-2-primers' },
+                        { label: 'RNA RT primers', to: '/rna-rt-primers' },
+                        { label: 'RNA PreSeq 1 primers', to: '/rna-preseq-1-primers' },
+                        { label: 'RNA PreSeq 2 primers', to: '/rna-preseq-2-primers' },
+                        { label: 'Index primers', to: '/index-primers' },
                     ]},
                 ]
             },
-            { label: 'Plates/Storage', iconComponent: PhGridNineFill, to: '/sge/plates' },
+            { label: 'Plates/Storage', iconComponent: PhGridNineFill, to: '/plates' },
             {
                 label: 'Experiments',
                 iconComponent: ExperimentIcon,
                 items: [
-                    { label: 'sgRNA Cloning', to: '/sge/sg-rna-cloning-experiments' },
-                    { label: 'HA Cloning', to: '/sge/ha-cloning-experiments' },
-                    { label: 'SNV Library Cloning', to: '/sge/snv-lib-cloning-experiments' },
-                    { label: 'Transfection', to: '/sge/transfect-experiments' },
-                    { label: 'Extraction', to: '/sge/extraction-experiments' },
-                    { label: 'PCR', to: '/sge/pcr-experiments' },
+                    { label: 'sgRNA Cloning', to: '/sg-rna-cloning-experiments' },
+                    { label: 'HA Cloning', to: '/ha-cloning-experiments' },
+                    { label: 'SNV Library Cloning', to: '/snv-lib-cloning-experiments' },
+                    { label: 'Transfection', to: '/transfect-experiments' },
+                    { label: 'Extraction', to: '/extraction-experiments' },
+                    { label: 'PCR', to: '/pcr-experiments' },
                 ]
             },
             {
                 label: 'Reagents',
                 iconComponent: BeakerOutlineIcon,
                 items: [
-                    { label: 'Lots', to: '/sge/lots' },
-                    { label: 'Reagent List', to: '/sge/reagents' },
+                    { label: 'Lots', to: '/lots' },
+                    { label: 'Reagent List', to: '/reagents' },
                 ]
             },
             {
                 label: 'Sequencing',
                 iconComponent: RunIcon,
                 items: [
-                    { label: 'Internal Samples', to: '/sge/internal-samples' },
-                    { label: 'External Samples', to: '/sge/external-samples' },
-                    { label: 'Sequencing Runs', to: '/sge/sequencing-runs' },
+                    { label: 'Internal Samples', to: '/internal-samples' },
+                    { label: 'External Samples', to: '/external-samples' },
+                    { label: 'Sequencing Runs', to: '/sequencing-runs' },
                 ]
             },
             {
@@ -113,7 +114,7 @@ const model = ref([
             },
             { label: 'Experimental', class: 'italic', iconComponent: MagicIcon,
                 items: [
-                    { label: 'JBrowse', to: '/sge/experimental/jbrowse' },
+                    { label: 'JBrowse', to: '/experimental/jbrowse' },
                 ]
             },
         ]
