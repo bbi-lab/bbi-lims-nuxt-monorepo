@@ -94,7 +94,7 @@ const columnDefs: ColumnDefinitions = {
     wellContents: {
         header: 'Location',
         format: (x: any) => {
-            return combinedWellLocations(x)
+            return combinedWellLocations(x) as string
         },
         path: 'wellContents.displayValue',
         type: 'string',

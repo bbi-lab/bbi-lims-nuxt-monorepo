@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
 
     const targetRecords = await db.query.targets.findMany({
       columns: { id: true, name: true },
-      where: (t, { inArray }) => inArray(t.name, targetNames),
+      where: { name: { in: targetNames } },
     })
     const targetRecordsById = _.keyBy(targetRecords, 'name')
 

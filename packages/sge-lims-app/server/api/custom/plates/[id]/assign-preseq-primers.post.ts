@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
     if (!_.isEmpty(targetIds)) {
       if (primerType === 'dna-preseq-1') {
         const rows = await db.query.preseq1PrimerTargets.findMany({
-          where: (t, { inArray }) => inArray(t.targetId, targetIds),
+          where: { targetId: { in: targetIds } },
           columns: { targetId: true },
           with: { preseq1Primer: { columns: { id: true, sequenceType: true, archived: true } } },
         })
@@ -83,7 +83,7 @@ export default defineEventHandler(async (event) => {
         })
       } else if (primerType === 'dna-preseq-2') {
         const rows = await db.query.preseq2Primers.findMany({
-          where: (t, { inArray }) => inArray(t.targetId, targetIds),
+          where: { targetId: { in: targetIds } },
           columns: { id: true, targetId: true, sequenceType: true, archived: true },
         })
         rows.forEach((row) => {
@@ -94,7 +94,7 @@ export default defineEventHandler(async (event) => {
         })
       } else if (primerType === 'rna-preseq-1') {
         const rows = await db.query.rnaPreseq1PrimerTargets.findMany({
-          where: (t, { inArray }) => inArray(t.targetId, targetIds),
+          where: { targetId: { in: targetIds } },
           columns: { targetId: true },
           with: { rnaPreseq1Primer: { columns: { id: true, sequenceType: true, archived: true } } },
         })
@@ -107,7 +107,7 @@ export default defineEventHandler(async (event) => {
         })
       } else if (primerType === 'rna-preseq-2') {
         const rows = await db.query.rnaPreseq2PrimerTargets.findMany({
-          where: (t, { inArray }) => inArray(t.targetId, targetIds),
+          where: { targetId: { in: targetIds } },
           columns: { targetId: true },
           with: { rnaPreseq2Primer: { columns: { id: true, sequenceType: true, archived: true } } },
         })
