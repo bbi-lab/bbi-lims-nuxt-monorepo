@@ -52,13 +52,14 @@ export default defineEventHandler(async (event) => {
           targetIds: _.map(x.sgRnaOligoTargets, 'targetId').sort(),
         })), ['name', 'targetIds'])
 
-        if (oligosCombined.length !== 1) {
+        const combined = oligosCombined[0]
+        if (oligosCombined.length !== 1 || !combined) {
           throw createError({ statusCode: 400, statusMessage: `Mismatched names or targets for oligos in well ${wellCoordinates}` })
         }
 
         return {
-          name: oligosCombined[0].name,
-          targetIds: oligosCombined[0].targetIds,
+          name: combined.name,
+          targetIds: combined.targetIds,
           wellId: well.id,
           wellContentIds: _.map(well.wellContents, (wc: any) => wc.id),
         }
@@ -70,12 +71,14 @@ export default defineEventHandler(async (event) => {
         if (!plasmid) continue
         try {
           const newPlasmid = await tx.insert(sgRnaPlasmids).values({ name: plasmid.name }).returning({ id: sgRnaPlasmids.id })
+          const newPlasmidRow = newPlasmid[0]
+          if (!newPlasmidRow) throw new Error('Insert returned no row')
           for (const targetId of plasmid.targetIds) {
-            await tx.insert(sgRnaPlasmidTargets).values({ sgRnaPlasmidId: newPlasmid[0].id, targetId })
+            await tx.insert(sgRnaPlasmidTargets).values({ sgRnaPlasmidId: newPlasmidRow.id, targetId })
           }
           await tx.delete(wellContentSources).where(inArray(wellContentSources.wellContentId, plasmid.wellContentIds))
           await tx.delete(wellContents).where(eq(wellContents.wellId, plasmid.wellId))
-          await tx.insert(wellContents).values({ wellId: plasmid.wellId, wellableId: newPlasmid[0].id })
+          await tx.insert(wellContents).values({ wellId: plasmid.wellId, wellableId: newPlasmidRow.id })
         } catch (error: any) {
           throw new Error(`Failed to create plasmid ${plasmid.name}: ${error.message}`)
         }

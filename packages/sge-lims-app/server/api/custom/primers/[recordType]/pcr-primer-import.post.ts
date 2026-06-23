@@ -119,7 +119,7 @@ export default defineEventHandler(async (event) => {
       const insertedPrimers = await tx.insert(primerTable).values(recordsForValidation).returning()
 
       for (let i = 0; i < insertedPrimers.length; i++) {
-        const primer = insertedPrimers[i]
+        const primer = insertedPrimers[i] as { id: string }
         const rowTargetNames = primerRecords[i].targetNames || []
 
         if (rowTargetNames.length > 0 && _.has(recordTypeConfig, 'updateRelatedTargetParams')) {

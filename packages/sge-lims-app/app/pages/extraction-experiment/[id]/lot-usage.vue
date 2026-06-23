@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import _ from 'lodash'
+import { z } from 'zod'
 import { schemas } from '#shared/db/zod/zodSchemas'
 
 const crudTable = useCrudTable()
@@ -8,7 +9,7 @@ const route = useRoute()
 const tableTitle = ref<string>()
 
 onMounted(async() => {
-    const experiment = await $fetch(`/api/extraction-experiments/${route.params.id as string}`)
+    const experiment = await $fetch(`/api/extraction-experiments/${route.params.id as string}`) as z.infer<typeof schemas.extractionExperiments.select>
     tableTitle.value = `${experiment.name}: Reagents`
 })
 

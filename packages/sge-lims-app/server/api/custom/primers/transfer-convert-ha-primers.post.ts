@@ -31,10 +31,11 @@ export default defineEventHandler(async (event) => {
         }
         const parsedRecord = haPuc19PrimerInsertSchema.parse(newHaPuc19Primer)
         const insertedHaPuc19Primer = await tx.insert(homologyArmPuc19Primers).values(parsedRecord).returning()
+        const newPrimer = insertedHaPuc19Primer[0]!
 
         wellContentsToInsert.push({
           wellId: record.wellId,
-          wellableId: insertedHaPuc19Primer[0].id,
+          wellableId: newPrimer.id,
         })
       }
       return await tx.insert(wellContents).values(wellContentsToInsert).returning()

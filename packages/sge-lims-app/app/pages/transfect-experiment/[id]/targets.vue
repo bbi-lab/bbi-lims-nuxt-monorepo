@@ -10,7 +10,7 @@ const rowActions = {}
 
 onMounted(async() => {
     if (route.params.id) {
-        const experiment = await $fetch(`/api/transfect-experiments/${route.params.id}`, { query: { with: JSON.stringify({cycle: {columns: {name: true}}}) } })
+        const experiment = await $fetch(`/api/transfect-experiments/${route.params.id}`, { query: { with: JSON.stringify({cycle: {columns: {name: true}}}) } }) as { cycle: { name: string } }
         tableTitle.value = `${experiment.cycle.name}: targets`
     } else {
         tableTitle.value = 'Transfection experiment targets'

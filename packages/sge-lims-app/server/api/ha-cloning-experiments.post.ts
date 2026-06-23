@@ -27,12 +27,13 @@ export default defineEventHandler(async (event) => {
       if (newRecords.length !== 1) {
         throw createError({ statusCode: 500, statusMessage: 'Failed to create HA cloning experiment.' })
       }
+      const newRecord = newRecords[0]!
 
       let newTargets: any[] = []
       if (_.size(body[0].haCloningExperimentTargets) > 0) {
         const toInsert = _.map(
           _.filter(body[0].haCloningExperimentTargets, (x) => !_.isEmpty(x.targetId)),
-          (x) => ({ haCloningExperimentId: newRecords[0].id, targetId: x.targetId })
+          (x) => ({ haCloningExperimentId: newRecord.id, targetId: x.targetId })
         )
         newTargets = await tx.insert(haCloningExperimentTargets).values(toInsert).returning({
           id: haCloningExperimentTargets.id,
@@ -41,7 +42,7 @@ export default defineEventHandler(async (event) => {
         })
       }
 
-      return { ...newRecords[0], haCloningExperimentTargets: newTargets }
+      return { ...newRecord, haCloningExperimentTargets: newTargets }
     })
     return [result]
   } catch (e: any) {

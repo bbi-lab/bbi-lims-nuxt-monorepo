@@ -24,16 +24,17 @@ export default defineEventHandler(async (event) => {
       if (updated.length !== 1) {
         throw createError({ statusCode: 500, statusMessage: 'Failed to update HA cloning experiment.' })
       }
+      const updatedExperiment = updated[0]!
 
       let existingTargets: any[] = []
 
       if (_.isArray(body.haCloningExperimentTargets)) {
         const toSync = _.map(
           _.filter(body.haCloningExperimentTargets, (x) => !_.isEmpty(x.targetId)),
-          (x) => ({ haCloningExperimentId: updated[0].id, targetId: x.targetId })
+          (x) => ({ haCloningExperimentId: updatedExperiment.id, targetId: x.targetId })
         )
         existingTargets = await tx.select().from(haCloningExperimentTargets)
-          .where(eq(haCloningExperimentTargets.haCloningExperimentId, updated[0].id))
+          .where(eq(haCloningExperimentTargets.haCloningExperimentId, updatedExperiment.id))
 
         const missing = _.difference(_.map(existingTargets, 'targetId'), _.map(body.haCloningExperimentTargets, 'targetId'))
         if (!_.isEmpty(missing)) {

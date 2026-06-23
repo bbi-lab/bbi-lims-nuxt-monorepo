@@ -9,7 +9,7 @@ const rowActions = {}
 const route = useRoute()
 
 onMounted(async() => {
-    const experiment = await $fetch(`/api/transfect-experiments/${route.params.id}`, { query: { with: JSON.stringify({cycle: {columns: {name: true}}}) } })
+    const experiment = await $fetch(`/api/transfect-experiments/${route.params.id}`, { query: { with: JSON.stringify({cycle: {columns: {name: true}}}) } }) as { cycle: { name: string } }
     tableTitle.value = `${experiment.cycle.name}: Reagents`
 })
 

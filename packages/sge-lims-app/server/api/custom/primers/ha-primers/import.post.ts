@@ -71,24 +71,28 @@ export default defineEventHandler(async (event) => {
       const insertedPrimers = await tx.insert(homologyArmPrimers).values(recordsForValidation).returning()
 
       for (let i = 0; i < insertedPrimers.length; i++) {
-        const rowTargetNames = primerRecords[i].targetNames
+        const insertedPrimer = insertedPrimers[i]!
+        const primerRecord = primerRecords[i]
+        if (!primerRecord) continue
+        const rowTargetNames = primerRecord.targetNames
         if (rowTargetNames.length > 0) {
           const targetIds = _.map(rowTargetNames, (name) => targetIdsByName[name]).filter(Boolean)
           if (targetIds.length > 0) {
-            await updateRelatedTargets(homologyArmPrimerTargets, 'homologyArmPrimerId', 'targetId', insertedPrimers[i].id, targetIds, tx)
+            await updateRelatedTargets(homologyArmPrimerTargets, 'homologyArmPrimerId', 'targetId', insertedPrimer.id, targetIds, tx)
           }
         }
       }
 
       for (let i = 0; i < insertedPrimers.length; i++) {
-        const orig = _.find(primerRecords, { name: insertedPrimers[i].name })
+        const insertedPrimer = insertedPrimers[i]!
+        const orig = _.find(primerRecords, { name: insertedPrimer.name })
         const plateName = orig?.plateStorageBoxName
         const wellLocation = orig?.wellTubeCoordinates
         if (plateName && wellLocation) {
           const wellId = await getWellIdFromPlateNameAndWellLocation(plateName, wellLocation, tx)
           const count = await wellContentsCount(wellId, tx)
           if (count > 0) throw createError({ statusCode: 400, statusMessage: `Well '${wellLocation}' in '${plateName}' is already occupied.` })
-          await tx.insert(wellContents).values({ wellId, wellableId: insertedPrimers[i].id })
+          await tx.insert(wellContents).values({ wellId, wellableId: insertedPrimer.id })
         }
       }
 

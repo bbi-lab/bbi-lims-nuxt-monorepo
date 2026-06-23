@@ -175,7 +175,7 @@ onMounted(async () => {
                 wells: [_.pick(wellContent.well, ['x', 'y'])]
             })
         } else {
-            acc[plateId].wells.push(_.pick(wellContent.well, ['x', 'y']))
+            acc[plateId]!.wells.push(_.pick(wellContent.well, ['x', 'y']))
         }
         return acc as PcrEntry
     }, {})
@@ -190,7 +190,7 @@ onMounted(async () => {
                 wells: [_.pick(wellContent.well, ['x', 'y'])]
             })
         } else {
-            acc[plateId].wells.push(_.pick(wellContent.well, ['x', 'y']))
+            acc[plateId]!.wells.push(_.pick(wellContent.well, ['x', 'y']))
         }
         return acc as PcrEntry
     }, {})

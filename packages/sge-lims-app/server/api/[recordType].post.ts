@@ -27,8 +27,9 @@ export default defineEventHandler(async (event) => {
 
     const newRecords = await db.transaction(async (tx) => {
       if (body.length == 1) {
-        if (!_.get(records, '0.plateId') && ['pcrExperiments', 'sgRnaCloningExperiments'].includes(_.camelCase(recordType)) && records[0].pcrType != 'rna-rt') {
-          const plateType = _.camelCase(recordType) == 'pcrExperiments' ? records[0].pcrType : 'sg-rna-oligo'
+        const firstRecord = records[0]
+        if (firstRecord && !_.get(records, '0.plateId') && ['pcrExperiments', 'sgRnaCloningExperiments'].includes(_.camelCase(recordType)) && firstRecord.pcrType != 'rna-rt') {
+          const plateType = _.camelCase(recordType) == 'pcrExperiments' ? firstRecord.pcrType : 'sg-rna-oligo'
           const plate = {
             name: body[0].name,
             sizeX: 12,
