@@ -1,5 +1,5 @@
 import { eq, sql } from "drizzle-orm/sql"
-import { uuid, varchar, text, integer, timestamp, doublePrecision, pgView, boolean, smallint} from 'drizzle-orm/pg-core'
+import { uuid, varchar, text, integer, timestamp, doublePrecision, pgView, boolean, smallint, jsonb} from 'drizzle-orm/pg-core'
 import { users } from "lims-layer/server/db/schema/user"
 import { haPcrProducts, haPuc19GibsonProducts, haPuc19PcrProducts, snvLibAmpProducts, snvLibGibsonProducts, snvLibLinProducts } from "./oligos"
 import { haPuc19Plasmids } from "./plasmid"
@@ -11,6 +11,8 @@ import { pcrExperiments, pcrExperimentTargets } from "./pcr-experiment"
 import { transfectExperiments, transfectTargets } from "./transfect-experiment"
 import { targets } from "./target"
 import { cycles } from "./cycle"
+import { preseq1Primers, preseq1PrimerTargets, preseq2Primers, rnaPreseq1Primers, rnaPreseq1PrimerTargets, rnaPreseq2Primers, rnaPreseq2PrimerTargets } from "./primer"
+import { projects } from "./project"
 
 export const viewHaPuc19GibsonProductsWithCalcs = pgView('view_ha_puc19_gibson_products_with_calcs', {
     id: uuid('id'),
@@ -405,3 +407,48 @@ SELECT
   LEFT JOIN index_primers AS ext_primer2 ON external_samples.index_primer_2_id = ext_primer2.id
   LEFT JOIN wells ON sequencing_run_external_samples.source_well_id = wells.id
   LEFT JOIN plates ON wells.plate_id = plates.id`)
+
+export const viewMixedPreseqPrimers = pgView('view_mixed_preseq_primers', {
+    id: uuid('id'),
+    name: varchar('name', { length: 255 }),
+    sequenceType: varchar('sequence_type', { length: 50 }),
+    primerType: varchar('primer_type', { length: 50 }),
+    archived: boolean('archived'),
+    targets: jsonb('targets').array(),
+    projects: jsonb('projects').array(),
+}).as(sql`
+  SELECT p.id, p.name, p.sequence_type, 'dna-preseq-1'::text AS primer_type, p.archived,
+    jsonb_agg(DISTINCT jsonb_build_object('id', t.id, 'name', t.name)) AS targets,
+    jsonb_agg(DISTINCT jsonb_build_object('id', pr.id, 'name', pr.name)) AS projects
+  FROM ${preseq1Primers} p
+  LEFT JOIN ${preseq1PrimerTargets} pt ON pt.preseq_1_primer_id = p.id
+  LEFT JOIN ${targets} t ON t.id = pt.target_id
+  LEFT JOIN ${projects} pr ON pr.id = t.project_id
+  GROUP BY p.id
+  UNION ALL
+  SELECT p.id, p.name, p.sequence_type, 'dna-preseq-2'::text AS primer_type, p.archived,
+    jsonb_agg(DISTINCT jsonb_build_object('id', t.id, 'name', t.name)) AS targets,
+    jsonb_agg(DISTINCT jsonb_build_object('id', pr.id, 'name', pr.name)) AS projects
+  FROM ${preseq2Primers} p
+  LEFT JOIN ${targets} t ON t.id = p.target_id
+  LEFT JOIN ${projects} pr ON pr.id = t.project_id
+  GROUP BY p.id
+  UNION ALL
+  SELECT p.id, p.name, p.sequence_type, 'rna-preseq-1'::text AS primer_type, p.archived,
+    jsonb_agg(DISTINCT jsonb_build_object('id', t.id, 'name', t.name)) AS targets,
+    jsonb_agg(DISTINCT jsonb_build_object('id', pr.id, 'name', pr.name)) AS projects
+  FROM ${rnaPreseq1Primers} p
+  LEFT JOIN ${rnaPreseq1PrimerTargets} pt ON pt.rna_preseq_1_primer_id = p.id
+  LEFT JOIN ${targets} t ON t.id = pt.target_id
+  LEFT JOIN ${projects} pr ON pr.id = t.project_id
+  GROUP BY p.id
+  UNION ALL
+  SELECT p.id, p.name, p.sequence_type, 'rna-preseq-2'::text AS primer_type, p.archived,
+    jsonb_agg(DISTINCT jsonb_build_object('id', t.id, 'name', t.name)) AS targets,
+    jsonb_agg(DISTINCT jsonb_build_object('id', pr.id, 'name', pr.name)) AS projects
+  FROM ${rnaPreseq2Primers} p
+  LEFT JOIN ${rnaPreseq2PrimerTargets} pt ON pt.rna_preseq_2_primer_id = p.id
+  LEFT JOIN ${targets} t ON t.id = pt.target_id
+  LEFT JOIN ${projects} pr ON pr.id = t.project_id
+  GROUP BY p.id
+`)

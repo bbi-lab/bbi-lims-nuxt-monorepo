@@ -40,7 +40,7 @@ import { extractionExperiments, extractionLotUsage } from '#shared/db/schema/ext
 import { transfectExperiments, transfectLotUsage, transfectTargets } from '#shared/db/schema/transfect-experiment'
 import { sequencingRuns, sequencingRunSamples, sequencingRunExternalSamples } from '#shared/db/schema/sequencing-run'
 import { externalSamples } from '#shared/db/schema/external-samples'
-import { viewHaPuc19GibsonProductsWithCalcs, viewPlatesWithWellCounts, viewSequencingRunAllSamples, viewSnvLibGibsonProducts } from '#shared/db/schema/views'
+import { viewHaPuc19GibsonProductsWithCalcs, viewPlatesWithWellCounts, viewSequencingRunAllSamples, viewSnvLibGibsonProducts, viewMixedPreseqPrimers } from '#shared/db/schema/views'
 
 import { relations } from '../db/relations/relations'
 
@@ -119,6 +119,7 @@ export const sgeSchema = {
   viewPlatesWithWellCounts,
   viewSequencingRunAllSamples,
   viewSnvLibGibsonProducts,
+  viewMixedPreseqPrimers,
 }
 
 // Named `sgeDb` / `useSgeDrizzle` to avoid auto-import collision with

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { wellCoordinateToChar } from 'lims-layer/shared/lib/plate-diagram'
-import type { SgRnaOligo } from '~/shared/db/schema/oligos'
-import type { SgRnaPlasmid } from '~/shared/db/schema/plasmid'
-import type { User } from '~/server/db/schema/user'
+import type { SgRnaOligo } from '#shared/db/schema/oligos'
+import type { SgRnaPlasmid } from '#shared/db/schema/plasmid'
 import { schemas } from '#shared/db/zod/zodSchemas'
 
 const { breakpoints, showLoginModal } = useLayout()
@@ -212,7 +211,7 @@ const transferSelectedWellsContents = async () => {
                     wellId: destinationWell.id,
                     wellableId: wellContent.wellableId,
                     sourceWellIds: [well.id],
-                    createdBy: (user.value as User)?.id,
+                    createdBy: (user.value)?.id,
                 }
             })
         }))
