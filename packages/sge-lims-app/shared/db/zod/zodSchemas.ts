@@ -26,8 +26,10 @@ import { sequencingRuns, sequencingRunSamples, sequencingRunExternalSamples } fr
 import { clonalHas, haPcrProducts, haPuc19GibsonProducts, haPuc19PcrProducts, sgeOligoLots, sgeOligos, sgRnaOligos, snvLibAmpProducts, snvLibGibsonProducts, snvLibGoldenGateProducts, snvLibLinProducts } from '../schema/oligos'
 import { externalSamples } from '../schema/external-samples'
 import { viewHaPuc19GibsonProductsWithCalcs, viewSnvLibGibsonProducts, viewPlatesWithWellCounts, viewSequencingRunAllSamples, viewMixedPreseqPrimers } from '../schema/views'
+import { plates } from 'lims-layer/shared/db/schema/plate'
 
 // tables
+const selectPlateSchema = createSelectSchema(plates)
 const selectProjectSchema = createSelectSchema(projects)
 const insertProjectSchema = selectProjectSchema.omit({id: true})
 const updateProjectSchema = insertProjectSchema
@@ -270,6 +272,9 @@ const selectViewMixedPreseqPrimersSchema = createSelectSchema(viewMixedPreseqPri
 // export all schemas
 export const schemas = {
     // tables
+    plates: {
+        select: selectPlateSchema,
+    },
     projects: {
         select: selectProjectSchema,
         insert: insertProjectSchema,

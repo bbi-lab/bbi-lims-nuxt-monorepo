@@ -205,7 +205,7 @@ const transferSelectedWellsContents = async () => {
 
         const wellContentsToAdd = _.flatten(_.map(sourceWellsSorted, (well, index) => {
             const wellContents = well.data.wellContents
-            const destinationWell = destinationWellsSorted[index]
+            const destinationWell = destinationWellsSorted[index]!
             return _.map(wellContents, (wellContent) => {
                 return {
                     wellId: destinationWell.id,
