@@ -2,8 +2,12 @@ import _ from "lodash"
 import { VALID_WELL_COLORS } from "../../shared/lib/plate-diagram"
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
 
-type PlateWithWellContents = Plate & {
-    wells: WellWithContents[]
+type PlateWithWellContents<TWellable = Record<string, any>> = Plate & {
+    wells: (Well & {
+        wellContents: (WellContent & {
+            wellable: TWellable
+        })[]
+    })[]
 }
 
 type WellSpecs = {
@@ -39,8 +43,8 @@ interface ExportPlateLayoutConfig {
     sortBy?: Function | string | string[],
 }
 
-export const usePlateLayout = () => {
-    const plateWithWellContents = ref<PlateWithWellContents>()
+export const usePlateLayout = <TWellable = Record<string, any>>() => {
+    const plateWithWellContents = ref<PlateWithWellContents<TWellable>>()
     const wellContentsDisplayConfig = ref<wellContentDisplayConfig>()
     const wellSpecs = ref<WellSpecs>({})
     const selectedWells = ref<WellSpecs[string][]>([])
