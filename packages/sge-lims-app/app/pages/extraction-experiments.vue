@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Icon } from '#components'
 import _ from 'lodash'
 import { schemas } from '#shared/db/zod/zodSchemas'
 

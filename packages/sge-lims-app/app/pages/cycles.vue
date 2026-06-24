@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Icon } from '#components'
 import { schemas } from '#shared/db/zod/zodSchemas'
 
 const router = useRouter()

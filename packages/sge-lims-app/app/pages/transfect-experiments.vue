@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Icon } from '#components'
 import _ from 'lodash'
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
