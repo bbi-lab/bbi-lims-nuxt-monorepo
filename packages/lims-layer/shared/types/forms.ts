@@ -1,6 +1,8 @@
 export interface FormFieldConfig {
     label?: string
     helpText?: string
+    // Help text rendered below the field (alias of helpText; QuickForm called it subtext)
+    subtext?: string
     inputType?: string
     defaultValue?: string | number | boolean | any[]
 
@@ -12,6 +14,11 @@ export interface FormFieldConfig {
     // properties passed to the PrimeVue component as v-bind options
     disabled?: boolean
     readonly?: boolean
+    // numeric constraints forwarded to SmartFormInputNumber for number/integer fields
+    min?: number
+    max?: number
+    minFractionDigits?: number
+    maxFractionDigits?: number
 
     // inputArray configuration
     inputArray?: {

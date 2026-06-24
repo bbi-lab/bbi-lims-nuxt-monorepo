@@ -119,6 +119,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     // set other fieldConfig options as v-bind properties
     _.assign(vBindObject, _.omit(fieldConfig, [
         'label',
+        'subtext',
         'inputType',
         'defaultValue',
         'dateType',
@@ -256,7 +257,7 @@ export const buildFormFields = (
             name: fieldName,
             component: componentMap[def.primeVueComponent] ?? def.primeVueComponent,
             label: def.label || _.startCase(fieldName),
-            helpText: fieldConfig?.helpText,
+            helpText: fieldConfig?.helpText ?? fieldConfig?.subtext,
             vBindObject: def.vBindObject,
         }
     })
