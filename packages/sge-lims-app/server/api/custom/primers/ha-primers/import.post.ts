@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
 
     const db = useSgeDrizzle()
     const result = await db.transaction(async (tx) => {
-      const insertedPrimers = await tx.insert(homologyArmPrimers).values(recordsForValidation).returning()
+      const insertedPrimers = await tx.insert(homologyArmPrimers).values(recordsForValidation as (typeof homologyArmPrimers.$inferInsert)[]).returning()
 
       for (let i = 0; i < insertedPrimers.length; i++) {
         const insertedPrimer = insertedPrimers[i]!

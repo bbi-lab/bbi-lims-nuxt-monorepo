@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
         sgRnaOligoId: record.id,
         targetId: _.find(recordsMapped, { name: record.name })?.targetId,
       }))
-      await tx.insert(sgRnaOligoTargets).values(newOligosTargets)
+      await tx.insert(sgRnaOligoTargets).values(newOligosTargets as (typeof sgRnaOligoTargets.$inferInsert)[])
 
       const plateWells = await tx.query.wells.findMany({
         columns: { id: true, x: true, y: true },

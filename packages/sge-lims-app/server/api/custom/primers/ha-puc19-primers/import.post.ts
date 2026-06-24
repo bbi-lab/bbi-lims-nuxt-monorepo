@@ -80,7 +80,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const result = await db.transaction(async (tx) => {
-      const insertedPrimers = await tx.insert(homologyArmPuc19Primers).values(recordsForValidation).returning()
+      const insertedPrimers = await tx.insert(homologyArmPuc19Primers).values(recordsForValidation as (typeof homologyArmPuc19Primers.$inferInsert)[]).returning()
 
       for (let i = 0; i < insertedPrimers.length; i++) {
         const insertedPrimer = insertedPrimers[i]!

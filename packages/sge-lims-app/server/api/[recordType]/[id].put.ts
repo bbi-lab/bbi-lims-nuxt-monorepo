@@ -26,6 +26,7 @@ export default defineEventHandler(async (event) => {
     const updatedRecord = await db.transaction(async (tx) => {
       const table = _.get(db, ['query', _.camelCase(recordType), 'table'])
       const [recordUpdated] = await tx.update(table).set(parsedValues).where(eq(table.id, id)).returning()
+      if (!recordUpdated) return recordUpdated
 
       if (_.camelCase(recordType) == 'homologyArmPrimers' && _.isArray(body.targets)) {
         const targets = await updateRelatedTargets(homologyArmPrimerTargets, 'homologyArmPrimerId', 'targetId', id, _.map(body.targets, 'targetId'), tx)
