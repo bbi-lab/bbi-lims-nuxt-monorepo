@@ -400,6 +400,7 @@ export const usePlateLayout = <TWellable = Record<string, any>>() => {
         // data
         plateWithWellContents,
         plateWithPlateDiagramWells,
+        plateId,
         setPlateId,
         loadPlate,
         reloadPlate,
