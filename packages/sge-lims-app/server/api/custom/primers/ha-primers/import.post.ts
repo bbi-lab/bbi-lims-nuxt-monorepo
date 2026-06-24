@@ -76,7 +76,7 @@ export default defineEventHandler(async (event) => {
         if (!primerRecord) continue
         const rowTargetNames = primerRecord.targetNames
         if (rowTargetNames.length > 0) {
-          const targetIds = _.map(rowTargetNames, (name) => targetIdsByName[name]).filter(Boolean)
+          const targetIds = _.compact(_.map(rowTargetNames, (name) => targetIdsByName[name]))
           if (targetIds.length > 0) {
             await updateRelatedTargets(homologyArmPrimerTargets, 'homologyArmPrimerId', 'targetId', insertedPrimer.id, targetIds, tx)
           }

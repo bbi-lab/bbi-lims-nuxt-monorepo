@@ -4,13 +4,13 @@ import { genes } from 'lims-layer/shared/db/schema/gene'
 interface ExportTargetsRow {
   target: string
   chom: string
-  editstart: string
-  editstop: string
-  ampstart: string
-  ampstop: string
+  editstart: number | null
+  editstop: number | null
+  ampstart: number | null
+  ampstop: number | null
   required_edits: string
-  cigar: string
-  skip_pos: string
+  cigar: string | null
+  skip_pos: string | null
 }
 
 export default defineEventHandler(async (event) => {

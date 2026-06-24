@@ -1,12 +1,12 @@
 export interface ColumnDefinition {
     header?: string
     index?: number
-    format?: string | ((data: any) => string | string[])
+    format?: string | ((data: any) => string | string[] | number | null)
     path?: string
     type?: string
     display?: boolean
     sortable?: boolean
-    element?: string | ((data: any) => string)
+    element?: string | ((data: any) => string | null)
     elementSearchText?: (data: any) => string
     elementClick?: (event: any) => void
     searchable?: boolean

@@ -79,7 +79,7 @@ const insertPlateSchema = selectPlateSchema.omit({id: true}).partial()
 const updatePlateSchema = createSelectSchema(plates, {
     sizeX: z.number().int().readonly(),
     sizeY: z.number().int().readonly(),
-    plateType: z.number().int().readonly(),
+    plateType: z.string().readonly(),
 }).omit({id: true}).partial()
 
 const selectWellsSchema = createSelectSchema(wells)

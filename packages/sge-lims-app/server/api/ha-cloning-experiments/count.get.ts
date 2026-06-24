@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
             ? jsonLogicToSql(selectParams.where, (name) => (haCloningExperiments as any)[name])
             : undefined
 
-        const [result] = await db.select({ count: count() }).from(haCloningExperiments).where(sqlFilter)
+        const [result] = await db.select({ count: count() }).from(haCloningExperiments).where(sqlFilter ?? undefined)
         return { count: Number(result?.count ?? 0) }
     } catch (e: any) {
         throw createError({ statusCode: 400, statusMessage: e.message })

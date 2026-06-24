@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
       if (body.length == 1) {
         const firstRecord = records[0]
         if (firstRecord && !_.get(records, '0.plateId') && ['pcrExperiments', 'sgRnaCloningExperiments'].includes(_.camelCase(recordType)) && firstRecord.pcrType != 'rna-rt') {
-          const plateType = _.camelCase(recordType) == 'pcrExperiments' ? firstRecord.pcrType : 'sg-rna-oligo'
+          const plateType = (_.camelCase(recordType) == 'pcrExperiments' ? firstRecord.pcrType : 'sg-rna-oligo') as string
           const plate = {
             name: body[0].name,
             sizeX: 12,
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       }
 
       const table = _.get(db, ['query', _.camelCase(recordType), 'table'])
-      const insertedRecords = await tx.insert(table).values(records).returning()
+      const insertedRecords = await tx.insert(table).values(records).returning() as any[]
 
       if (body.length == 1 && insertedRecords?.length == 1) {
         if (_.camelCase(recordType) == 'homologyArmPrimers' && _.isArray(body[0].targets)) {
