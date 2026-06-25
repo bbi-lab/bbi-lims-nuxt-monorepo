@@ -40,6 +40,7 @@ export interface FormFieldConfig {
         dropdown?: boolean
         hideClearButton?: boolean
         placeholderValue?: string
+        inputClass?: string
     }
 
     // nestedSelect configuration

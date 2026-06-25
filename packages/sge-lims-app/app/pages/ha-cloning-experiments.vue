@@ -209,18 +209,15 @@ const fieldConfigs: FormFieldConfigs = {
             },
         },
     },
-    'haCloningExperimentTargets.*': {
+    haCloningExperimentTargets: {
         label: 'Targets',
-        component: 'InputArray',
-        canDelete: false,
-        canUpdate: false,
-        props: {
-            components: [
-                {
-                    variableField: 'targetId',
+        inputArray: {
+            canAdd: false,
+            canDelete: false,
+            fieldConfigs: {
+                targetId: {
                     label: 'Target',
-                    component: 'AutoCompleter',
-                    componentProps: {
+                    autoCompleter: {
                         searchBaseUrl: '/api/targets',
                         searchFields: ['region.gene.symbol', 'region.name', 'name'],
                         valueField: 'id',
@@ -231,8 +228,8 @@ const fieldConfigs: FormFieldConfigs = {
                         searchWithClause: {region: {columns: {name: true}, with: {gene: {columns: {symbol:true}}}}},
                     },
                 },
-            ]
-        }
+            },
+        },
     },
 }
 
@@ -403,9 +400,7 @@ const haPuc19GibsonProductFieldConfigs: FormFieldConfigs = {
     },
     totalReactionVolume: {
         label: 'Total Reaction Volume (µL)',
-        props: {
-            defaultValue: 10,
-        }
+        defaultValue: 10,
     },
 }
 
@@ -422,9 +417,7 @@ const haPuc19PlasmidFieldConfigs: FormFieldConfigs = {
     },
     eColiStellarVolume: {
         label: 'E. coli Stellar Volume (µL)',
-        props: {
-            defaultValue: 20,
-        }
+        defaultValue: 20,
     },
     transformedById: {
         autoCompleter: {

@@ -359,7 +359,7 @@ const ampProductFieldConfigs: FormFieldConfigs = {
         },
     },
     cleanedOn: {
-        type: 'date',
+        dateType: 'date',
     },
     quant: {
         label: 'Quant (ng/µL)',
@@ -462,7 +462,7 @@ const linProductFieldConfigs: FormFieldConfigs = {
     },
     dpn1DigestOn: {
         label: 'DpnI Digest On',
-        type: 'date',
+        dateType: 'date',
     },
     gelExtractedById: {
         label: 'Gel Extracted By',
@@ -475,7 +475,7 @@ const linProductFieldConfigs: FormFieldConfigs = {
         },
     },
     gelExtractedOn: {
-        type: 'date',
+        dateType: 'date',
     },
     quant: {
         label: 'Quant (ng/µL)',
@@ -494,9 +494,7 @@ const gibsonProductFieldConfigs: FormFieldConfigs = {
     },
     linProductVectorAmount: {
         label: 'LIN Product Vector Amount (ng)',
-        props:{
-            defaultValue: 50,
-        },
+        defaultValue: 50,
     },
     gibsonById: {
         label: 'Gibson By',
@@ -549,9 +547,7 @@ const gibsonProductFieldConfigs: FormFieldConfigs = {
     },
     totalReactionVolume: {
         label: 'Total Reaction Volume (µL)',
-        props: {
-            defaultValue: 10,
-        }
+        defaultValue: 10,
     },
 }
 const plasmidFieldConfigs: FormFieldConfigs = {
@@ -615,9 +611,7 @@ const goldenGateProductFieldConfigs: FormFieldConfigs = {
     },
     goldenGateProductVectorAmount: {
         label: 'Golden Gate Product Vector Amount (ng)',
-        props:{
-            defaultValue: 50,
-        },
+        defaultValue: 50,
     },
 }
 

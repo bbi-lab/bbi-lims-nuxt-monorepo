@@ -45,18 +45,13 @@ const fieldConfigs: FormFieldConfigs = {
     libraryType: {
         label: 'Library Type',
     },
-    'sgeOligoLots.*': {
+    sgeOligoLots: {
         label: 'Twist Lots',
-        component: 'InputArray',
-        canDelete: true,
-        canUpdate: true,
-        props: {
-            components: [
-                {
-                    variableField: 'lotId',
+        inputArray: {
+            fieldConfigs: {
+                lotId: {
                     label: 'Lot',
-                    component: 'AutoCompleter',
-                    componentProps: {
+                    autoCompleter: {
                         searchBaseUrl: '/api/lots',
                         searchFields: ['lotNumber'],
                         valueField: 'id',
@@ -66,7 +61,7 @@ const fieldConfigs: FormFieldConfigs = {
                         searchWhereClause: { '==': [{ 'toLower': { 'var': 'reagent.name' } }, 'twist'] },
                     },
                 },
-            ],
+            },
         },
     },
 }

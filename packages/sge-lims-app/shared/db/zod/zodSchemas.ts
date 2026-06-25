@@ -97,7 +97,9 @@ const insertHaPuc19PlasmidsSchema = selectHaPuc19PlasmidsSchema.omit({id: true})
 const updateHaPuc19PlasmidsSchema = insertHaPuc19PlasmidsSchema
 
 const selectClonalHasSchema = createSelectSchema(clonalHas)
-const insertClonalHasSchema = selectClonalHasSchema.omit({id: true})
+const insertClonalHasSchema = selectClonalHasSchema.omit({id: true}).merge(
+    z.object({ clonalHaTargets: z.object({ targetId: z.string() }).array() })
+)
 const updateClonalHasSchema = insertClonalHasSchema
 
 const selectSnvLibCloningExperimentsSchema = createSelectSchema(snvLibCloningExperiments)
@@ -105,7 +107,9 @@ const insertSnvLibCloningExperimentsSchema = selectSnvLibCloningExperimentsSchem
 const updateSnvLibCloningExperimentsSchema = insertSnvLibCloningExperimentsSchema
 
 const selectSgeOligosSchema = createSelectSchema(sgeOligos, {sequence: z.string().regex(new RegExp(/^[ACGT]*$/i)).nullable()})
-const insertSgeOligosSchema = selectSgeOligosSchema.omit({id: true})
+const insertSgeOligosSchema = selectSgeOligosSchema.omit({id: true}).merge(
+    z.object({ sgeOligoLots: z.object({ lotId: z.string() }).array() })
+)
 const updateSgeOligosSchema = insertSgeOligosSchema
 
 const selectSgeOligoLotsSchema = createSelectSchema(sgeOligoLots)
@@ -198,7 +202,9 @@ const insertReagentsSchema = createSelectSchema(reagents).omit({id: true})
 const updateReagentsSchema = insertReagentsSchema
 
 const selectSgRnaPlasmidsSchema = createSelectSchema(sgRnaPlasmids)
-const insertSgRnaPlasmidsSchema = createSelectSchema(sgRnaPlasmids, {externalLink: z.string().regex(new RegExp(/^https?:\/\/[^\s\/$.?#].[^\s]*$/i)).nullable()}).omit({id: true})
+const insertSgRnaPlasmidsSchema = createSelectSchema(sgRnaPlasmids, {externalLink: z.string().regex(new RegExp(/^https?:\/\/[^\s\/$.?#].[^\s]*$/i)).nullable()}).omit({id: true}).merge(
+    z.object({ sgRnaPlasmidTargets: z.object({ targetId: z.string() }).array() })
+)
 const updateSgRnaPlasmidsSchema = insertSgRnaPlasmidsSchema
 
 const selectSnvLibPlasmidsSchema = createSelectSchema(snvLibPlasmids)
@@ -206,7 +212,9 @@ const insertSnvLibPlasmidsSchema = createSelectSchema(snvLibPlasmids, {externalL
 const updateSnvLibPlasmidsSchema = insertSnvLibPlasmidsSchema
 
 const selectSgRnaOligosSchema = createSelectSchema(sgRnaOligos)
-const insertSgRnaOligosSchema = createSelectSchema(sgRnaOligos).omit({id: true})
+const insertSgRnaOligosSchema = createSelectSchema(sgRnaOligos).omit({id: true}).merge(
+    z.object({ sgRnaOligoTargets: z.object({ targetId: z.string() }).array() })
+)
 const updateSgRnaOligosSchema = insertSgRnaOligosSchema
 
 const selectDnaSchema = createSelectSchema(dna)
@@ -228,7 +236,9 @@ const insertAmplificationPrimerSchema = createSelectSchema(amplificationPrimers,
 const updateAmplificationPrimerSchema = insertAmplificationPrimerSchema
 
 const selectHomologyArmPrimerSchema = createSelectSchema(homologyArmPrimers)
-const insertHomologyArmPrimerSchema = createSelectSchema(homologyArmPrimers, {sequence: z.string().regex(new RegExp(/^[ACGT]*$/i))}).omit({id: true})
+const insertHomologyArmPrimerSchema = createSelectSchema(homologyArmPrimers, {sequence: z.string().regex(new RegExp(/^[ACGT]*$/i))}).omit({id: true}).merge(
+    z.object({ targets: z.object({ targetId: z.string() }).array() })
+)
 const updateHomologyArmPrimerSchema = insertHomologyArmPrimerSchema
 
 const selectHomologyArmPuc19PrimerSchema = createSelectSchema(homologyArmPuc19Primers)
@@ -244,7 +254,9 @@ const insertIndexPrimerSchema = createInsertSchema(indexPrimers, {sequence: z.st
 const updateIndexPrimerSchema = insertIndexPrimerSchema
 
 const selectpreseq1PrimerSchema = createSelectSchema(preseq1Primers)
-const insertpreseq1PrimerSchema = createInsertSchema(preseq1Primers, {sequence: z.string().regex(new RegExp(/^[ACGT]+$/i))}).omit({id: true})
+const insertpreseq1PrimerSchema = createInsertSchema(preseq1Primers, {sequence: z.string().regex(new RegExp(/^[ACGT]+$/i))}).omit({id: true}).merge(
+    z.object({ preseq1PrimerTargets: z.object({ targetId: z.string() }).array() })
+)
 const updatepreseq1PrimerSchema = insertpreseq1PrimerSchema
 
 const selectpreseq2PrimerSchema = createSelectSchema(preseq2Primers)
@@ -256,11 +268,15 @@ const insertRnaRtPrimerSchema = createInsertSchema(rnaRtPrimers, {sequence: z.st
 const updateRnaRtPrimerSchema = insertRnaRtPrimerSchema
 
 const selectRnaPreseq1PrimerSchema = createSelectSchema(rnaPreseq1Primers)
-const insertRnaPreseq1PrimerSchema = createInsertSchema(rnaPreseq1Primers, {sequence: z.string().regex(new RegExp(/^[ACGT]+$/i))}).omit({id: true})
+const insertRnaPreseq1PrimerSchema = createInsertSchema(rnaPreseq1Primers, {sequence: z.string().regex(new RegExp(/^[ACGT]+$/i))}).omit({id: true}).merge(
+    z.object({ rnaPreseq1PrimerTargets: z.object({ targetId: z.string() }).array() })
+)
 const updateRnaPreseq1PrimerSchema = insertRnaPreseq1PrimerSchema
 
 const selectRnaPreseq2PrimerSchema = createSelectSchema(rnaPreseq2Primers)
-const insertRnaPreseq2PrimerSchema = createInsertSchema(rnaPreseq2Primers, {sequence: z.string().regex(new RegExp(/^[ACGT]+$/i)), adapterSequence: z.string().regex(new RegExp(/^[ACGT]+$/i))}).omit({id: true})
+const insertRnaPreseq2PrimerSchema = createInsertSchema(rnaPreseq2Primers, {sequence: z.string().regex(new RegExp(/^[ACGT]+$/i)), adapterSequence: z.string().regex(new RegExp(/^[ACGT]+$/i))}).omit({id: true}).merge(
+    z.object({ rnaPreseq2PrimerTargets: z.object({ targetId: z.string() }).array() })
+)
 const updateRnaPreseq2PrimerSchema = insertRnaPreseq2PrimerSchema
 
 // views

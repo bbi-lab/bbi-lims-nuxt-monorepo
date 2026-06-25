@@ -76,9 +76,7 @@ const fieldConfigs: FormFieldConfigs = {
     },
     eColiStellarVolume: {
         label: 'E. coli Stellar Volume (µL)',
-        props: {
-            defaultValue: 20,
-        }
+        defaultValue: 20,
     },
     transformedById: {
         autoCompleter: {

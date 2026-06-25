@@ -259,7 +259,7 @@ const fieldConfigs: FormFieldConfigs = {
         }
     },
     startedOn: {
-        type: 'date',
+        dateType: 'date',
     },
 }
 

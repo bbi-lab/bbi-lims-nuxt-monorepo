@@ -96,18 +96,14 @@ const columnDefs: ColumnDefinitions = {
 }
 
 const fieldConfigs: FormFieldConfigs = {
-    'targets.*': {
+    targets: {
         label: 'Targets',
-        component: 'InputArray',
-        canDelete: false,
-        canUpdate: true,
-        props: {
-            components: [
-                {
-                    variableField: 'targetId',
+        inputArray: {
+            canDelete: false,
+            fieldConfigs: {
+                targetId: {
                     label: 'Target',
-                    component: 'AutoCompleter',
-                    componentProps: {
+                    autoCompleter: {
                         searchBaseUrl: '/api/targets',
                         searchFields: ['region.gene.symbol', 'region.name', 'name'],
                         valueField: 'id',
@@ -118,7 +114,7 @@ const fieldConfigs: FormFieldConfigs = {
                         searchWithClause: {region: {columns: {name: true}, with: {gene: {columns: {symbol:true}}}}},
                     },
                 },
-            ]
+            }
         }
     },
 }

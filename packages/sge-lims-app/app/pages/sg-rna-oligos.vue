@@ -29,18 +29,13 @@ const columnDefs: ColumnDefinitions = {
     wellContents: {display: false},
 }
 const fieldConfigs: FormFieldConfigs = {
-    'sgRnaOligoTargets.*': {
+    sgRnaOligoTargets: {
         label: 'Targets',
-        component: 'InputArray',
-        canDelete: true,
-        canUpdate: true,
-        props: {
-            components: [
-                {
-                    variableField: 'targetId',
+        inputArray: {
+            fieldConfigs: {
+                targetId: {
                     label: 'Target',
-                    component: 'AutoCompleter',
-                    componentProps: {
+                    autoCompleter: {
                         searchBaseUrl: '/api/targets',
                         searchFields: ['name'],
                         valueField: 'id',
@@ -48,7 +43,7 @@ const fieldConfigs: FormFieldConfigs = {
                         dropdown: true,
                     },
                 },
-            ]
+            },
         },
     },
 }
