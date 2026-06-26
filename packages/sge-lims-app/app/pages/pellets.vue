@@ -120,7 +120,6 @@ const fieldConfigs: FormFieldConfigs = {
         label: 'Target',
         nestedSelect: {
             parentSearchBaseUrl: '/api/transfect-experiments',
-            parentSearchFields: ['cycle.name'],
             parentValueField: 'id',
             parentDisplayFields: ['cycle.name'],
             parentIftaLabel: 'Experiment',
@@ -129,7 +128,6 @@ const fieldConfigs: FormFieldConfigs = {
             },
 
             searchBaseUrl: '/api/transfect-targets',
-            searchFields: ['target.name', 'target.region.gene.symbol', 'target.region.name'],
             valueField: 'id',
             displayFormat: (x:any) => { return x.target?.name ?? `${x.target?.region?.gene?.symbol}:${x.target.region.name}`},
             parentKeyField: 'experimentId',

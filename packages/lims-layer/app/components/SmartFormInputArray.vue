@@ -91,7 +91,7 @@ watch(
 
 // Determine sub-fields from the item schema (ZodObject)
 const subFields = computed(() => {
-    return _.keys(props.itemSchema.shape).map((fieldName) => {
+    return _.sortBy(_.keys(props.itemSchema.shape), (fieldName) => _.get(props.fieldConfigs, [fieldName, 'index'])).map((fieldName) => {
         const fieldConfig = _.get(props.fieldConfigs, fieldName)
         const fieldDefinition = getFormFieldDefinition(fieldName, props.itemSchema, fieldConfig)
 
@@ -106,7 +106,9 @@ const subFields = computed(() => {
                 : fieldDefinition.primeVueComponent === 'SmartFormDatePicker'
                 ? SmartFormDatePicker
                 : fieldDefinition.primeVueComponent,
-            label: fieldDefinition.label || _.startCase(fieldName),
+            // Guard against a function-valued label (array sub-fields aren't evaluated dynamically
+            // per item) so it falls back to the default instead of rendering "[Function]".
+            label: (_.isFunction(fieldDefinition.label) ? undefined : fieldDefinition.label) || _.startCase(fieldName),
             vBindObject: fieldDefinition.vBindObject,
         }
     })

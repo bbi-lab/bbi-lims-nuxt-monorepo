@@ -152,8 +152,6 @@ const fieldConfigs: FormFieldConfigs = {
             dropdown: true,
         },
     },
-    'fixedEdits.*': { canUpdate: true },
-    'skipPositions.*': { canUpdate: true },
 }
 </script>
 <template>

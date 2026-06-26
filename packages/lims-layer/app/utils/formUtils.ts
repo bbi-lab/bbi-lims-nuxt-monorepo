@@ -30,7 +30,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         _.assign(vBindObject, fieldConfig.nestedSelect)
 
         // set other fieldConfig options as v-bind properties (excluding nestedSelect)
-        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue', 'nestedSelect']))
+        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'subtext', 'inputType', 'defaultValue', 'index', 'display', 'events', 'dynamicKey', 'nestedSelect']))
 
         return {
             primeVueComponent,
@@ -42,15 +42,19 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     // Check if this field should use autoCompleter
     if (fieldConfig?.autoCompleter) {
         primeVueComponent = 'SmartFormAutoCompleter'
-        _.assign(vBindObject, fieldConfig.autoCompleter)
+        // A function autoCompleter is resolved per-render against the live record in SmartForm's
+        // template; only a static config object is spread into v-bind here.
+        const acIsFn = _.isFunction(fieldConfig.autoCompleter)
+        if (!acIsFn) _.assign(vBindObject, fieldConfig.autoCompleter)
 
         // set other fieldConfig options as v-bind properties (excluding autoCompleter)
-        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue', 'autoCompleter']))
+        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'subtext', 'inputType', 'defaultValue', 'index', 'display', 'events', 'dynamicKey', 'autoCompleter']))
 
         return {
             primeVueComponent,
             label: fieldConfig?.label,
             vBindObject,
+            dynamicAutoCompleter: acIsFn,
         }
     }
 
@@ -123,6 +127,10 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         'inputType',
         'defaultValue',
         'dateType',
+        'index',
+        'display',
+        'events',
+        'dynamicKey',
         'autoCompleter',
         'inputArray',
         'nestedSelect',
@@ -241,7 +249,9 @@ export const buildFormFields = (
     fieldConfigs: FormFieldConfigs | undefined,
     componentMap: Record<string, Component | string>,
 ) => {
-    return _.keys(zodSchema.shape).map((fieldName) => {
+    // Render in `index` (ascending); fields without `index` keep schema order and
+    // sort after indexed ones (_.sortBy is stable and places undefined last).
+    return _.sortBy(_.keys(zodSchema.shape), (fieldName) => _.get(fieldConfigs, [fieldName, 'index'])).map((fieldName) => {
         const fieldConfig = _.get(fieldConfigs, fieldName)
         const schemaReadonly = isZodFieldReadonly(zodSchema, fieldName)
         const def = getFormFieldDefinition(fieldName, zodSchema, fieldConfig)
@@ -256,9 +266,21 @@ export const buildFormFields = (
             id: fieldName,
             name: fieldName,
             component: componentMap[def.primeVueComponent] ?? def.primeVueComponent,
-            label: def.label || _.startCase(fieldName),
-            helpText: fieldConfig?.helpText ?? fieldConfig?.subtext,
+            // Static fallbacks (used by SmartFormMultiple, which doesn't evaluate dynamic config).
+            // Guard against function-valued label/subtext so they never render as "[Function]".
+            label: (_.isFunction(def.label) ? undefined : def.label) || _.startCase(fieldName),
+            helpText: _.isString(fieldConfig?.helpText) ? fieldConfig?.helpText
+                : (_.isString(fieldConfig?.subtext) ? fieldConfig?.subtext : undefined),
             vBindObject: def.vBindObject,
+            // Raw config passthrough for SmartForm's in-template dynamic resolution
+            // (display/label/subtext/events/dynamicKey/autoCompleter as functions of the live record).
+            labelConfig: fieldConfig?.label,
+            subtextConfig: fieldConfig?.subtext ?? fieldConfig?.helpText,
+            displayConfig: fieldConfig?.display,
+            events: fieldConfig?.events,
+            dynamicKeyFn: fieldConfig?.dynamicKey,
+            dynamicAutoCompleter: (def as any).dynamicAutoCompleter,
+            autoCompleterFn: (def as any).dynamicAutoCompleter ? fieldConfig?.autoCompleter : undefined,
         }
     })
 }

@@ -31,6 +31,7 @@ const props = defineProps({
 // Define emits for v-model support
 const emit = defineEmits<{
   'update:modelValue': [value: any]
+  'update:relatedRecord': [value: any]
   'blur': []
 }>()
 
@@ -123,6 +124,8 @@ async function setValueFromFormState(newValue: any) {
         record: record
       }
     }
+    // Expose the full selected record so SmartForm can populate relatedRecords (covers edit-mode preload)
+    emit('update:relatedRecord', _.get(currentValue.value, 'record', null))
   } catch (error) {
     console.error('Error setting value from form state:', error)
     clearValue()
@@ -180,6 +183,7 @@ function clearValue() {
   isUserTyping.value = false // Reset typing flag
   currentValue.value = null
   emit('update:modelValue', null) // Emit v-model update
+  emit('update:relatedRecord', null)
   notifyFormOfChange(null)
 }
 
@@ -203,6 +207,7 @@ function setModelValue() {
 
     // Emit v-model update first
     emit('update:modelValue', selectedValue)
+    emit('update:relatedRecord', selectedRecord)
 
     // Notify form with the selected value (can be just the ID or the full record based on needs)
     notifyFormOfChange(selectedValue)

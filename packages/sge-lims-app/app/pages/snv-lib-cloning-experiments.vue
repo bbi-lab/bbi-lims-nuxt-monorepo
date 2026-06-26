@@ -250,9 +250,9 @@ const hideAddDialog = () => {
 
 const fieldConfigs: FormFieldConfigs = {
     name: {
-        props: {
-            defaultValue: '_SNVlib',
-            onFocus: async (event: any) => {
+        defaultValue: '_SNVlib',
+        events: {
+            focus: () => async (event: any) => {
                 if (_.endsWith(event.target?._value, '_SNVlib')) {
                     if (event.target.setSelectionRange) {
                         setTimeout(() => {

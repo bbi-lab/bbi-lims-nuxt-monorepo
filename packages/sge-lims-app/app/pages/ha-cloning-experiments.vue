@@ -195,9 +195,9 @@ const hideAddDialog = () => {
 
 const fieldConfigs: FormFieldConfigs = {
     name: {
-        props: {
-            defaultValue: '_HA',
-            onFocus: async (event: any) => {
+        defaultValue: '_HA',
+        events: {
+            focus: () => async (event: any) => {
                 if (_.endsWith(event.target?._value, '_HA')) {
                     if (event.target.setSelectionRange) {
                         setTimeout(() => {

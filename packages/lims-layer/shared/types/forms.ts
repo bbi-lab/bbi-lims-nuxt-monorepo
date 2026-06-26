@@ -1,10 +1,46 @@
+type FieldFn<T> = (record: Record<string, any>, relatedRecords: Record<string, any>) => T
+
+export interface AutoCompleterConfig {
+    searchBaseUrl: string
+    searchFields?: string[]
+    valueField?: string
+    displayFields?: string[]
+    displayFormat?: Function
+    searchWithClause?: Object
+    searchWhereClause?: Object
+    searchMode?: 'JsonLogic' | 'simple'
+    dropdown?: boolean
+    hideClearButton?: boolean
+    placeholderValue?: string
+    inputClass?: string
+}
+
 export interface FormFieldConfig {
-    label?: string
+    // May be a function of (record, relatedRecords) for a dynamic label.
+    label?: string | FieldFn<string>
     helpText?: string
-    // Help text rendered below the field (alias of helpText; QuickForm called it subtext)
-    subtext?: string
+    // Help text rendered below the field (alias of helpText; QuickForm called it subtext).
+    // May be a function of (record, relatedRecords) for dynamic help text.
+    subtext?: string | FieldFn<string>
     inputType?: string
     defaultValue?: string | number | boolean | any[]
+
+    // Field display order (mirrors ColumnDefinition.index for tables): SmartForm and
+    // SmartFormInputArray render fields sorted ascending by `index`. Fields without
+    // `index` keep their schema (source) order and appear after any indexed fields.
+    index?: number
+
+    // Conditional visibility: hide the field when this is false / returns false for the
+    // current record. Omit to always show (matches prior behavior).
+    display?: boolean | ((record: Record<string, any>) => boolean)
+
+    // Event handlers wired to the field's input component, e.g.
+    // { focus: (record, recordOld) => ... }. Each handler is called with the current record.
+    events?: Record<string, (record: any, recordOld: any) => any>
+
+    // Force the field to re-mount when this key changes (used as the v-for :key) — e.g. to
+    // re-query an autoCompleter after a field it depends on changes.
+    dynamicKey?: (record: Record<string, any>) => string
 
     // For date columns: render the DatePicker as date-only or with a time picker.
     // Defaults to 'datetime'. Time is shown/edited in the user's local time zone;
@@ -27,21 +63,9 @@ export interface FormFieldConfig {
         fieldConfigs?: FormFieldConfigs
     }
 
-    // autoCompleter configuration
-    autoCompleter?: {
-        searchBaseUrl: string
-        searchFields?: string[]
-        valueField?: string
-        displayFields?: string[]
-        displayFormat?: Function
-        searchWithClause?: Object
-        searchWhereClause?: Object
-        searchMode?: 'JsonLogic' | 'simple'
-        dropdown?: boolean
-        hideClearButton?: boolean
-        placeholderValue?: string
-        inputClass?: string
-    }
+    // autoCompleter configuration — static, or a function of the record for dynamic config
+    // (e.g. a searchWhereClause derived from another field's value).
+    autoCompleter?: AutoCompleterConfig | ((record: Record<string, any>) => AutoCompleterConfig)
 
     // nestedSelect configuration
     nestedSelect?: {
