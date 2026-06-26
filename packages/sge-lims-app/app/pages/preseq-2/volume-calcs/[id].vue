@@ -359,6 +359,9 @@ const dnaVolume = computed(() => {
     </Dialog>
 </template>
 <style scoped>
+    /* Tailwind v4: @apply in a scoped style needs the theme context (custom surface-* utils + dark variant) */
+    @reference '../../../../../base-layer/assets/tailwind.css';
+
     .calcs-grid > div {
         @apply px-4 py-2 border-b border-l border-surface-200 dark:border-surface-600;
         overflow: hidden;

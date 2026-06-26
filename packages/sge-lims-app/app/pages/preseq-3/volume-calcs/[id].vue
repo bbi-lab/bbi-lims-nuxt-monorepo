@@ -187,6 +187,9 @@ const wellsWithSamples = computed(() => {
 
 </template>
 <style scoped>
+    /* Tailwind v4: @apply in a scoped style needs the theme context (custom surface-* utils + dark variant) */
+    @reference '../../../../../base-layer/assets/tailwind.css';
+
     .calcs-table {
         @apply mt-3 w-full text-sm border-collapse bg-surface-0 dark:bg-surface-900;
     }

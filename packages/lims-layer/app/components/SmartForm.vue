@@ -122,8 +122,7 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
                         :is="field.component"
                         :id="field.id"
                         :name="field.name"
-                        v-bind="field.vBindObject"
-                        v-bind="resolveAutoCompleter($form, field)"
+                        v-bind="{ ...field.vBindObject, ...resolveAutoCompleter($form, field) }"
                         v-on="fieldHandlers($form, field)"
                         @update:relatedRecord="(r: any) => { relatedRecords[field.name] = r; relatedRecords[field.name.replace(/Id$/, '')] = r }"
                     />
