@@ -57,7 +57,7 @@ const insertCycleSchema = selectCycleSchema.omit({id: true})
 const updateCycleSchema = insertCycleSchema
 
 const selectTransfectExperimentsSchema = createSelectSchema(transfectExperiments)
-const insertTransfectExperimentsSchema = selectTransfectExperimentsSchema.omit({id: true, transfectionCount: true, technicianId: true})
+const insertTransfectExperimentsSchema = selectTransfectExperimentsSchema.omit({id: true, transfectionCount: true, technicianId: true}).merge(z.object({ transfectTargets: z.object({ targetId: z.string(), transfectionCount: z.number(), negativeControl: z.boolean().nullable() }).array() }))
 const updateTransfectExperimentsSchema = insertTransfectExperimentsSchema
 
 const selectTransfectTargetsSchema = createSelectSchema(transfectTargets)
@@ -135,7 +135,7 @@ const updateSnvLibGoldenGateProductsSchema = insertSnvLibGoldenGateProductsSchem
 const selectPcrTypeSchema = createSelectSchema(pcrTypes)
 
 const selectPcrExperimentsSchema = createSelectSchema(pcrExperiments)
-const insertPcrExperimentsSchema = selectPcrExperimentsSchema.omit({id: true})
+const insertPcrExperimentsSchema = selectPcrExperimentsSchema.omit({id: true}).merge(z.object({ pcrExperimentTargets: z.object({ transfectTargetId: z.string() }).array() }))
 const updatePcrExperimentsSchema = insertPcrExperimentsSchema
 
 const pcr1ExperimentMasterMixVolumesSchema = createSelectSchema(pcr1ExperimentMasterMixVolumes)

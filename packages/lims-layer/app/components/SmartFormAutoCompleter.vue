@@ -25,7 +25,9 @@ const props = defineProps({
   iftaLabel: { type: String },
   inputId: { type: String },
   placeholderValue: { type: String },
-  inputClass: { type: String },
+  // string, or a function (data) => class — evaluated per option and on the selected value
+  // (data is the {code,label,record} wrapper) so e.g. archived records can render struck-through
+  inputClass: { type: [String, Function] as PropType<string | ((data: any) => string)> },
 })
 
 // Define emits for v-model support
@@ -261,7 +263,7 @@ defineExpose({
         <component :is="_.isEmpty(iftaLabel) ? 'span' : 'IftaLabel'">
             <AutoComplete
                 v-model="currentValue"
-                :inputClass="inputClass"
+                :inputClass="_.isFunction(inputClass) ? inputClass(currentValue) : inputClass"
                 :id="inputId"
                 :suggestions="suggestions"
                 optionLabel="label"
@@ -276,6 +278,9 @@ defineExpose({
                 <template #empty>
                     <span v-if="!currentValue">Type to search…</span>
                     <span v-else>No results found</span>
+                </template>
+                <template #option="{ option }">
+                    <span :class="_.isFunction(inputClass) ? inputClass(option) : inputClass">{{ option.label }}</span>
                 </template>
             </AutoComplete>
             <label v-if="!_.isEmpty(iftaLabel)" :for="inputId">{{ iftaLabel }}</label>

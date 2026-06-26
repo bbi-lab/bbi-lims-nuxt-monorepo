@@ -122,28 +122,19 @@ const addFieldConfigs: FormFieldConfigs = {
         inputType: 'date',
     },
     pcrExperimentTargets: {
+        label: 'Targets',
         display: (x: any) => {
             return _.includes(['rna-rt','dna-preseq-1'], x.pcrType)
         },
-        fixedSize: (record: any) => {
-            return record.pcrType == 'dna-preseq-1'
-        },
-    },
-    'pcrExperimentTargets.*': {
-        label: 'Targets',
-        component: 'InputArray',
-        canDelete: true,
-        canUpdate: true,
-        props: {
-            components: [
-                {
-                    variableField: 'transfectTargetId',
+        // NOTE: flat had fixedSize:(r)=>r.pcrType==='dna-preseq-1' (no add/delete for dna-preseq-1).
+        // Deferred — function-valued canAdd/canDelete is a separate lims-layer change; static true for now.
+        inputArray: {
+            canAdd: true,
+            canDelete: true,
+            fieldConfigs: {
+                transfectTargetId: {
                     label: 'Target',
-                    component: 'AutoCompleter',
-                    display: (x: any) => {
-                        return _.includes(['preseq-1','dna-preseq-1', 'rna-rt'], x.pcrType)
-                    },
-                    componentProps: {
+                    autoCompleter: {
                         searchBaseUrl: '/api/transfect-targets',
                         searchFields: ['target.name', 'target.region.gene.symbol', 'target.region.name', 'experiment.cycle.name'],
                         valueField: 'id',
@@ -157,9 +148,9 @@ const addFieldConfigs: FormFieldConfigs = {
                             experiment: {columns: {}, with: {cycle: {columns: {name: true}}}},
                         },
                         inputClass: 'w-64',
-                    }
+                    },
                 },
-            ],
+            },
         },
     },
 }

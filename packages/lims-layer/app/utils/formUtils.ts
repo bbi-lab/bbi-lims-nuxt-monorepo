@@ -30,7 +30,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         _.assign(vBindObject, fieldConfig.nestedSelect)
 
         // set other fieldConfig options as v-bind properties (excluding nestedSelect)
-        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'subtext', 'inputType', 'defaultValue', 'index', 'display', 'events', 'dynamicKey', 'nestedSelect']))
+        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'subtext', 'inputType', 'type', 'defaultValue', 'index', 'display', 'events', 'dynamicKey', 'nestedSelect']))
 
         return {
             primeVueComponent,
@@ -48,7 +48,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         if (!acIsFn) _.assign(vBindObject, fieldConfig.autoCompleter)
 
         // set other fieldConfig options as v-bind properties (excluding autoCompleter)
-        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'subtext', 'inputType', 'defaultValue', 'index', 'display', 'events', 'dynamicKey', 'autoCompleter']))
+        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'subtext', 'inputType', 'type', 'defaultValue', 'index', 'display', 'events', 'dynamicKey', 'autoCompleter']))
 
         return {
             primeVueComponent,
@@ -125,6 +125,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         'label',
         'subtext',
         'inputType',
+        'type',
         'defaultValue',
         'dateType',
         'index',
@@ -277,6 +278,7 @@ export const buildFormFields = (
             labelConfig: fieldConfig?.label,
             subtextConfig: fieldConfig?.subtext ?? fieldConfig?.helpText,
             displayConfig: fieldConfig?.display,
+            isHyperlink: fieldConfig?.type === 'hyperlink',
             events: fieldConfig?.events,
             dynamicKeyFn: fieldConfig?.dynamicKey,
             dynamicAutoCompleter: (def as any).dynamicAutoCompleter,

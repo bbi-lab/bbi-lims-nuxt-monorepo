@@ -99,7 +99,14 @@ const resolveAutoCompleter = ($form: any, f: any) =>
 const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
     const { values, valid } = event
     if (valid) {
-        const filtered = _.omit(values, [...readonlyFields.value])
+        // Omit fields hidden by `display` from submission: a field the user can't see isn't
+        // user-provided and must not be posted (e.g. a relation array whose v-if is false would
+        // otherwise submit [] and be rejected/persisted). Shown-but-empty fields are still sent,
+        // preserving server-side "required" enforcement.
+        const hiddenFields = formFields.value
+            .filter((f) => _.isFunction(f.displayConfig) ? f.displayConfig(values) === false : f.displayConfig === false)
+            .map((f) => f.name)
+        const filtered = _.omit(values, [...readonlyFields.value, ...hiddenFields])
         emit('submitSuccess', filtered)
     }
 }
@@ -126,6 +133,9 @@ const onFormSubmit = (event: FormSubmitEvent<Record<string, unknown>>) => {
                         v-on="fieldHandlers($form, field)"
                         @update:relatedRecord="(r: any) => { relatedRecords[field.name] = r; relatedRecords[field.name.replace(/Id$/, '')] = r }"
                     />
+                    <a v-if="field.isHyperlink && isValidUrl($form[field.name]?.value)" :href="$form[field.name]?.value" target="_blank">
+                        <Button icon="pi pi-external-link" variant="text" severity="info" />
+                    </a>
                 </div>
                 <Message v-if="field.component !== smartFormComponents.SmartFormInputArray ? $form[field.name]?.invalid : false" severity="error">
                     {{ getFormErrorMessage($form, field.name) }}

@@ -12,7 +12,9 @@ export interface AutoCompleterConfig {
     dropdown?: boolean
     hideClearButton?: boolean
     placeholderValue?: string
-    inputClass?: string
+    // string, or a function (data) => class evaluated per option / selected value
+    // (data is the {code,label,record} wrapper) — e.g. strike-through archived records
+    inputClass?: string | ((data: any) => string)
 }
 
 export interface FormFieldConfig {
@@ -23,6 +25,10 @@ export interface FormFieldConfig {
     // May be a function of (record, relatedRecords) for dynamic help text.
     subtext?: string | FieldFn<string>
     inputType?: string
+
+    // Render a clickable external-link button next to the (still-editable) text input when the
+    // live value is a valid URL. No effect when unset. (Dates use `dateType`, not `type`.)
+    type?: 'hyperlink'
     defaultValue?: string | number | boolean | any[]
 
     // Field display order (mirrors ColumnDefinition.index for tables): SmartForm and

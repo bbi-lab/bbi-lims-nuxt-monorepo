@@ -216,18 +216,15 @@ const fieldConfigs: FormFieldConfigs = {
         min: 1,
         max: 9,
     },
-    'transfectTargets.*': {
+    transfectTargets: {
         label: 'Targets',
-        component: 'InputArray',
-        canDelete: false,
-        canUpdate: false,
-        props: {
-            components: [
-                {
-                    variableField: 'targetId',
+        inputArray: {
+            canAdd: false,
+            canDelete: false,
+            fieldConfigs: {
+                targetId: {
                     label: 'Target',
-                    component: 'AutoCompleter',
-                    componentProps: {
+                    autoCompleter: {
                         searchBaseUrl: '/api/targets',
                         searchFields: ['region.gene.symbol', 'region.name', 'name'],
                         valueField: 'id',
@@ -238,25 +235,15 @@ const fieldConfigs: FormFieldConfigs = {
                         searchWithClause: {region: {columns: {name: true}, with: {gene: {columns: {symbol:true}}}}},
                     },
                 },
-                {
-                    variableField: 'transfectionCount',
-                    component: 'InputNumber',
+                transfectionCount: {
                     label: 'transfections per replicate',
-                    componentProps:{
-                        inputClass: 'w-40',
-                        defaultValue: 3,
-                        showButtons: true,
-                        allowEmpty: false,
-                        min: 1,
-                    },
+                    min: 1,
                 },
-                {
-                    variableField: 'negativeControl',
-                    component: 'Checkbox',
+                negativeControl: {
                     label: 'NC',
                 },
-            ]
-        }
+            },
+        },
     },
     startedOn: {
         dateType: 'date',
@@ -289,7 +276,7 @@ const fieldConfigs: FormFieldConfigs = {
                 submitUrl="/api/transfect-experiments"
                 submitMethod="POST"
                 :zodSchema="schemas.transfectExperiments.insert"
-                :fieldConfigs="{...fieldConfigs, 'transfectTargets.*': {display: false}}"
+                :fieldConfigs="{...fieldConfigs, transfectTargets: {display: false}}"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
                 @record-add="crudTable.didAddRecord"
