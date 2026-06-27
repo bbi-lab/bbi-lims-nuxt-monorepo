@@ -62,10 +62,12 @@ export interface FormFieldConfig {
     minFractionDigits?: number
     maxFractionDigits?: number
 
-    // inputArray configuration
+    // inputArray configuration. canAdd/canDelete may be a function of the live form
+    // record for record-dependent add/delete permission (e.g. a fixed-size array for a
+    // particular record type); a plain boolean behaves as before.
     inputArray?: {
-        canAdd?: boolean
-        canDelete?: boolean
+        canAdd?: boolean | ((record: Record<string, any>) => boolean)
+        canDelete?: boolean | ((record: Record<string, any>) => boolean)
         fieldConfigs?: FormFieldConfigs
     }
 

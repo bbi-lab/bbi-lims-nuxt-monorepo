@@ -126,11 +126,14 @@ const addFieldConfigs: FormFieldConfigs = {
         display: (x: any) => {
             return _.includes(['rna-rt','dna-preseq-1'], x.pcrType)
         },
-        // NOTE: flat had fixedSize:(r)=>r.pcrType==='dna-preseq-1' (no add/delete for dna-preseq-1).
-        // Deferred — function-valued canAdd/canDelete is a separate lims-layer change; static true for now.
+        // For dna-preseq-1 the target list is fixed at exactly one entry (the flat repo's
+        // fixedSize:(r)=>r.pcrType==='dna-preseq-1', which seeded one row and hid add/delete).
+        // We don't port the seed handler; instead canAdd permits only the first row (when the
+        // array is empty) so a new dna-preseq-1 record can still get its one required target,
+        // then no further adds and no deletes. Other target types edit the list freely.
         inputArray: {
-            canAdd: true,
-            canDelete: true,
+            canAdd: (r: any) => r.pcrType !== 'dna-preseq-1' || _.isEmpty(r.pcrExperimentTargets),
+            canDelete: (r: any) => r.pcrType !== 'dna-preseq-1',
             fieldConfigs: {
                 transfectTargetId: {
                     label: 'Target',

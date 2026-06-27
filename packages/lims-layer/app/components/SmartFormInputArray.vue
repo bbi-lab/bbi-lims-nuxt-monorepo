@@ -18,8 +18,10 @@ const props = defineProps({
         required: false,
         default: () => ({}),
     },
-    canAdd: { type: Boolean, required: false, default: true },
-    canDelete: { type: Boolean, required: false, default: true },
+    // boolean, or a function of the live form record (e.g. fix the array size for a
+    // particular record type by returning false). Static booleans behave as before.
+    canAdd: { type: [Boolean, Function] as PropType<boolean | ((record: Record<string, any>) => boolean)>, required: false, default: true },
+    canDelete: { type: [Boolean, Function] as PropType<boolean | ((record: Record<string, any>) => boolean)>, required: false, default: true },
     disabled: { type: Boolean, required: false, default: false },
 })
 
@@ -114,6 +116,19 @@ const subFields = computed(() => {
     })
 })
 
+// Resolve function-valued canAdd/canDelete against the live form record, mirroring
+// SmartForm.vue's liveRecord helper. A plain boolean is returned as-is, so existing
+// static configs across all consumer apps behave identically.
+const liveRecord = computed(() =>
+    _.mapValues(_.pickBy($pcForm?.states, (s: any) => _.isObject(s) && 'value' in s), (s: any) => s.value),
+)
+const canAddResolved = computed(() =>
+    _.isFunction(props.canAdd) ? props.canAdd(liveRecord.value) : props.canAdd,
+)
+const canDeleteResolved = computed(() =>
+    _.isFunction(props.canDelete) ? props.canDelete(liveRecord.value) : props.canDelete,
+)
+
 function createEmptyItem() {
     const item: Record<string, any> = {}
     subFields.value.forEach(f => { item[f.key] = null })
@@ -188,8 +203,8 @@ function onSubFieldBlur(index: number, key: string) {
                     </Message>
                 </div>
             </div>
-            <Button v-if="!disabled && canDelete" icon="pi pi-trash" severity="danger" text @click="() => removeItem(index)" />
+            <Button v-if="!disabled && canDeleteResolved" icon="pi pi-trash" severity="danger" text @click="() => removeItem(index)" />
         </div>
-        <Button v-if="!disabled && canAdd" icon="pi pi-plus" label="Add Item" severity="secondary" outlined @click="addItem" class="w-fit" />
+        <Button v-if="!disabled && canAddResolved" icon="pi pi-plus" label="Add Item" severity="secondary" outlined @click="addItem" class="w-fit" />
     </div>
 </template>
