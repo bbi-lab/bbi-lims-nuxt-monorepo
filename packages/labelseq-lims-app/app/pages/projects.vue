@@ -20,6 +20,7 @@ const columnDefs: ColumnDefinitions = {
     name: { index: 0},
     restrictionEnzymeId: { display: false },
     restrictionEnzyme: { header: 'Restriction Enzyme', index: 1, path: 'restrictionEnzyme.name' },
+    applyCapseqToGblocks: { header: 'Apply capseq to gblocks', index: 2 },
 }
 const rowActions = {
 }
@@ -36,6 +37,7 @@ const fieldConfigs: FormFieldConfigs = {
             dropdown: true,
         },
     },
+    applyCapseqToGblocks: { label: 'Apply capseq to gblocks' },
 }
 
 const withClause = {

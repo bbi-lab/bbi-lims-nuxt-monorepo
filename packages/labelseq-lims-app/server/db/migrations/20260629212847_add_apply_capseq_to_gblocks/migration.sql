@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ADD COLUMN "apply_capseq_to_gblocks" boolean DEFAULT false;
