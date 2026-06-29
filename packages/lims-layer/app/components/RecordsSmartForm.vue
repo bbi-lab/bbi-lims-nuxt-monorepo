@@ -24,6 +24,11 @@ const props = defineProps({
         required: false,
         default: () => ({}),
     },
+    initialValues: {
+        type: Object as () => Record<string, unknown>,
+        required: false,
+        default: () => ({}),
+    },
     withClause: {
         type: Object as () => Record<string, unknown>,
         required: false,
@@ -56,6 +61,9 @@ const emit = defineEmits([
 
 const isMultiEdit = computed(() => props.recordIds.length > 1)
 const zodShape = computed(() => props.zodSchema.shape)
+// Date columns come back from the API as ISO strings; convert them to Date objects
+// so the DatePicker displays the existing value when editing a record.
+const dateFieldNames = computed(() => getDateFieldNames(props.zodSchema))
 const initialValues = ref<Record<string, unknown>>({})
 const conflictingFields = ref<Record<string, number>>({})
 const loading = ref(true)
@@ -82,17 +90,17 @@ async function loadRecord() {
                 }
             }
 
-            initialValues.value = combined
+            initialValues.value = coerceDateFields(combined, dateFieldNames.value)
             conflictingFields.value = conflicts
         } else if (props.selectUrl && props.recordIds.length === 1) {
             const record = await RecordService.getRecord(props.selectUrl!, props.recordIds[0]!, props.withClause)
-            initialValues.value = _.pick(record, _.keys(zodShape.value))
+            initialValues.value = coerceDateFields(_.pick(record, _.keys(zodShape.value)), dateFieldNames.value)
         } else {
             // For new records, set empty initial values from schema keys
             const empty: Record<string, unknown> = {}
             _.keys(zodShape.value).forEach((key) => { empty[key] = null })
             // Apply readonly values
-            initialValues.value = { ...empty, ...getBlankFormInitialValues(props.zodSchema, props.fieldConfigs), ...props.readonlyValues }
+            initialValues.value = coerceDateFields({ ...empty, ...getBlankFormInitialValues(props.zodSchema, props.fieldConfigs), ...props.readonlyValues, ...props.initialValues }, dateFieldNames.value)
         }
     } catch (error: any) {
         toast.add({

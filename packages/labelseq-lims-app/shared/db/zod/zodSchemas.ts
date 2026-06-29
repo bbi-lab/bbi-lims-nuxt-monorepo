@@ -1,5 +1,10 @@
-import { createSelectSchema } from 'drizzle-orm/zod'
+import { createSchemaFactory } from 'drizzle-orm/zod'
 import { z } from 'zod'
+
+// Coerce date columns (timestamp -> z.coerce.date()) so ISO date strings from HTTP
+// request bodies and DatePicker/edit-form values validate without per-field helpers.
+// Coerced dates are still detected as `date` by the SmartForm field builder.
+const { createSelectSchema } = createSchemaFactory({ coerce: { date: true } })
 import { projects } from '../schema/project'
 import { restrictionEnzymes } from '../schema/reagents'
 import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '../schema/primers'

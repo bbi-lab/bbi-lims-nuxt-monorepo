@@ -2,6 +2,8 @@
 
 @source '../../lims-app/app/**/*.{vue,js,ts}';
 @source '../../lims-layer/app/**/*.{vue,js,ts}';
+@source '../../sge-lims-app/app/**/*.{vue,js,ts}';
+@source '../../labelseq-lims-app/app/**/*.{vue,js,ts}';
 
 @plugin 'tailwindcss-primeui';
 

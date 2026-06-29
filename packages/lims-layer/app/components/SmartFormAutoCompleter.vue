@@ -25,12 +25,15 @@ const props = defineProps({
   iftaLabel: { type: String },
   inputId: { type: String },
   placeholderValue: { type: String },
-  inputClass: { type: String },
+  // string, or a function (data) => class — evaluated per option and on the selected value
+  // (data is the {code,label,record} wrapper) so e.g. archived records can render struck-through
+  inputClass: { type: [String, Function] as PropType<string | ((data: any) => string)> },
 })
 
 // Define emits for v-model support
 const emit = defineEmits<{
   'update:modelValue': [value: any]
+  'update:relatedRecord': [value: any]
   'blur': []
 }>()
 
@@ -123,6 +126,8 @@ async function setValueFromFormState(newValue: any) {
         record: record
       }
     }
+    // Expose the full selected record so SmartForm can populate relatedRecords (covers edit-mode preload)
+    emit('update:relatedRecord', _.get(currentValue.value, 'record', null))
   } catch (error) {
     console.error('Error setting value from form state:', error)
     clearValue()
@@ -180,6 +185,7 @@ function clearValue() {
   isUserTyping.value = false // Reset typing flag
   currentValue.value = null
   emit('update:modelValue', null) // Emit v-model update
+  emit('update:relatedRecord', null)
   notifyFormOfChange(null)
 }
 
@@ -203,6 +209,7 @@ function setModelValue() {
 
     // Emit v-model update first
     emit('update:modelValue', selectedValue)
+    emit('update:relatedRecord', selectedRecord)
 
     // Notify form with the selected value (can be just the ID or the full record based on needs)
     notifyFormOfChange(selectedValue)
@@ -256,7 +263,7 @@ defineExpose({
         <component :is="_.isEmpty(iftaLabel) ? 'span' : 'IftaLabel'">
             <AutoComplete
                 v-model="currentValue"
-                :inputClass="inputClass"
+                :inputClass="_.isFunction(inputClass) ? inputClass(currentValue) : inputClass"
                 :id="inputId"
                 :suggestions="suggestions"
                 optionLabel="label"
@@ -267,7 +274,15 @@ defineExpose({
                 :placeholder="placeholderValue"
                 :dropdown="dropdown"
                 :disabled="disabled"
-            />
+            >
+                <template #empty>
+                    <span v-if="!currentValue">Type to search…</span>
+                    <span v-else>No results found</span>
+                </template>
+                <template #option="{ option }">
+                    <span :class="_.isFunction(inputClass) ? inputClass(option) : inputClass">{{ option.label }}</span>
+                </template>
+            </AutoComplete>
             <label v-if="!_.isEmpty(iftaLabel)" :for="inputId">{{ iftaLabel }}</label>
         </component>
 

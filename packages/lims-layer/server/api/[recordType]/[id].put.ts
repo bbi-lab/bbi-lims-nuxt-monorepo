@@ -17,8 +17,11 @@ export default defineEventHandler(async (event) => {
         const body = await readBody(event)
         const updateSchema = (schemas as any)[_.camelCase(recordType)].update as ZodObject
         const values = _.mapValues(body, (value) => _.isString(value) && _.isEmpty(value) ? null : value)
+
+        console.log('Received values:', values)
         const parsedValues = updateSchema.parse(values) as RecordValues
 
+        console.log('Parsed values:', parsedValues)
         // many-to-many
         // if (_.camelCase(recordType) == 'transfectExperiments' && _.isArray(body.transfectTargets)) {
         //     const transfectionTargets = _.map(body.transfectTargets, (x) => {
@@ -39,6 +42,7 @@ export default defineEventHandler(async (event) => {
 
         return updatedRecord
     } catch (e: unknown) {
+        console.log(e)
         const { error, data } = parsePutPostError(e)
 
         throw createError({

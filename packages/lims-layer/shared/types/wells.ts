@@ -14,3 +14,12 @@ export type WellWithContents = Well & {
         wellable: object
     }[]
 }
+
+export interface WellContentWithSource {
+  id?: string
+  wellId: string
+  wellableId: string
+  sourceWellIds?: string[]
+  createdById?: string
+  [key: string]: unknown
+}
