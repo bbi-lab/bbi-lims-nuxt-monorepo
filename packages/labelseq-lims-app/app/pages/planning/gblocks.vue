@@ -108,6 +108,7 @@ const rowActions = {
                 :row-actions="rowActions"
                 :show-column-filters="true"
                 :sort-by="['tileName', 'side']"
+                :rowsPerPageOptions="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
             />
         </SplitterPanel>

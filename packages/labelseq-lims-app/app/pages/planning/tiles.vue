@@ -167,6 +167,7 @@ const rowActions = {
                 :show-column-filters="true"
                 :sort-by="['tileName']"
                 :row-actions="rowActions"
+                :rowsPerPageOptions="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-multiple-record-edit="crudTable.didClickMultipleRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"
