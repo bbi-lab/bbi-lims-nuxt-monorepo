@@ -10,6 +10,7 @@ const groups = [
             { label: 'Superblocks', iconName: 'fluent-mdl2:tiles', path: '/planning/superblocks',                 api: '/api/superblocks' },
             { label: 'Tiles',       icon: 'pi pi-objects-column',  path: '/planning/tiles',                       api: '/api/view-tiles-with-sequences' },
             { label: 'Tile Variants', iconName: 'mdi:compare-horizontal', path: '/planning/tile-variants',           api: '/api/tile-variants' },
+            { label: 'Gblocks',     iconName: 'uil:arrows-resize-h', path: '/planning/gblocks',                    api: '/api/view-tile-gblocks' },
             ],
     },
     {

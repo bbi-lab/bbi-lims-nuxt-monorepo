@@ -53,6 +53,46 @@ export function buildOligoItems(tile: Record<string, any>): OligoItem[] {
 }
 
 /**
+ * Convert a row from the view-tile-gblocks API into an ordered (5' -> 3')
+ * array of OligoItem objects for the OligoViewer. The items concatenate to the
+ * full orderable gblock (gblockOrderSeq), including the leading random pad.
+ * Entries with null/empty sequences (the side-specific caps and the empty pad)
+ * are omitted. Shared `type` names ('BsaI Overhang', the restriction-enzyme
+ * name) match buildOligoItems so a shared color map stays consistent across the
+ * tile and gblock viewers.
+ */
+export function buildGblockOligoItems(gblock: Record<string, any>): OligoItem[] {
+    const reName = gblock.restrictionEnzymeName ?? 'RE Site'
+
+    const items: OligoItem[] = []
+    if (gblock.gblockPadSeq) {
+        items.push({ label: 'Random Pad', type: 'Random Pad', sequence: gblock.gblockPadSeq })
+    }
+    if (gblock.gblockCapseqFSeq) {
+        items.push({ label: 'Capseq F', type: 'Capseq', sequence: gblock.gblockCapseqFSeq })
+    }
+    if (gblock.gblockNtermOverhangSeq) {
+        items.push({ label: 'BsaI Overhang', type: 'BsaI Overhang', sequence: gblock.gblockNtermOverhangSeq })
+    }
+    if (gblock.gblockNtermRestrictionEnzymeSeq) {
+        items.push({ label: reName, type: reName, sequence: gblock.gblockNtermRestrictionEnzymeSeq })
+    }
+    if (gblock.gblockCoreSeq) {
+        items.push({ label: 'Gblock Core', type: 'Gblock Core', sequence: gblock.gblockCoreSeq })
+    }
+    if (gblock.gblockCtermRestrictionEnzymeSeqRevComp) {
+        items.push({ label: `${reName} (RC)`, type: reName, sequence: gblock.gblockCtermRestrictionEnzymeSeqRevComp })
+    }
+    if (gblock.gblockCtermOverhangSeq) {
+        items.push({ label: 'BsaI Overhang', type: 'BsaI Overhang', sequence: gblock.gblockCtermOverhangSeq })
+    }
+    if (gblock.gblockCapseqRRevCompSeq) {
+        items.push({ label: 'Capseq R (RC)', type: 'Capseq', sequence: gblock.gblockCapseqRRevCompSeq })
+    }
+    return items
+}
+
+/**
  * Build a shared color map from all OligoItems across multiple tiles so that
  * every OligoViewer on the same page uses a consistent color scheme.
  *

@@ -10,6 +10,7 @@ import { restrictionEnzymes } from '../schema/reagents'
 import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '../schema/primers'
 import { superblocks, tiles, tileVariants } from '../schema/tiles'
 import { refseqTranscripts } from '../schema/transcripts'
+import { viewTileGblocks } from '../schema/views'
 
 const selectProjectSchema = createSelectSchema(projects)
 const insertProjectSchema = selectProjectSchema.omit({id: true, createdAt: true, updatedAt: true}).partial()
@@ -68,6 +69,9 @@ const updateRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.omit({ id: t
 }).partial()
 // only allow geneType and notes to be updated directly, other fields are either readonly or auto-populated
 const updateRefseqTranscriptValuesSchema = selectRefseqTranscriptsSchema.pick({geneType: true,notes: true}).partial()
+
+// views (read-only — no insert/update schemas)
+const selectViewTileGblocksSchema = createSelectSchema(viewTileGblocks)
 
 // Freeze all schema shapes to prevent accidental mutation of shared module-level objects.
 // Zod methods like .extend(), .omit(), .partial() return new objects and are unaffected.
@@ -129,5 +133,9 @@ export const schemas = freezeSchemas({
         insert: insertRefseqTranscriptsSchema,
         update: updateRefseqTranscriptsSchema,
         updateValues: updateRefseqTranscriptValuesSchema,
+    },
+    // views
+    viewTileGblocks: {
+        select: selectViewTileGblocksSchema,
     },
 })

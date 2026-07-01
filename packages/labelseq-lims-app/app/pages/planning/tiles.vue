@@ -6,6 +6,7 @@ import { schemas } from '#shared/db/zod/zodSchemas'
 
 import { Icon } from '#components'
 const CompareHorizontalIcon = h(Icon, { name: 'mdi:compare-horizontal' })
+const ArrowsResizeHIcon = h(Icon, { name: 'uil:arrows-resize-h' })
 
 const route = useRoute()
 const router = useRouter()
@@ -135,6 +136,14 @@ const rowActions = {
         },
         iconComponent: CompareHorizontalIcon,
         tooltip: 'View tile variants',
+        label: '',
+    },
+    viewGblocks: {
+        action: (data: Record<string, any>) => {
+            router.push(`/planning/gblocks?tileId=${data.id}`)
+        },
+        iconComponent: ArrowsResizeHIcon,
+        tooltip: 'View gblocks',
         label: '',
     },
 
