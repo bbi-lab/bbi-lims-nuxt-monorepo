@@ -8,7 +8,7 @@ import { projects } from '#shared/db/schema/project'
 import { superblocks, tiles, tileVariants } from '#shared/db/schema/tiles'
 import { retrieverPrimers } from '#shared/db/schema/primers'
 import { restrictionEnzymes } from '#shared/db/schema/reagents'
-import { viewTilesWithSequences, viewTileVariantsWithSequences } from '#shared/db/schema/views'
+import { viewTilesWithSequences, viewTileVariantsWithSequences, viewTileGblocks } from '#shared/db/schema/views'
 import { plateTypes } from 'lims-layer/shared/db/schema/plateTypes'
 import { refseqTranscripts } from '#shared/db/schema/transcripts'
 
@@ -26,6 +26,7 @@ export const appSchema = {
   restrictionEnzymes,
   viewTilesWithSequences,
   viewTileVariantsWithSequences,
+  viewTileGblocks,
   plateTypes,
   refseqTranscripts,
 }
