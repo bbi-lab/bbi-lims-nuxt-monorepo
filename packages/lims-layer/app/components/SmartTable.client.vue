@@ -146,11 +146,17 @@ const lastColumnFilterInputKey = ref<string | null>(null)
 const displayColumnFilters = ref(false)
 const filters = ref({ global: { value: null, matchMode: FilterMatchMode.CONTAINS } })
 
+const filteredRecordCount = ref<number | null>(null)
+const displayedCount = computed(() => filteredRecordCount.value ?? records.value?.length ?? 0)
 const selectionCount = computed(() =>
     props.selectionMode == 'multiple'
-        ? `${selectedRecords.value?.length || 0} of ${records.value?.length || 0} selected`
-        : `${records.value?.length || 0} records`
+        ? `${selectedRecords.value?.length || 0} of ${displayedCount.value} selected`
+        : `${displayedCount.value} records`
 )
+function onFilter(event: any) {
+    filteredRecordCount.value = event.filteredValue?.length ?? null
+}
+watch(records, () => { filteredRecordCount.value = null })
 const paginator = computed(() => !_.isEmpty(props.rowsPerPageOptions))
 const rowsPerPage: ComputedRef<number> = computed(() => _.get(props.rowsPerPageOptions, 0) as number)
 const rowActionsStart = computed(() => props.rowActions ? _.pickBy(props.rowActions, (v) => _.isNumber(v.index) && v.index < 1) : {})
@@ -169,13 +175,17 @@ const refreshFormattedValues = (ids?: string[]) => {
 
 const loadTableData = async () => {
     loading.value = true
-    records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where)
-    refreshFormattedValues()
-    if (props.sortBy) records.value = _.sortBy(records.value, props.sortBy)
-
-    clientSettings.value = JSON.parse(localStorage.getItem(localStorageKey.value) || '{}')
-    visibleColumns.value = _.get(clientSettings.value, 'columnVisibility', visibleColumnsOptions.value)
-    loading.value = false
+    try {
+        records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where)
+        refreshFormattedValues()
+        if (props.sortBy) records.value = _.sortBy(records.value, props.sortBy)
+        clientSettings.value = JSON.parse(localStorage.getItem(localStorageKey.value) || '{}')
+        visibleColumns.value = _.get(clientSettings.value, 'columnVisibility', visibleColumnsOptions.value)
+    } catch (err: any) {
+        toast.add({ severity: 'error', summary: 'Failed to load data', detail: err?.message ?? String(err), life: 5000 })
+    } finally {
+        loading.value = false
+    }
 }
 
 // ── Frozen rows ────────────────────────────────────────────────────────────
@@ -351,8 +361,9 @@ function debounceSearch(f: Function, columnDefKey?: string) {
     return _.debounce(() => { f() }, 1000)
 }
 
-function filteringComplete() {
+function filteringComplete(event?: any) {
     filteringInProgress.value = false
+    onFilter(event)
     if (lastColumnFilterInputKey.value) {
         const input = _.get(columnFilterInputs.value, lastColumnFilterInputKey.value)
         if (input) input.$el.focus()
@@ -596,6 +607,14 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                         {{ formatDateTime(slotProps.data[columnDef.key]) }}
                     </template>
                 </Column>
+                <Column v-else-if="columnDef.format == 'date'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="_.get(columnDef, 'sortable', true)">
+                    <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
+                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                    </template>
+                    <template #body="slotProps">
+                        {{ formatDate(slotProps.data[columnDef.key]) }}
+                    </template>
+                </Column>
                 <Column v-else-if="columnDef.type == 'boolean' || _.includes(columnDef.type, 'boolean')" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="_.get(columnDef, 'sortable', true)">
                     <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
                         <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
@@ -649,6 +668,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
             </template>
         </template>
         <Column class="whitespace-nowrap" v-if="rowActionsEnd" columnKey="rowActions" :reorderableColumn="false" frozen alignFrozen="right">
+            <template #header>{{ Object.values(rowActionsEnd ?? {})[0]?.header ?? '' }}</template>
             <template #body="{ data }">
                 <div class="flex items-center">
                     <template v-for="(v, k) in rowActionsEnd">

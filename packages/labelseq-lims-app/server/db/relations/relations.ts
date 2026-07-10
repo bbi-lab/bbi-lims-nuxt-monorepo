@@ -13,7 +13,7 @@ import { superblocks, tiles, tileVariants } from '#shared/db/schema/tiles'
 import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '#shared/db/schema/primers'
 import { restrictionEnzymes } from '#shared/db/schema/reagents'
 import { refseqTranscripts } from '#shared/db/schema/transcripts'
-import { viewTilesWithSequences, viewTileVariantsWithSequences } from '#shared/db/schema/views'
+import { viewTilesWithSequences, viewTileVariantsWithSequences, viewTileGblocks } from '#shared/db/schema/views'
 
 export const relations = defineRelations({
   // lims-layer tables
@@ -43,6 +43,7 @@ export const relations = defineRelations({
   // labelseq views
   viewTilesWithSequences,
   viewTileVariantsWithSequences,
+  viewTileGblocks,
 }, (r) => ({
   // ── lims-layer relations ──────────────────────────────────────────────────
   users: {
@@ -170,6 +171,7 @@ export const relations = defineRelations({
       to: r.viewTilesWithSequences.id,
     }),
     tileVariants: r.many.tileVariants(),
+    gblocks: r.many.viewTileGblocks(),
   },
   tileVariants: {
     tile: r.one.tiles({
@@ -225,6 +227,16 @@ export const relations = defineRelations({
     tileVariant: r.one.tileVariants({
       from: r.viewTileVariantsWithSequences.id,
       to: r.tileVariants.id,
+    }),
+  },
+  viewTileGblocks: {
+    tile: r.one.tiles({
+      from: r.viewTileGblocks.tileId,
+      to: r.tiles.id,
+    }),
+    superblock: r.one.superblocks({
+      from: r.viewTileGblocks.superblockId,
+      to: r.superblocks.id,
     }),
   },
 }))

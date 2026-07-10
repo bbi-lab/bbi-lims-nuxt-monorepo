@@ -33,7 +33,7 @@ const baseUnits = computed<BaseUnit[]>(() =>
     Array.from({ length: maxLen.value }, (_, i) => ({
         ref: refPadded.value[i]!,
         alt: altPadded.value[i]!,
-        isDiff: refPadded.value[i] !== altPadded.value[i],
+        isDiff: refPadded.value[i]!.toUpperCase() !== altPadded.value[i]!.toUpperCase(),
         pos: i + 1,
         codonIndex: Math.floor(i / 3),
     })),

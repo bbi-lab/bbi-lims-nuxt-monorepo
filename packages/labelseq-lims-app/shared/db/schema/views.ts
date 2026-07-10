@@ -65,6 +65,114 @@ export const viewTilesWithSequences = pgView('view_tiles_with_sequences', {
         join ${retrieverPrimers} as retriever_primer_r on ${tiles.retrieverPrimerReverseId} = "retriever_primer_r"."id")`
 )
 
+// Generates the gblock sequences that flank each tile. For a given tile, the gblock(s)
+// cover the rest of its superblock: the 5' gblock spans the superblock N-terminus up to
+// the tile, the 3' gblock spans from the tile to the C-terminus. Assembled (Golden Gate)
+// with the tile they reconstitute the full superblock sequence. A first tile
+// (superblockFirst) has no 5' gblock; a last tile (superblockLast) has no 3' gblock, so
+// each tile yields one row per existing gblock piece (side = '5-prime' / '3-prime').
+//
+// The gblock core is sliced on the tile boundaries (tileStart/tileEnd) with a 4 bp overlap
+// into the tile: the 5' core runs to tileStart+3 and the 3' core starts at tileEnd-3, so
+// each gblock shares the 4 bp Golden Gate junction with the tile it flanks. This matches the
+// design notebook, which cuts each piece at the block breakpoint + 4 bp overlap. (Slicing on
+// the mutagenesis window instead is wrong: that window is codon-rounded and lands 0-2 bp
+// short of the breakpoint, making the gblock 0-2 bp too long at the junction.) The
+// superblock-terminal end of each gblock carries the same BsaI overhang ('CGTC'/'GCAT') +
+// restriction-enzyme caps as the oligo view.
+//
+// When the parent project's apply_capseq_to_gblocks is true, each gblock is additionally
+// flanked by the constant capseq oligos (gbl_capseq_F prepended, reverse-complement of
+// gbl_capseq_R appended), matching the design notebook.
+//
+// gblock_seq is the assembled (unpadded) sequence — gblock_seq + tile reconstitutes the
+// superblock. gblock_order_seq is the orderable sequence: per the notebook's Twist 300 bp
+// minimum, when gblock_seq is shorter than 300 bp the leading (300 - length) bases of a
+// fixed random pad (randomsequencepad) are prepended (gblock_pad_seq); otherwise the pad is
+// empty and gblock_order_seq == gblock_seq. The pad sits 5' of everything (outside the BsaI
+// site) so it never affects assembly.
+export const viewTileGblocks = pgView('view_tile_gblocks', {
+    id: varchar('id'),
+    tileId: uuid('tile_id'),
+    superblockId: uuid('superblock_id'),
+    tileName: varchar('tile_name', { length: 50 }),
+    side: varchar('side'),
+    superblockFirst: boolean('superblock_first'),
+    superblockLast: boolean('superblock_last'),
+    mutagenesisStart: integer('mutagenesis_start'),
+    mutagenesisEnd: integer('mutagenesis_end'),
+    restrictionEnzymeName: varchar('restriction_enzyme_name'),
+    applyCapseqToGblocks: boolean('apply_capseq_to_gblocks'),
+    gblockCapseqFSeq: varchar('gblock_capseq_f_seq'),
+    gblockNtermOverhangSeq: varchar('gblock_nterm_overhang_seq'),
+    gblockNtermRestrictionEnzymeSeq: varchar('gblock_nterm_restriction_enzyme_seq'),
+    gblockCoreSeq: varchar('gblock_core_seq'),
+    gblockCtermRestrictionEnzymeSeqRevComp: varchar('gblock_cterm_restriction_enzyme_seq_rev_comp'),
+    gblockCtermOverhangSeq: varchar('gblock_cterm_overhang_seq'),
+    gblockCapseqRRevCompSeq: varchar('gblock_capseq_r_rev_comp_seq'),
+    gblockSeq: varchar('gblock_seq'),
+    gblockPadSeq: varchar('gblock_pad_seq'),
+    gblockOrderSeq: varchar('gblock_order_seq'),
+}).as(sql`select *,
+    concat(gblock_pad_seq, gblock_seq) as gblock_order_seq
+    from (
+        select *,
+        substring('ACGCCGCCACGTGTTCGTTAACTGTTGATTGGTGGCACATAAGTAATACCATGGTCCCTGAAATTCGGCTCAGTTACTTCGAGCGTAATGTCTCAAATGGCGTAGAACGGCAATGACTGTTTGACACTAGGTGGTGTTCAGTTCGGTAACGGAGAGTCTGTGCGGCATTCTTATTAATACATTTGAAACGCGCCCAACTGACGCTAGGCAAGTCAGTGCAGGCTCCCGTGTTAGGATAAGGGTAAACATACAAGTCGATAGAAGATGGGTAGGGGCCTTCAATTCATCCAGCACTCTACG' from 1 for greatest(0, 300 - length(gblock_seq))) as gblock_pad_seq
+        from (
+            select *,
+            concat(gblock_capseq_f_seq, gblock_nterm_overhang_seq, gblock_nterm_restriction_enzyme_seq, gblock_core_seq, gblock_cterm_restriction_enzyme_seq_rev_comp, gblock_cterm_overhang_seq, gblock_capseq_r_rev_comp_seq) as gblock_seq
+            from (
+        select
+        concat(base.tile_id, '-', g.side) as id,
+        base.tile_id,
+        base.superblock_id,
+        base.tile_name,
+        g.side,
+        base.superblock_first,
+        base.superblock_last,
+        base.mutagenesis_start,
+        base.mutagenesis_end,
+        base.restriction_enzyme_name,
+        base.apply_capseq_to_gblocks,
+        case when base.apply_capseq_to_gblocks then 'CCGCGTGATTACGAGTCGGGCTACGGTCTCT' end as gblock_capseq_f_seq,
+        case when g.side = '5-prime' then 'CGTC' end as gblock_nterm_overhang_seq,
+        case when g.side = '5-prime' then base.recog_seq_plus_overhang end as gblock_nterm_restriction_enzyme_seq,
+        case when g.side = '5-prime'
+            then substring(base.seq from 1 for base.tile_start + 3)
+            else substring(base.seq from base.tile_end - 3)
+        end as gblock_core_seq,
+        case when g.side = '3-prime' then base.recog_seq_plus_overhang_rev_comp end as gblock_cterm_restriction_enzyme_seq_rev_comp,
+        case when g.side = '3-prime' then 'GCAT' end as gblock_cterm_overhang_seq,
+        case when base.apply_capseq_to_gblocks then 'AGAGACCGTAGCCAGGCTGCCACTTGCTAACCC' end as gblock_capseq_r_rev_comp_seq
+        from (
+            select
+            ${tiles.id} as tile_id,
+            ${tiles.superblockId},
+            ${tiles.tileName},
+            ${tiles.superblockFirst},
+            ${tiles.superblockLast},
+            ${tiles.tileStart},
+            ${tiles.tileEnd},
+            ${tiles.mutagenesisStart},
+            ${tiles.mutagenesisEnd},
+            ${superblocks.seq} as seq,
+            ${restrictionEnzymes.name} as restriction_enzyme_name,
+            ${restrictionEnzymes.recogSeqPlusOverhang} as recog_seq_plus_overhang,
+            ${restrictionEnzymes.recogSeqPlusOverhangRevComp} as recog_seq_plus_overhang_rev_comp,
+            ${projects.applyCapseqToGblocks} as apply_capseq_to_gblocks
+            from ${tiles}
+            join ${superblocks} on ${eq(tiles.superblockId, superblocks.id)}
+            join ${projects} on ${eq(superblocks.projectId, projects.id)}
+            join ${restrictionEnzymes} on ${eq(projects.restrictionEnzymeId, restrictionEnzymes.id)}
+        ) base
+        cross join (values ('5-prime'), ('3-prime')) as g(side)
+        where (g.side = '5-prime' and not coalesce(base.superblock_first, false))
+           or (g.side = '3-prime' and not coalesce(base.superblock_last, false))
+            ) gblocks
+        ) assembled
+    ) padded`
+)
+
 export const viewTileVariantsWithSequences = pgView('view_tile_variants_with_sequences', {
     id: uuid('id'),
     tileId: uuid('tile_id'),

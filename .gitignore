@@ -21,6 +21,10 @@ logs
 .vscode/
 .planning/
 .playwright-mcp/
+.mcp.json
+CLAUDE.md
+AGENTS.md
+.claude
 
 # Local env files
 .env

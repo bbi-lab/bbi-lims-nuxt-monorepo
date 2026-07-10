@@ -5,6 +5,7 @@ import type { z } from 'zod'
 const SmartFormAutoCompleter = resolveComponent('SmartFormAutoCompleter')
 const SmartFormNestedSelect = resolveComponent('SmartFormNestedSelect')
 const SmartFormInputNumber = resolveComponent('SmartFormInputNumber')
+const SmartFormDatePicker = resolveComponent('SmartFormDatePicker')
 
 const props = defineProps({
     name: { type: String, required: true },
@@ -17,8 +18,10 @@ const props = defineProps({
         required: false,
         default: () => ({}),
     },
-    canAdd: { type: Boolean, required: false, default: true },
-    canDelete: { type: Boolean, required: false, default: true },
+    // boolean, or a function of the live form record (e.g. fix the array size for a
+    // particular record type by returning false). Static booleans behave as before.
+    canAdd: { type: [Boolean, Function] as PropType<boolean | ((record: Record<string, any>) => boolean)>, required: false, default: true },
+    canDelete: { type: [Boolean, Function] as PropType<boolean | ((record: Record<string, any>) => boolean)>, required: false, default: true },
     disabled: { type: Boolean, required: false, default: false },
 })
 
@@ -90,7 +93,7 @@ watch(
 
 // Determine sub-fields from the item schema (ZodObject)
 const subFields = computed(() => {
-    return _.keys(props.itemSchema.shape).map((fieldName) => {
+    return _.sortBy(_.keys(props.itemSchema.shape), (fieldName) => _.get(props.fieldConfigs, [fieldName, 'index'])).map((fieldName) => {
         const fieldConfig = _.get(props.fieldConfigs, fieldName)
         const fieldDefinition = getFormFieldDefinition(fieldName, props.itemSchema, fieldConfig)
 
@@ -102,12 +105,29 @@ const subFields = computed(() => {
                 ? SmartFormNestedSelect
                 : fieldDefinition.primeVueComponent === 'SmartFormInputNumber'
                 ? SmartFormInputNumber
+                : fieldDefinition.primeVueComponent === 'SmartFormDatePicker'
+                ? SmartFormDatePicker
                 : fieldDefinition.primeVueComponent,
-            label: fieldDefinition.label || _.startCase(fieldName),
+            // Guard against a function-valued label (array sub-fields aren't evaluated dynamically
+            // per item) so it falls back to the default instead of rendering "[Function]".
+            label: (_.isFunction(fieldDefinition.label) ? undefined : fieldDefinition.label) || _.startCase(fieldName),
             vBindObject: fieldDefinition.vBindObject,
         }
     })
 })
+
+// Resolve function-valued canAdd/canDelete against the live form record, mirroring
+// SmartForm.vue's liveRecord helper. A plain boolean is returned as-is, so existing
+// static configs across all consumer apps behave identically.
+const liveRecord = computed(() =>
+    _.mapValues(_.pickBy($pcForm?.states, (s: any) => _.isObject(s) && 'value' in s), (s: any) => s.value),
+)
+const canAddResolved = computed(() =>
+    _.isFunction(props.canAdd) ? props.canAdd(liveRecord.value) : props.canAdd,
+)
+const canDeleteResolved = computed(() =>
+    _.isFunction(props.canDelete) ? props.canDelete(liveRecord.value) : props.canDelete,
+)
 
 function createEmptyItem() {
     const item: Record<string, any> = {}
@@ -183,8 +203,8 @@ function onSubFieldBlur(index: number, key: string) {
                     </Message>
                 </div>
             </div>
-            <Button v-if="!disabled && canDelete" icon="pi pi-trash" severity="danger" text @click="() => removeItem(index)" />
+            <Button v-if="!disabled && canDeleteResolved" icon="pi pi-trash" severity="danger" text @click="() => removeItem(index)" />
         </div>
-        <Button v-if="!disabled && canAdd" icon="pi pi-plus" label="Add Item" severity="secondary" outlined @click="addItem" class="w-fit" />
+        <Button v-if="!disabled && canAddResolved" icon="pi pi-plus" label="Add Item" severity="secondary" outlined @click="addItem" class="w-fit" />
     </div>
 </template>

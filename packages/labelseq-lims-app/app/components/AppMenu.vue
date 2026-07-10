@@ -32,6 +32,7 @@ const model = ref([
                     { label: 'Superblocks', to: '/planning/superblocks' },
                     { label: 'Tiles', to: '/planning/tiles' },
                     { label: 'Tile Variants', to: '/planning/tile-variants' },
+                    { label: 'Gblocks', to: '/planning/gblocks' },
                 ]
             },
             {

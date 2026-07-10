@@ -13,6 +13,7 @@ const smartFormComponents: Record<string, Component | string> = {
     SmartFormAutoCompleter: resolveComponent('SmartFormAutoCompleter'),
     SmartFormNestedSelect: resolveComponent('SmartFormNestedSelect'),
     SmartFormInputNumber: resolveComponent('SmartFormInputNumber'),
+    SmartFormDatePicker: resolveComponent('SmartFormDatePicker'),
 }
 
 const activeElement = useActiveElement()

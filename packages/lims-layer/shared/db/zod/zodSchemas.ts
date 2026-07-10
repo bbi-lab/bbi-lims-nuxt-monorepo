@@ -1,6 +1,10 @@
-import { dateSchema, nullableDateSchema } from '../helpers/schemas'
-import { createInsertSchema, createSelectSchema } from 'drizzle-orm/zod'
+import { createSchemaFactory } from 'drizzle-orm/zod'
 import { z } from 'zod'
+
+// Coerce date columns (timestamp -> z.coerce.date()) so ISO date strings from HTTP
+// request bodies and DatePicker/edit-form values validate without per-field helpers.
+// Coerced dates are still detected as `date` by the SmartForm field builder.
+const { createSelectSchema, createInsertSchema } = createSchemaFactory({ coerce: { date: true } })
 import { genes } from '../schema/gene'
 import { plates } from '../schema/plate'
 import { plateTypes } from '../schema/plateTypes'
@@ -75,6 +79,7 @@ const insertPlateSchema = selectPlateSchema.omit({id: true}).partial()
 const updatePlateSchema = createSelectSchema(plates, {
     sizeX: z.number().int().readonly(),
     sizeY: z.number().int().readonly(),
+    plateType: z.string().readonly(),
 }).omit({id: true}).partial()
 
 const selectWellsSchema = createSelectSchema(wells)
@@ -85,7 +90,7 @@ const selectWellContentsSchema = createSelectSchema(wellContents)
 const insertWellContentsSchema = selectWellContentsSchema.omit({id: true})
 const updateWellContentsSchema = insertWellContentsSchema
 
-const selectWellContentSourcesSchema = createSelectSchema(wellContentSources, {createdAt: nullableDateSchema})
+const selectWellContentSourcesSchema = createSelectSchema(wellContentSources)
 const insertWellContentSourcesSchema = selectWellContentSourcesSchema.omit({id: true}).partial()
 const updateWellContentSourcesSchema = insertWellContentSourcesSchema
 

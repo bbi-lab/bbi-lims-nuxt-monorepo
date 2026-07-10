@@ -30,7 +30,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         _.assign(vBindObject, fieldConfig.nestedSelect)
 
         // set other fieldConfig options as v-bind properties (excluding nestedSelect)
-        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue', 'nestedSelect']))
+        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'subtext', 'inputType', 'type', 'defaultValue', 'index', 'display', 'events', 'dynamicKey', 'nestedSelect']))
 
         return {
             primeVueComponent,
@@ -42,15 +42,19 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     // Check if this field should use autoCompleter
     if (fieldConfig?.autoCompleter) {
         primeVueComponent = 'SmartFormAutoCompleter'
-        _.assign(vBindObject, fieldConfig.autoCompleter)
+        // A function autoCompleter is resolved per-render against the live record in SmartForm's
+        // template; only a static config object is spread into v-bind here.
+        const acIsFn = _.isFunction(fieldConfig.autoCompleter)
+        if (!acIsFn) _.assign(vBindObject, fieldConfig.autoCompleter)
 
         // set other fieldConfig options as v-bind properties (excluding autoCompleter)
-        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'inputType', 'defaultValue', 'autoCompleter']))
+        _.assign(vBindObject, _.omit(fieldConfig, ['label', 'subtext', 'inputType', 'type', 'defaultValue', 'index', 'display', 'events', 'dynamicKey', 'autoCompleter']))
 
         return {
             primeVueComponent,
             label: fieldConfig?.label,
             vBindObject,
+            dynamicAutoCompleter: acIsFn,
         }
     }
 
@@ -75,7 +79,15 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
         primeVueComponent = 'Checkbox'
         _.set(vBindObject, 'binary', true) // for boolean fields, we want to use the binary mode of the Checkbox component
     } else if (zodType == 'date') {
-        primeVueComponent = 'DatePicker'
+        primeVueComponent = 'SmartFormDatePicker'
+        // YYYY-MM-DD display. `datetime` (default) adds a 24-hour local-time picker;
+        // `date` is date-only. These are defaults — any explicit DatePicker prop set
+        // on the fieldConfig (e.g. showTime, dateFormat) still overrides them below.
+        _.assign(vBindObject, {
+            dateFormat: 'yy-mm-dd',
+            showTime: fieldConfig?.dateType !== 'date',
+            hourFormat: '24',
+        })
     } else if (zodType == 'enum') {
         primeVueComponent = 'Select'
         // Extract enum values from Zod schema, and map them to options for the Select component
@@ -100,7 +112,7 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     } else if (zodType == 'array') {
         primeVueComponent = 'SmartFormInputArray'
         // Pass the element schema so SmartFormInputArray can determine sub-fields
-        const itemSchema = _.get(zodSchema, `shape.${fieldName}.def.element`)
+        const itemSchema = (zodFieldDef as any)?.element
         _.set(vBindObject, 'itemSchema', itemSchema)
 
         _.assign(vBindObject, fieldConfig?.inputArray)
@@ -111,8 +123,15 @@ export const getFormFieldDefinition = (fieldName: string, zodSchema: z.ZodObject
     // set other fieldConfig options as v-bind properties
     _.assign(vBindObject, _.omit(fieldConfig, [
         'label',
+        'subtext',
         'inputType',
+        'type',
         'defaultValue',
+        'dateType',
+        'index',
+        'display',
+        'events',
+        'dynamicKey',
         'autoCompleter',
         'inputArray',
         'nestedSelect',
@@ -152,6 +171,34 @@ export const getBlankFormInitialValues = (zodSchema: z.ZodObject<Record<string, 
  */
 export const sanitizeFormValues = (values: Record<string, any>): Record<string, any> => {
     return _.mapValues(values, (v) => (v === '' ? null : v))
+}
+
+/**
+ * Returns the names of fields whose (unwrapped) Zod type is `date`, using the
+ * same modifier-unwrapping logic as getFormFieldDefinition. These fields render
+ * a DatePicker but validate with a bare z.date(), which rejects strings — e.g.
+ * an ISO date string loaded into an edit form, or a DatePicker value that hasn't
+ * been re-picked. coerceDateFields() converts those strings back to Date objects
+ * before validation. (Schemas wrapped with the preprocess date helpers are type
+ * `pipe` and coerce strings themselves, so they are intentionally not matched.)
+ */
+export const getDateFieldNames = (zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>): string[] => {
+    return _.keys(_.get(zodSchema, 'shape', {})).filter((fieldName) => {
+        let zodFieldDef = _.get(zodSchema, `shape.${fieldName}.def`, null)
+        while (_.has(zodFieldDef, 'innerType')) { zodFieldDef = _.get(zodFieldDef, 'innerType.def', null) }
+        return zodFieldDef?.type === 'date'
+    })
+}
+
+/**
+ * Converts non-empty string values of the given date fields to Date objects so
+ * they satisfy a bare z.date() validator. Non-string values (Date, null) pass
+ * through unchanged.
+ */
+export const coerceDateFields = (values: Record<string, any>, dateFieldNames: string[]): Record<string, any> => {
+    return _.mapValues(values, (v, k) =>
+        (_.includes(dateFieldNames, k) && _.isString(v) && v !== '') ? new Date(v) : v
+    )
 }
 
 /**
@@ -203,7 +250,9 @@ export const buildFormFields = (
     fieldConfigs: FormFieldConfigs | undefined,
     componentMap: Record<string, Component | string>,
 ) => {
-    return _.keys(zodSchema.shape).map((fieldName) => {
+    // Render in `index` (ascending); fields without `index` keep schema order and
+    // sort after indexed ones (_.sortBy is stable and places undefined last).
+    return _.sortBy(_.keys(zodSchema.shape), (fieldName) => _.get(fieldConfigs, [fieldName, 'index'])).map((fieldName) => {
         const fieldConfig = _.get(fieldConfigs, fieldName)
         const schemaReadonly = isZodFieldReadonly(zodSchema, fieldName)
         const def = getFormFieldDefinition(fieldName, zodSchema, fieldConfig)
@@ -218,9 +267,22 @@ export const buildFormFields = (
             id: fieldName,
             name: fieldName,
             component: componentMap[def.primeVueComponent] ?? def.primeVueComponent,
-            label: def.label || _.startCase(fieldName),
-            helpText: fieldConfig?.helpText,
+            // Static fallbacks (used by SmartFormMultiple, which doesn't evaluate dynamic config).
+            // Guard against function-valued label/subtext so they never render as "[Function]".
+            label: (_.isFunction(def.label) ? undefined : def.label) || _.startCase(fieldName),
+            helpText: _.isString(fieldConfig?.helpText) ? fieldConfig?.helpText
+                : (_.isString(fieldConfig?.subtext) ? fieldConfig?.subtext : undefined),
             vBindObject: def.vBindObject,
+            // Raw config passthrough for SmartForm's in-template dynamic resolution
+            // (display/label/subtext/events/dynamicKey/autoCompleter as functions of the live record).
+            labelConfig: fieldConfig?.label,
+            subtextConfig: fieldConfig?.subtext ?? fieldConfig?.helpText,
+            displayConfig: fieldConfig?.display,
+            isHyperlink: fieldConfig?.type === 'hyperlink',
+            events: fieldConfig?.events,
+            dynamicKeyFn: fieldConfig?.dynamicKey,
+            dynamicAutoCompleter: (def as any).dynamicAutoCompleter,
+            autoCompleterFn: (def as any).dynamicAutoCompleter ? fieldConfig?.autoCompleter : undefined,
         }
     })
 }
@@ -258,8 +320,9 @@ export const createMultiEditResolver = (
     combinedRecord: Ref<Record<string, CombinedRecordEntry>>,
 ) => {
     // Returns the resolver function matching PrimeVue's FormResolverOptions → Record<string, any>
+    const dateFieldNames = getDateFieldNames(zodSchema)
     return ({ values: rawValues }: { values: Record<string, any>, names?: string[] }) => {
-        const values = sanitizeFormValues(rawValues)
+        const values = coerceDateFields(sanitizeFormValues(rawValues), dateFieldNames)
         // Build a modified shape: make conflicting+untouched fields optional
         const shape: Record<string, z.ZodTypeAny> = {}
         for (const [fieldName, zodField] of Object.entries(zodSchema.shape)) {

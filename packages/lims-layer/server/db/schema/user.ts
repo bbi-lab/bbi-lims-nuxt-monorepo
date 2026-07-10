@@ -1,4 +1,5 @@
 import { boolean, pgSchema, primaryKey, integer, text, timestamp, uuid, varchar, unique, index } from 'drizzle-orm/pg-core'
+import { type InferSelectModel } from 'drizzle-orm'
 import _ from 'lodash'
 
 export const usersSchema = pgSchema("users");
@@ -46,3 +47,6 @@ export const passwordResetTokens = usersSchema.table('password_reset_tokens', {
   index('password_reset_tokens_token_hash_idx').on(t.tokenHash),
   index('password_reset_tokens_user_id_idx').on(t.userId),
 ])
+
+export type User = InferSelectModel<typeof users>
+export type UserGroup = InferSelectModel<typeof userGroups>

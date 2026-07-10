@@ -80,6 +80,7 @@ const withClause = {
                 :can-edit-multiple="true"
                 :show-column-filters="true"
                 :sort-by="['aaPosition']"
+                :rowsPerPageOptions="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-multiple-record-edit="crudTable.didClickMultipleRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"

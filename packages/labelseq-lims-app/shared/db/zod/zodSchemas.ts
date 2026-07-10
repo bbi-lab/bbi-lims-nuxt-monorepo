@@ -1,11 +1,16 @@
-// import { dateSchema, nullableDateSchema } from '../helpers/schemas'
-import { createSelectSchema } from 'drizzle-orm/zod'
+import { createSchemaFactory } from 'drizzle-orm/zod'
 import { z } from 'zod'
+
+// Coerce date columns (timestamp -> z.coerce.date()) so ISO date strings from HTTP
+// request bodies and DatePicker/edit-form values validate without per-field helpers.
+// Coerced dates are still detected as `date` by the SmartForm field builder.
+const { createSelectSchema } = createSchemaFactory({ coerce: { date: true } })
 import { projects } from '../schema/project'
 import { restrictionEnzymes } from '../schema/reagents'
 import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '../schema/primers'
 import { superblocks, tiles, tileVariants } from '../schema/tiles'
 import { refseqTranscripts } from '../schema/transcripts'
+import { viewTileGblocks } from '../schema/views'
 
 const selectProjectSchema = createSelectSchema(projects)
 const insertProjectSchema = selectProjectSchema.omit({id: true, createdAt: true, updatedAt: true}).partial()
@@ -24,23 +29,25 @@ const selectRetrieverPrimerSchema = createSelectSchema(retrieverPrimers)
 const insertRetrieverPrimerSchema = selectRetrieverPrimerSchema.omit({ id: true, seqRevComp: true }).partial()
 const updateRetrieverPrimerSchema = insertRetrieverPrimerSchema.extend({
     seqRevComp: selectRetrieverPrimerSchema.shape.seqRevComp.readonly(),
-})
+}).partial()
 
 const selectLabelseqIndexPrimerSchema = createSelectSchema(labelseqIndexPrimers)
 const insertLabelseqIndexPrimerSchema = selectLabelseqIndexPrimerSchema.omit({ id: true, indexSeqRevComp: true }).partial()
 const updateLabelseqIndexPrimerSchema = insertLabelseqIndexPrimerSchema.extend({
     indexSeqRevComp: selectLabelseqIndexPrimerSchema.shape.indexSeqRevComp.readonly(),
-})
+}).partial()
 
 const selectNexteraIndexPrimerSchema = createSelectSchema(nexteraIndexPrimers)
 const insertNexteraIndexPrimerSchema = selectNexteraIndexPrimerSchema.omit({ id: true, indexSeqRevComp: true }).partial()
 const updateNexteraIndexPrimerSchema = insertNexteraIndexPrimerSchema.extend({
     indexSeqRevComp: selectNexteraIndexPrimerSchema.shape.indexSeqRevComp.readonly(),
-})
+}).partial()
 
 const selectSuperblocksSchema = createSelectSchema(superblocks)
-const insertSuperblocksSchema = selectSuperblocksSchema.omit({ id: true }).partial()
-const updateSuperblocksSchema = insertSuperblocksSchema
+const insertSuperblocksSchema = selectSuperblocksSchema.omit({ id: true, aaSeq: true }).partial()
+const updateSuperblocksSchema = insertSuperblocksSchema.extend({
+    aaSeq: selectSuperblocksSchema.shape.aaSeq.readonly(),
+}).partial()
 
 const selectTilesSchema = createSelectSchema(tiles)
 const insertTilesSchema = selectTilesSchema.omit({ id: true }).partial()
@@ -53,15 +60,18 @@ const updateTileVariantsSchema = insertTileVariantsSchema
 const selectRefseqTranscriptsSchema = createSelectSchema(refseqTranscripts)
 const insertRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.pick({transcriptId: true, geneType: true,notes: true}).partial()
 // make most fields readonly for update schema since we don't want them to be updated directly
-const updateRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.omit({ id: true }).partial().extend({
+const updateRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.omit({ id: true }).extend({
     transcriptId: selectRefseqTranscriptsSchema.shape.transcriptId.readonly(),
     geneId: selectRefseqTranscriptsSchema.shape.geneId.readonly(),
     description: selectRefseqTranscriptsSchema.shape.description.readonly(),
     cds: selectRefseqTranscriptsSchema.shape.cds.readonly(),
     aa: selectRefseqTranscriptsSchema.shape.aa.readonly(),
-})
+}).partial()
 // only allow geneType and notes to be updated directly, other fields are either readonly or auto-populated
 const updateRefseqTranscriptValuesSchema = selectRefseqTranscriptsSchema.pick({geneType: true,notes: true}).partial()
+
+// views (read-only — no insert/update schemas)
+const selectViewTileGblocksSchema = createSelectSchema(viewTileGblocks)
 
 // Freeze all schema shapes to prevent accidental mutation of shared module-level objects.
 // Zod methods like .extend(), .omit(), .partial() return new objects and are unaffected.
@@ -123,5 +133,9 @@ export const schemas = freezeSchemas({
         insert: insertRefseqTranscriptsSchema,
         update: updateRefseqTranscriptsSchema,
         updateValues: updateRefseqTranscriptValuesSchema,
+    },
+    // views
+    viewTileGblocks: {
+        select: selectViewTileGblocksSchema,
     },
 })

@@ -2,8 +2,12 @@ import _ from "lodash"
 import { VALID_WELL_COLORS } from "../../shared/lib/plate-diagram"
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
 
-type PlateWithWellContents = Plate & {
-    wells: WellWithContents[]
+type PlateWithWellContents<TWellable = Record<string, any>> = Plate & {
+    wells: (Well & {
+        wellContents: (WellContent & {
+            wellable: TWellable
+        })[]
+    })[]
 }
 
 type WellSpecs = {
@@ -27,6 +31,7 @@ interface wellContentDisplayConfig {
     selectionTableRecordIdPaths?: (_.PropertyPath | Function)[] // array of paths or functions to retrieve ids from well contents that correspond to selection table record IDs
     symbol?: Function | null
     tooltip?: Function | null
+    syncedPlateWellSpecs?: WellSpecs | Ref<WellSpecs> | null
 }
 
 interface ExportPlateLayoutColumnConfig {
@@ -39,8 +44,8 @@ interface ExportPlateLayoutConfig {
     sortBy?: Function | string | string[],
 }
 
-export const usePlateLayout = () => {
-    const plateWithWellContents = ref<PlateWithWellContents>()
+export const usePlateLayout = <TWellable = Record<string, any>>() => {
+    const plateWithWellContents = ref<PlateWithWellContents<TWellable>>()
     const wellContentsDisplayConfig = ref<wellContentDisplayConfig>()
     const wellSpecs = ref<WellSpecs>({})
     const selectedWells = ref<WellSpecs[string][]>([])
@@ -124,7 +129,8 @@ export const usePlateLayout = () => {
 
     const nextColorToUse = computed(() => {
         const colorCounts = _.countBy(_.values(_.filter(wellSpecs.value, 'color')), 'color')
-        const unusedColors = _.difference(VALID_WELL_COLORS, _.keys(colorCounts))
+        const syncedColorCounts = _.countBy(_.values(_.filter(toValue(wellContentsDisplayConfig.value?.syncedPlateWellSpecs), 'color')), 'color')
+        const unusedColors = _.difference(VALID_WELL_COLORS, _.keys(colorCounts), _.keys(syncedColorCounts))
         unusedColors.forEach((color) => {
             colorCounts[color] = 0
         })
@@ -161,7 +167,8 @@ export const usePlateLayout = () => {
 
             // if well contents foreign keys have not changed, leave color unchanged
             let wellColor
-            const wellSpecWithSameContentsToColorBy = _.find(_.values(wellSpecs.value), (x) => _.isEqual(x.colorByValues, contentsToColorBy))
+            const wellSpecWithSameContentsToColorBy = _.find(_.values(toValue(wellContentsDisplayConfig.value?.syncedPlateWellSpecs)), (x) => _.isEqual(x.colorByValues, contentsToColorBy)) ||
+                _.find(_.values(wellSpecs.value), (x) => _.isEqual(x.colorByValues, contentsToColorBy))
             if (existingWellSpec && _.isEqual(contentsToColorBy, existingWellSpec.colorByValues)) {
                 wellColor = existingWellSpec.color
             } else if (wellSpecWithSameContentsToColorBy) {
@@ -393,6 +400,7 @@ export const usePlateLayout = () => {
         // data
         plateWithWellContents,
         plateWithPlateDiagramWells,
+        plateId,
         setPlateId,
         loadPlate,
         reloadPlate,
