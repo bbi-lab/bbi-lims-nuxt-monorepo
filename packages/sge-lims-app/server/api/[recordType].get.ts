@@ -13,9 +13,15 @@ export default defineEventHandler(async (event) => {
   const db = useSgeDrizzle()
 
   try {
-    const queryParams = getQuery(event) as QueryParams
+    const queryParams = getQuery(event) as QueryParams & { flat?: string }
     const selectParams = queryToSelectParams(queryParams) as SelectParams
-    const queryBuilder = _.get(db.query, _.camelCase(recordType))
+
+    // `flat=true` forces the plain SQL view path (selectRecordsFromView → jsonLogicToSql)
+    // instead of the relational query builder. This matches the translator used by the
+    // /count endpoint and enables cast-based substring filtering on any column type
+    // (enum, integer). Used by SmartTable's lazy mode.
+    const flat = String(queryParams.flat) === 'true'
+    const queryBuilder = flat ? undefined : _.get(db.query, _.camelCase(recordType))
     if (queryBuilder) {
       return await selectRecords(queryBuilder, selectParams)
     } else {

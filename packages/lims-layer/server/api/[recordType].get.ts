@@ -12,10 +12,16 @@ export default defineEventHandler(async (event) => {
     const db = useDrizzle()
 
     try {
-        const queryParams = getQuery(event) as QueryParams
+        const queryParams = getQuery(event) as QueryParams & { flat?: string }
         const selectParams = queryToSelectParams(queryParams) as SelectParams
+
+        // `flat=true` forces the plain SQL view path (selectRecordsFromView →
+        // jsonLogicToSql) instead of the relational query builder. This matches the
+        // translator used by the /count endpoint and enables cast-based substring
+        // filtering on any column type (enum, integer). Used by SmartTable's lazy mode.
+        const flat = String(queryParams.flat) === 'true'
         // requires relevant schema to have been passed on drizzle db init
-        const queryBuilder = _.get(db.query, _.camelCase(recordType))
+        const queryBuilder = flat ? undefined : _.get(db.query, _.camelCase(recordType))
         if (queryBuilder) {
             return await selectRecords(queryBuilder, selectParams)
         } else {

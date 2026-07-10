@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import jsonLogic, { type JsonLogicFilter, type JsonLogicAll  } from 'json-logic-js'
-import { and, or, not, eq, ne, lt, lte, gt, gte, ilike, inArray, type SQL } from 'drizzle-orm'
+import { and, or, not, eq, ne, lt, lte, gt, gte, ilike, inArray, sql, type SQL } from 'drizzle-orm'
 
 export interface QueryParams {
     where: string,
@@ -31,8 +31,10 @@ export function queryToSelectParams<SelectParams>(queryParams: QueryParams) {
         where: queryParams.where ? JSON.parse(queryParams.where) : undefined,
         columns: columnsToInclude,
         order: queryParams.order ? JSON.parse(queryParams.order) : undefined,
-        limit: queryParams.limit,
-        offset: queryParams.offset,
+        // Query params arrive as strings; coerce to numbers so Postgres LIMIT/OFFSET
+        // (which require integers) receive the right type.
+        limit: queryParams.limit != null ? Number(queryParams.limit) : undefined,
+        offset: queryParams.offset != null ? Number(queryParams.offset) : undefined,
         with: queryParams.with ? JSON.parse(queryParams.with) : undefined
     } as SelectParams
 
@@ -145,6 +147,19 @@ export function jsonLogicToSql(logic: unknown, getColumn: (name: string) => unkn
             return ilike(fieldArg.column as any, `${prefix}%`)
         }
 
+        case 'contains': {
+            // Custom operation: contains(field | toLower(field), substring)
+            // Maps to ilike(cast(col as text), '%substring%'). The cast lets substring
+            // search work uniformly on non-text columns (enum, integer, etc.) — a bare
+            // ilike on those raises "operator does not exist" in Postgres.
+            if (args.length < 2) return null
+            const fieldArg = resolveArg(args[0], getColumn)
+            if (!fieldArg || !('column' in fieldArg)) return null
+            const term = args[1]
+            if (typeof term !== 'string') return null
+            return ilike(sql`cast(${fieldArg.column} as text)`, `%${term}%`)
+        }
+
         default:
             return null // unsupported operator — caller should fall back to in-memory
     }
@@ -254,6 +269,15 @@ export function jsonLogicToFilter(logic: unknown): Record<string, unknown> | nul
             return buildNestedFilter(fieldPath, { ilike: `${args[1]}%` })
         }
 
+        case 'contains': {
+            // NOTE: RQB ilike has no cast, so this only works on text columns. For views
+            // queried through jsonLogicToSql the cast variant handles all column types.
+            if (args.length < 2) return null
+            const fieldPath = resolveVarPath(args[0])
+            if (!fieldPath || typeof args[1] !== 'string') return null
+            return buildNestedFilter(fieldPath, { ilike: `%${args[1]}%` })
+        }
+
         default:
             return null
     }
@@ -265,6 +289,7 @@ export function applySelectParamsToRecords<T>(selectParams: SelectParams, record
     const queryFinal  = selectParams.where ? {filter:[{var:""}, selectParams.where]} : null
 
     jsonLogic.add_operation("startsWith", (a, b) => _.startsWith(_.toLower(a), _.toLower(b)))
+    jsonLogic.add_operation("contains", (a, b) => _.includes(_.toLower(_.toString(a)), _.toLower(_.toString(b))))
     jsonLogic.add_operation("toLower", (a) => _.toLower(a))
 
     // TODO - apply filter logic as where clause on query above

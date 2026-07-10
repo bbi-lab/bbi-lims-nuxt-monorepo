@@ -47,6 +47,43 @@ export const RecordService = {
         }
     },
 
+    // Server-side ("lazy") page fetch: pushes where/order/limit/offset to the API so
+    // only a single page of rows is returned. `flat` routes views through the SQL path
+    // (see [recordType].get.ts) so substring filters work on any column type.
+    async getRecordsPage(baseUrl: string, params: { where?: Object, order?: Object, limit?: number, offset?: number, flat?: boolean }) {
+        const query: Record<string, unknown> = {}
+        if (params.where !== undefined) query.where = params.where
+        if (params.order !== undefined) query.order = params.order
+        if (params.limit !== undefined) query.limit = params.limit
+        if (params.offset !== undefined) query.offset = params.offset
+        if (params.flat) query.flat = 'true'
+        try {
+            return await _fetch(`${baseUrl}`, { query }) as any[]
+        } catch (error: any) {
+            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
+                useLayout().showLoginModal()
+            } else {
+                throw error
+            }
+        }
+    },
+
+    // Total row count for the current filter — feeds the paginator's totalRecords.
+    async getCount(baseUrl: string, where?: Object): Promise<number> {
+        const query: Record<string, unknown> = {}
+        if (where !== undefined) query.where = where
+        try {
+            const result = await _fetch(`${baseUrl}/count`, { query }) as { count: number }
+            return result?.count ?? 0
+        } catch (error: any) {
+            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
+                useLayout().showLoginModal()
+                return 0
+            }
+            throw error
+        }
+    },
+
     async updateRecord(baseUrl: string, record: any, withClause?: Object) {
         const {id, ...values} = record
         try {

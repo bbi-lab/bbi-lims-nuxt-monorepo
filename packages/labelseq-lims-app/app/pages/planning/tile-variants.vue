@@ -19,7 +19,7 @@ watch(() => route.query, async (newValue, _oldValue) => {
 const columnDefs: ColumnDefinitions = {
     id: { display: false },
     tileId: { display: false },
-    tile: { header: 'Tile', index: 0, path: 'tileVariant.tile.tileName' },
+    tile: { header: 'Tile', index: 0, path: 'tileName' },
     aaPosition: { header: 'AA Position', index: 1 },
     aaRef: { header: 'AA Ref', index: 2 },
     aaAlt: { header: 'AA Alt', index: 3 },
@@ -55,13 +55,6 @@ const editFormZodSchema = z.object({
     ...schemas.tileVariants.update.shape,
     fullSequence: z.string().readonly(),
 })
-const withClause = {
-    tileVariant: {
-        with: {
-            tile: true,
-        }
-    }
-}
 </script>
 
 <template>
@@ -73,10 +66,10 @@ const withClause = {
                 table-name="view-tile-variants-with-sequences"
                 :zodSchema="schemas.tileVariants.select"
                 title="Tile Variants"
+                :lazy="true"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 :column-defs="columnDefs"
                 :where="whereClauses"
-                :with-clause="withClause"
                 :can-edit-multiple="true"
                 :show-column-filters="true"
                 :sort-by="['aaPosition']"
