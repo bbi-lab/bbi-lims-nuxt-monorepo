@@ -122,4 +122,44 @@ describe('SmartTable', () => {
             expect(addButton).toBeUndefined()
         })
     })
+
+    it('renders a Select for filterType:select columns and a text input for the rest', async () => {
+        registerEndpoint('/api/samples', () => [
+            { id: '1', name: 'S1', status: 'active' },
+            { id: '2', name: 'S2', status: 'archived' },
+            { id: '3', name: 'S3', status: 'active' },
+        ])
+
+        const component = await mountSuspended(SmartTable, {
+            props: {
+                tableName: 'samples',
+                zodSchema: z.object({ id: z.string(), name: z.string(), status: z.string() }),
+                columnDefs: {
+                    // no filterOptions → options are auto-derived from the loaded data
+                    status: { filterType: 'select' },
+                },
+                title: 'Samples',
+                canAdd: false,
+                canEdit: false,
+                canDelete: false,
+                showColumnFilters: true,
+            },
+        })
+
+        // Filters are hidden until toggled on, so no Select is present yet.
+        await vi.waitFor(() => expect(component.text()).toContain('S1'))
+        expect(component.find('.p-select').exists()).toBe(false)
+
+        // Click the show-filters toggle (the pi-search-plus button in the actions column).
+        const toggle = component.findAll('button').find((b) => b.find('.pi-search-plus').exists())
+        expect(toggle).toBeDefined()
+        await toggle!.trigger('click')
+
+        // The select column renders a Select; the text column (name) renders a text input.
+        await vi.waitFor(() => {
+            expect(component.findAll('.p-select').length).toBe(1)
+            // global search + the `name` column filter → at least two text inputs
+            expect(component.findAll('input.p-inputtext').length).toBeGreaterThanOrEqual(2)
+        })
+    })
 })
