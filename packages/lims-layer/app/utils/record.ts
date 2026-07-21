@@ -1,8 +1,11 @@
 import _ from 'lodash'
 import type { TableNames } from '../../shared/types/drizzle'
 
-// Cast to bypass TypeScript's route-inference on dynamic baseUrl strings
-const _fetch = $fetch as any
+// Resolve $fetch lazily on each call (cast to bypass TypeScript's route-inference on dynamic
+// baseUrl strings). The auth-fetch plugin installs its 401 handler by reassigning
+// globalThis.$fetch; capturing the reference here at module load would snapshot the original,
+// unwrapped instance and bypass the interceptor — so read the current global per call.
+const _fetch = ((...args: any[]) => ($fetch as any)(...args)) as any
 
 export const RecordService = {
     async getRecord(baseUrl: string, id: string, withClause: Object | undefined) {
