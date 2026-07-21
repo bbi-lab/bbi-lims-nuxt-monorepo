@@ -8,7 +8,6 @@ const { breakpoints } = useLayout()
 const route = useRoute()
 const plateLayout = usePlateLayout<{ sgRnaOligo: SgRnaOligo | null }>()
 const config = useRuntimeConfig()
-const { showLoginModal } = useLayout()
 const toast = useToast()
 
 const smallerThanLg = breakpoints.smaller('lg')
@@ -94,9 +93,8 @@ const submitSgRnaOligos = async (data: any[]) => {
             })
         }
     } catch (error: any) {
-        if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-            showLoginModal()
-        } else {
+        // 401s open the login modal via the global auth-fetch interceptor; only surface other errors.
+        if (error.data?.statusCode !== 401) {
             const userMessage =  _.isArray(error?.data?.data) ? convertErrorDataToUserMessage(error.data.data) : error.statusMessage ?? 'An unexpected error occurred during import. Please try again.'
             toast.add({ severity: 'error', summary: 'Error', detail: userMessage, life: 5000 })
         }
