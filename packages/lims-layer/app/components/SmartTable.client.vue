@@ -259,6 +259,38 @@ function normalizeWhere(where: any): any {
     return where
 }
 
+/** Single source of truth mapping a PrimeVue `FilterMatchMode` to the JSON Logic clause the
+ *  server understands (see jsonLogicToSql). Used to translate row-mode column filters for
+ *  lazy loading; client-side filtering is done by PrimeVue itself. Match modes absent here
+ *  (e.g. ENDS_WITH, BETWEEN, DATE_*) have no server mapping yet and are ignored in lazy mode
+ *  — add them alongside their server operator when advanced (Tier 2) filtering lands. */
+const MATCH_MODE_TO_JSONLOGIC: Record<string, (field: string, value: any) => any> = {
+    [FilterMatchMode.CONTAINS]:                 (f, v) => ({ contains: [{ var: f }, String(v)] }),
+    [FilterMatchMode.STARTS_WITH]:              (f, v) => ({ startsWith: [{ var: f }, String(v)] }),
+    [FilterMatchMode.NOT_CONTAINS]:             (f, v) => ({ '!': { contains: [{ var: f }, String(v)] } }),
+    [FilterMatchMode.EQUALS]:                   (f, v) => ({ '==': [{ var: f }, v] }),
+    [FilterMatchMode.NOT_EQUALS]:               (f, v) => ({ '!=': [{ var: f }, v] }),
+    [FilterMatchMode.LESS_THAN]:                (f, v) => ({ '<': [{ var: f }, v] }),
+    [FilterMatchMode.LESS_THAN_OR_EQUAL_TO]:    (f, v) => ({ '<=': [{ var: f }, v] }),
+    [FilterMatchMode.GREATER_THAN]:             (f, v) => ({ '>': [{ var: f }, v] }),
+    [FilterMatchMode.GREATER_THAN_OR_EQUAL_TO]: (f, v) => ({ '>=': [{ var: f }, v] }),
+}
+
+/** Translate one column's row-mode filter model (`{ value, matchMode }`) into a JSON Logic
+ *  clause for lazy (server-side) filtering. Returns null when the filter is empty or its
+ *  match mode has no server mapping (PrimeVue still applies it client-side). */
+function columnFilterToJsonLogic(field: string, model: any): any {
+    const value = _.get(model, 'value')
+    if (value === null || value === undefined || value === '') return null
+    const matchMode = _.get(model, 'matchMode') || FilterMatchMode.CONTAINS
+    const build = MATCH_MODE_TO_JSONLOGIC[matchMode]
+    if (!build) {
+        if (import.meta.dev) console.warn(`[SmartTable] no server-side mapping for filter match mode "${matchMode}" on "${field}"; this column filter is ignored in lazy mode.`)
+        return null
+    }
+    return build(field, value)
+}
+
 /** Combine page-level where + global search + column filters into one JSON Logic clause. */
 function buildLazyWhere(): any {
     const conditions: any[] = []
@@ -274,9 +306,8 @@ function buildLazyWhere(): any {
 
     for (const [key, model] of _.entries(filters.value)) {
         if (key === 'global' || _.includes(key, '.')) continue
-        const value = _.get(model, 'value')
-        if (value === null || value === undefined || value === '') continue
-        conditions.push({ contains: [{ var: key }, String(value)] })
+        const clause = columnFilterToJsonLogic(key, model)
+        if (clause) conditions.push(clause)
     }
 
     if (conditions.length === 0) return undefined
@@ -459,7 +490,7 @@ watch(sortedColumnDefs, (newValue, oldValue) => {
             const filtersEntries = newValue.reduce((acc, colDef) => {
                 const key = colDef.path || colDef.key
                 if (colDef.searchable !== false) {
-                    _.set(acc, [key], { value: null, matchMode: FilterMatchMode.CONTAINS })
+                    _.set(acc, [key], { value: null, matchMode: defaultColumnMatchMode(colDef) })
                 }
                 return acc
             }, {})
@@ -599,6 +630,49 @@ function filteringComplete(event?: any) {
         const input = _.get(columnFilterInputs.value, lastColumnFilterInputKey.value)
         if (input) input.$el.focus()
     }
+}
+
+/** The match mode a column filters by: explicit `filterMatchMode`, else EQUALS for select
+ *  columns (an exact-value dropdown), else CONTAINS (substring text search). */
+function defaultColumnMatchMode(columnDef: SortedColumnDefinition): string {
+    if (columnDef.filterMatchMode) return columnDef.filterMatchMode
+    if (columnDef.filterType === 'select') return FilterMatchMode.EQUALS
+    return FilterMatchMode.CONTAINS
+}
+
+/** Distinct field values → select options, for client-side select columns that don't
+ *  declare explicit `filterOptions`. Empty in lazy mode: only one page is loaded, so the
+ *  distinct set would be incomplete — those columns must supply explicit `filterOptions`. */
+const derivedFilterOptions = computed<Record<string, { label: string, value: any }[]>>(() => {
+    if (props.lazy) return {}
+    const out: Record<string, { label: string, value: any }[]> = {}
+    for (const col of sortedColumnDefs.value) {
+        if (col.filterType !== 'select' || col.filterOptions) continue
+        const field = col.path ?? col.key
+        const values = _.uniq(_.flatMap(records.value ?? [], (r) => {
+            const v = _.get(r, field)
+            return _.isArray(v) ? v : [v]
+        }))
+        const clean = _.sortBy(_.reject(values, (v) => v === null || v === undefined || v === ''))
+        _.set(out, [col.key], _.map(clean, (v) => ({ label: String(v), value: v })))
+    }
+    return out
+})
+
+/** Resolved dropdown options for a select-filter column: explicit (normalized to
+ *  `{ label, value }`) if given, otherwise the values auto-derived from the loaded data. */
+function filterSelectOptions(columnDef: SortedColumnDefinition): { label: string, value: any }[] {
+    if (columnDef.filterOptions) {
+        return _.map(columnDef.filterOptions, (o) => _.isObject(o) ? o : { label: String(o), value: o })
+    }
+    return _.get(derivedFilterOptions.value, columnDef.key, [])
+}
+
+/** Apply a select-filter change. Clears the last-typed-input key first so filteringComplete
+ *  doesn't yank focus back to a text input in another column after a dropdown selection. */
+function onColumnFilterSelectChange(filterCallback: Function) {
+    lastColumnFilterInputKey.value = null
+    filterCallback()
 }
 
 function columnHeader(sortedColumnDef: SortedColumnDefinition) {
@@ -841,33 +915,33 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
         </Column>
         <template v-for="columnDef of filterByColumnVisibility(sortedColumnDefs)">
             <template v-if="columnDef.display !== false">
-                <Column v-if="columnDef.format == 'date-time'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                <Column v-if="columnDef.format == 'date-time'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
                     <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         {{ formatDateTime(slotProps.data[columnDef.key]) }}
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.format == 'date'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                <Column v-else-if="columnDef.format == 'date'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
                     <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         {{ formatDate(slotProps.data[columnDef.key]) }}
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.type == 'boolean' || _.includes(columnDef.type, 'boolean')" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                <Column v-else-if="columnDef.type == 'boolean' || _.includes(columnDef.type, 'boolean')" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
                     <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         {{ slotProps.data[columnDef.key] ? '✓' : '' }}
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.format == 'hyperlink'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                <Column v-else-if="columnDef.format == 'hyperlink'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
                     <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         <a class="text-blue-600 underline visited:text-purple-600 hover:text-blue-800"
@@ -877,9 +951,9 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                         </a>
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.type == 'element'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass" :showFilterMenu="false" :showClearButton="false" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                <Column v-else-if="columnDef.type == 'element'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
                     <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         <span v-if="_.isFunction(columnDef.element)" v-html="columnDef.element(slotProps.data)" v-on:click="columnDef.elementClick ? columnDef.elementClick(slotProps.data) : null"></span>
@@ -887,9 +961,9 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                         <span v-else>err</span>
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.key != 'id'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                <Column v-else-if="columnDef.key != 'id'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
                     <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template v-if="columnDef.path || columnDef.truncatable" #body="slotProps">
                         <template v-if="columnDef.truncatable">

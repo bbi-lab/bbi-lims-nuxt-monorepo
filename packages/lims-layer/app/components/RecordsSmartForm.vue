@@ -4,6 +4,7 @@ import type { z } from 'zod'
 
 const toast = useToast()
 const confirm = useConfirm()
+const { isLoginModalVisible } = useLayout()
 
 const props = defineProps({
     selectUrl: { type: String, required: false },
@@ -67,10 +68,15 @@ const dateFieldNames = computed(() => getDateFieldNames(props.zodSchema))
 const initialValues = ref<Record<string, unknown>>({})
 const conflictingFields = ref<Record<string, number>>({})
 const loading = ref(true)
+// Tracks whether the record data actually loaded. Stays false when a load is skipped/failed
+// (e.g. a 401 that opened the login modal) so we can retry after re-auth without clobbering a
+// form the user has already filled in.
+const recordLoaded = ref(false)
 const serverSideValidationErrors = ref<Record<string, string>>({})
 
 async function loadRecord() {
     loading.value = true
+    recordLoaded.value = false
     try {
         if (isMultiEdit.value && props.selectUrl) {
             // Multi-edit: load all records and compute combined values
@@ -92,15 +98,18 @@ async function loadRecord() {
 
             initialValues.value = coerceDateFields(combined, dateFieldNames.value)
             conflictingFields.value = conflicts
+            recordLoaded.value = !_.isEmpty(records)
         } else if (props.selectUrl && props.recordIds.length === 1) {
             const record = await RecordService.getRecord(props.selectUrl!, props.recordIds[0]!, props.withClause)
             initialValues.value = coerceDateFields(_.pick(record, _.keys(zodShape.value)), dateFieldNames.value)
+            recordLoaded.value = !_.isNil(record)
         } else {
             // For new records, set empty initial values from schema keys
             const empty: Record<string, unknown> = {}
             _.keys(zodShape.value).forEach((key) => { empty[key] = null })
             // Apply readonly values
             initialValues.value = coerceDateFields({ ...empty, ...getBlankFormInitialValues(props.zodSchema, props.fieldConfigs), ...props.readonlyValues, ...props.initialValues }, dateFieldNames.value)
+            recordLoaded.value = true
         }
     } catch (error: any) {
         toast.add({
@@ -227,6 +236,14 @@ const effectiveFieldConfigs = computed(() => {
 
 onMounted(() => {
     loadRecord()
+})
+
+// If the initial load 401'd, the auth-fetch plugin opened the login modal and the form is
+// empty. Once the user re-authenticates and the modal closes, retry the load so the fields
+// populate. Guarded on !recordLoaded so a 401 raised on submit (form already filled) doesn't
+// wipe the user's edits.
+watch(isLoginModalVisible, (visible, wasVisible) => {
+    if (wasVisible && !visible && !recordLoaded.value) loadRecord()
 })
 </script>
 

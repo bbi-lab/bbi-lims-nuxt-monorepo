@@ -1,8 +1,11 @@
 import _ from 'lodash'
 import type { TableNames } from '../../shared/types/drizzle'
 
-// Cast to bypass TypeScript's route-inference on dynamic baseUrl strings
-const _fetch = $fetch as any
+// Resolve $fetch lazily on each call (cast to bypass TypeScript's route-inference on dynamic
+// baseUrl strings). The auth-fetch plugin installs its 401 handler by reassigning
+// globalThis.$fetch; capturing the reference here at module load would snapshot the original,
+// unwrapped instance and bypass the interceptor — so read the current global per call.
+const _fetch = ((...args: any[]) => ($fetch as any)(...args)) as any
 
 export const RecordService = {
     async getRecord(baseUrl: string, id: string, withClause: Object | undefined) {
@@ -11,11 +14,10 @@ export const RecordService = {
             const record = await _fetch(`${baseUrl}/${id}`, fetchOptions)
             return record
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-            } else {
-                throw error
-            }
+            // 401s are handled centrally by the auth-fetch plugin (opens the login modal);
+            // swallow here so callers don't also raise an error toast.
+            if (error.data?.statusCode === 401) return
+            throw error
         }
     },
 
@@ -28,9 +30,15 @@ export const RecordService = {
     async getRecordsByIds(baseUrl: string, ids: string[], withClause?: Object) {
         const fetchOptions = {query: {where: {"in": [{"var": "id"}, ids]}}}
         if (withClause) _.set(fetchOptions, ['query', 'with'], withClause)
-        // use search POST endpoint with request body to avoid URL length issues with large ids array
-        const records = await _fetch(`${baseUrl}/search`, {method: 'POST', body: fetchOptions}) as any[]
-        return records
+        try {
+            // use search POST endpoint with request body to avoid URL length issues with large ids array
+            const records = await _fetch(`${baseUrl}/search`, {method: 'POST', body: fetchOptions}) as any[]
+            return records
+        } catch (error: any) {
+            // 401 handled centrally by the auth-fetch plugin; swallow to avoid a duplicate toast.
+            if (error.data?.statusCode === 401) return []
+            throw error
+        }
     },
 
     async getRecords(baseUrl: string, withClause?: Object, where?: Object) {
@@ -39,11 +47,10 @@ export const RecordService = {
             const records =  await _fetch(`${baseUrl}`, fetchOptions) as any[]
             return records
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-            } else {
-                throw error
-            }
+            // 401s are handled centrally by the auth-fetch plugin (opens the login modal);
+            // swallow here so callers don't also raise an error toast.
+            if (error.data?.statusCode === 401) return
+            throw error
         }
     },
 
@@ -60,11 +67,10 @@ export const RecordService = {
         try {
             return await _fetch(`${baseUrl}`, { query }) as any[]
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-            } else {
-                throw error
-            }
+            // 401s are handled centrally by the auth-fetch plugin (opens the login modal);
+            // swallow here so callers don't also raise an error toast.
+            if (error.data?.statusCode === 401) return
+            throw error
         }
     },
 
@@ -76,10 +82,8 @@ export const RecordService = {
             const result = await _fetch(`${baseUrl}/count`, { query }) as { count: number }
             return result?.count ?? 0
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-                return 0
-            }
+            // 401 handled centrally by the auth-fetch plugin; report an empty count.
+            if (error.data?.statusCode === 401) return 0
             throw error
         }
     },
@@ -96,11 +100,10 @@ export const RecordService = {
                 return updatedRecords
             }
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-            } else {
-                throw error
-            }
+            // 401s are handled centrally by the auth-fetch plugin (opens the login modal);
+            // swallow here so callers don't also raise an error toast.
+            if (error.data?.statusCode === 401) return
+            throw error
         }
     },
 
@@ -116,11 +119,10 @@ export const RecordService = {
                 return updatedRecords
             }
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-            } else {
-                throw error
-            }
+            // 401s are handled centrally by the auth-fetch plugin (opens the login modal);
+            // swallow here so callers don't also raise an error toast.
+            if (error.data?.statusCode === 401) return
+            throw error
         }
     },
 
@@ -130,11 +132,10 @@ export const RecordService = {
             const newRecords = await _fetch(`${baseUrl}`, {method: 'POST', body: [values]})
             return _.get(newRecords, 0)
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-            } else {
-                throw error
-            }
+            // 401s are handled centrally by the auth-fetch plugin (opens the login modal);
+            // swallow here so callers don't also raise an error toast.
+            if (error.data?.statusCode === 401) return
+            throw error
         }
     },
 
@@ -144,11 +145,10 @@ export const RecordService = {
             const newRecords = await _fetch(`${baseUrl}`, {method: 'POST', body: recordsCopy})
             return newRecords
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-            } else {
-                throw error
-            }
+            // 401s are handled centrally by the auth-fetch plugin (opens the login modal);
+            // swallow here so callers don't also raise an error toast.
+            if (error.data?.statusCode === 401) return
+            throw error
         }
     },
 
@@ -157,11 +157,10 @@ export const RecordService = {
             const deletedRecord = await _fetch(`${baseUrl}/${id}`, {method: 'DELETE'})
             return deletedRecord
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-            } else {
-                throw error
-            }
+            // 401s are handled centrally by the auth-fetch plugin (opens the login modal);
+            // swallow here so callers don't also raise an error toast.
+            if (error.data?.statusCode === 401) return
+            throw error
         }
     },
 
@@ -174,11 +173,10 @@ export const RecordService = {
             }
             return deletedRecords
         } catch (error: any) {
-            if (error.data?.statusCode == 401 && error.data?.statusMessage == 'TOKEN EXPIRED') {
-                useLayout().showLoginModal()
-            } else {
-                throw error
-            }
+            // 401s are handled centrally by the auth-fetch plugin (opens the login modal);
+            // swallow here so callers don't also raise an error toast.
+            if (error.data?.statusCode === 401) return
+            throw error
         }
     },
 }
