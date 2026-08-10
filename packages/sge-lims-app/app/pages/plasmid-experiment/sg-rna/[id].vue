@@ -5,7 +5,7 @@ import type { SgRnaOligo } from '#shared/db/schema/oligos'
 import type { SgRnaPlasmid } from '#shared/db/schema/plasmid'
 import { schemas } from '#shared/db/zod/zodSchemas'
 
-const { breakpoints, showLoginModal } = useLayout()
+const { breakpoints } = useLayout()
 const route = useRoute()
 const plateLayout = usePlateLayout<{ sgRnaOligo: SgRnaOligo | null; sgRnaPlasmid: SgRnaPlasmid | null }>()
 const sourcePlateLayout = usePlateLayout<{ sgRnaOligo: SgRnaOligo | null }>()
@@ -164,9 +164,8 @@ const transformOligos = async () => {
     })
 
     if (error.value) {
-        if (error.value.data?.statusCode == 401 && error.value.data?.statusMessage == 'TOKEN EXPIRED') {
-            showLoginModal()
-        } else {
+        // 401s open the login modal via the global auth-fetch interceptor; only surface other errors.
+        if (error.value.data?.statusCode !== 401) {
             toast.add({severity: 'error', summary: 'Transformation failed', detail: error.value.data?.message || error.value.message, life: 3000})
         }
     } else {

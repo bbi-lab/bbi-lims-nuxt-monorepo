@@ -31,10 +31,16 @@ pnpm run dev
 
 ```
 cd packages/<layer-name>
-pnpm run drizzle-kit push
+pnpm exec drizzle-kit push
 ```
+
 ```
-pnpm run drizzle-kit generate
+pnpm exec drizzle-kit generate
+```
+
+Or from the project root:
+```
+pnpm --filter <layer-name> exec drizzle-kit push
 ```
 
 

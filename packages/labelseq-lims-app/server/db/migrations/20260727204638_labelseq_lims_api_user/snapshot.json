@@ -1,0 +1,2800 @@
+{
+  "id": "40a45887-2a2f-4190-92b0-3ed0af77e3aa",
+  "prevIds": [
+    "6e95cba4-3369-4447-9d7e-5f0be50223b6"
+  ],
+  "version": "8",
+  "dialect": "postgres",
+  "ddl": [
+    {
+      "name": "users",
+      "entityType": "schemas"
+    },
+    {
+      "values": [
+        "forward",
+        "reverse"
+      ],
+      "name": "primer_directions",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "p5",
+        "p7"
+      ],
+      "name": "primer_type",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "A",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "K",
+        "L",
+        "M",
+        "N",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "V",
+        "W",
+        "Y",
+        "X"
+      ],
+      "name": "amino_acid",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "AAA",
+        "AAC",
+        "AAG",
+        "AAT",
+        "ACA",
+        "ACC",
+        "ACG",
+        "ACT",
+        "AGA",
+        "AGC",
+        "AGG",
+        "AGT",
+        "ATA",
+        "ATC",
+        "ATG",
+        "ATT",
+        "CAA",
+        "CAC",
+        "CAG",
+        "CAT",
+        "CCA",
+        "CCC",
+        "CCG",
+        "CCT",
+        "CGA",
+        "CGC",
+        "CGG",
+        "CGT",
+        "CTA",
+        "CTC",
+        "CTG",
+        "CTT",
+        "GAA",
+        "GAC",
+        "GAG",
+        "GAT",
+        "GCA",
+        "GCC",
+        "GCG",
+        "GCT",
+        "GGA",
+        "GGC",
+        "GGG",
+        "GGT",
+        "GTA",
+        "GTC",
+        "GTG",
+        "GTT",
+        "TAA",
+        "TAC",
+        "TAG",
+        "TAT",
+        "TCA",
+        "TCC",
+        "TCG",
+        "TCT",
+        "TGA",
+        "TGC",
+        "TGG",
+        "TGT",
+        "TTA",
+        "TTC",
+        "TTG",
+        "TTT"
+      ],
+      "name": "dna_codon",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "n-terminus",
+        "c-terminus",
+        "internal",
+        "complete"
+      ],
+      "name": "superblock_classification",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "c-tag",
+        "n-tag"
+      ],
+      "name": "gene_type",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "plus",
+        "minus"
+      ],
+      "name": "gene_orientations",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "labelseq_index_primers",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "nextera_index_primers",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "retriever_primers",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "projects",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "restriction_enzymes",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "superblocks",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "tile_variants",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "tiles",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "refseq_transcripts",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "password_reset_tokens",
+      "entityType": "tables",
+      "schema": "users"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "pre_verified_users",
+      "entityType": "tables",
+      "schema": "users"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "user_group_memberships",
+      "entityType": "tables",
+      "schema": "users"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "user_groups",
+      "entityType": "tables",
+      "schema": "users"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "users",
+      "entityType": "tables",
+      "schema": "users"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "genes",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "plates",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "plate_types",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "well_content_sources",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "well_contents",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "wellables",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "wells",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "labelseq_index_primers"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "labelseq_index_primers"
+    },
+    {
+      "type": "primer_type",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "primer_type",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "labelseq_index_primers"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "index_seq",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "labelseq_index_primers"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": {
+        "as": "reverse(translate(\"labelseq_index_primers\".\"index_seq\", 'aAcCgGtT', 'tTgGcCaA'))",
+        "type": "stored"
+      },
+      "identity": null,
+      "name": "index_seq_rev_comp",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "labelseq_index_primers"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "nextera_index_primers"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "nextera_index_primers"
+    },
+    {
+      "type": "primer_type",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "primer_type",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "nextera_index_primers"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "index_seq",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "nextera_index_primers"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": {
+        "as": "reverse(translate(\"nextera_index_primers\".\"index_seq\", 'aAcCgGtT', 'tTgGcCaA'))",
+        "type": "stored"
+      },
+      "identity": null,
+      "name": "index_seq_rev_comp",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "nextera_index_primers"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "retriever_primers"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "retriever_primers"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "seq",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "retriever_primers"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": {
+        "as": "reverse(translate(\"retriever_primers\".\"seq\", 'aAcCgGtT', 'tTgGcCaA'))",
+        "type": "stored"
+      },
+      "identity": null,
+      "name": "seq_rev_comp",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "retriever_primers"
+    },
+    {
+      "type": "primer_directions",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "direction",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "retriever_primers"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "projects"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "projects"
+    },
+    {
+      "type": "varchar(500)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "description",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "projects"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "restriction_enzyme_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "projects"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "apply_capseq_to_gblocks",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "projects"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "projects"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "projects"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "restriction_enzymes"
+    },
+    {
+      "type": "varchar(10)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "restriction_enzymes"
+    },
+    {
+      "type": "varchar(20)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "recog_seq_plus_overhang",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "restriction_enzymes"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "overhang_length",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "restriction_enzymes"
+    },
+    {
+      "type": "varchar(20)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": {
+        "as": "substring(\"restriction_enzymes\".\"recog_seq_plus_overhang\", 1, length(\"restriction_enzymes\".\"recog_seq_plus_overhang\") - \"restriction_enzymes\".\"overhang_length\")",
+        "type": "stored"
+      },
+      "identity": null,
+      "name": "recog_seq",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "restriction_enzymes"
+    },
+    {
+      "type": "varchar",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": {
+        "as": "reverse(translate(substring(\"restriction_enzymes\".\"recog_seq_plus_overhang\", 1, length(\"restriction_enzymes\".\"recog_seq_plus_overhang\") - \"restriction_enzymes\".\"overhang_length\"), 'aAcCgGtT', 'tTgGcCaA'))",
+        "type": "stored"
+      },
+      "identity": null,
+      "name": "recog_seq_rev_comp",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "restriction_enzymes"
+    },
+    {
+      "type": "varchar",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": {
+        "as": "reverse(translate(\"restriction_enzymes\".\"recog_seq_plus_overhang\", 'aAcCgGtT', 'tTgGcCaA'))",
+        "type": "stored"
+      },
+      "identity": null,
+      "name": "recog_seq_plus_overhang_rev_comp",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "restriction_enzymes"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "project_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "refseq_transcript_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "superblock_classification",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "classification",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "description",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "start",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "end",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "seq",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": {
+        "as": "translate_dna(seq)",
+        "type": "stored"
+      },
+      "identity": null,
+      "name": "aa_seq",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tile_variants"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "tile_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tile_variants"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "aa_position",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tile_variants"
+    },
+    {
+      "type": "amino_acid",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "aa_ref",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tile_variants"
+    },
+    {
+      "type": "amino_acid",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "aa_alt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tile_variants"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "nt_position",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tile_variants"
+    },
+    {
+      "type": "dna_codon",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "nt_ref",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tile_variants"
+    },
+    {
+      "type": "dna_codon",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "nt_alt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tile_variants"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "superblock_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "tile_name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "tile_start",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "tile_end",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "mutagenesis_start",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "mutagenesis_end",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "retriever_primer_forward_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "retriever_primer_reverse_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "superblock_first",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "superblock_last",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "transcript_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "description",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "type": "gene_type",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "gene_type",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "gene_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "cds",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "aa",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "notes",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "password_reset_tokens"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "password_reset_tokens"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "token_hash",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "password_reset_tokens"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "expires_at",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "password_reset_tokens"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "password_reset_tokens"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "email",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "pre_verified_users"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "user_group_memberships"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_group_id",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "user_group_memberships"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": {
+        "type": "always",
+        "name": "user_groups_id_seq",
+        "increment": "1",
+        "startWith": "1",
+        "minValue": "1",
+        "maxValue": "2147483647",
+        "cache": 1,
+        "cycle": false
+      },
+      "name": "id",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "user_groups"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "user_groups"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "email",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "is_admin",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "password",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "is_verified",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "code",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "ncbi_accession",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "start_position",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "end_position",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(10)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "chromosome",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "gene_orientations",
+      "typeSchema": "public",
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "orientation",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "symbol",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "ncbi_gene_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "gene_type",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "transcripts_accession",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "protein_acccession",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "protein_length",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "locus_tag",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "assembly",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "varchar(50)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "annotation",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "type": "smallint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "12",
+      "generated": null,
+      "identity": null,
+      "name": "size_x",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "type": "smallint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "8",
+      "generated": null,
+      "identity": null,
+      "name": "size_y",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "plate_type",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "discarded",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "processed",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "type": "varchar(100)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plate_types"
+    },
+    {
+      "type": "varchar(255)",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "label",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plate_types"
+    },
+    {
+      "type": "varchar(500)",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "desc",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "plate_types"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "well_content_sources"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "well_content_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "well_content_sources"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "source_well_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "well_content_sources"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "well_content_sources"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "created_by",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "well_content_sources"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "well_contents"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "well_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "well_contents"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "wellable_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "well_contents"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wellables"
+    },
+    {
+      "type": "varchar",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "table_name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wellables"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "gen_random_uuid()",
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wells"
+    },
+    {
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "plate_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wells"
+    },
+    {
+      "type": "smallint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "x",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wells"
+    },
+    {
+      "type": "smallint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "y",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "wells"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "token_hash",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "password_reset_tokens_token_hash_idx",
+      "entityType": "indexes",
+      "schema": "users",
+      "table": "password_reset_tokens"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "password_reset_tokens_user_id_idx",
+      "entityType": "indexes",
+      "schema": "users",
+      "table": "password_reset_tokens"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "ncbi_accession",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "ncbi_accession_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "symbol",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "symbol_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "gene_type",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "gene_type_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "genes"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "restriction_enzyme_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "restriction_enzymes",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "projects_restriction_enzyme_id_restriction_enzymes_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "projects"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "project_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "projects",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "superblocks_project_id_projects_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "refseq_transcript_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "refseq_transcripts",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "superblocks_refseq_transcript_id_refseq_transcripts_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "tile_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "tiles",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "tile_variants_tile_id_tiles_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "tile_variants"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "superblock_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "superblocks",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "tiles_superblock_id_superblocks_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "retriever_primer_forward_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "retriever_primers",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "tiles_retriever_primer_forward_id_retriever_primers_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "retriever_primer_reverse_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "retriever_primers",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "tiles_retriever_primer_reverse_id_retriever_primers_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "tiles"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "gene_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "genes",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "refseq_transcripts_gene_id_genes_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "users",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "password_reset_tokens_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "users",
+      "table": "password_reset_tokens"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "users",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "user_group_memberships_user_id_users_id_fkey",
+      "entityType": "fks",
+      "schema": "users",
+      "table": "user_group_memberships"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_group_id"
+      ],
+      "schemaTo": "users",
+      "tableTo": "user_groups",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "user_group_memberships_user_group_id_user_groups_id_fkey",
+      "entityType": "fks",
+      "schema": "users",
+      "table": "user_group_memberships"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "plate_type"
+      ],
+      "schemaTo": "public",
+      "tableTo": "plate_types",
+      "columnsTo": [
+        "value"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "plates_plate_type_plate_types_value_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "well_content_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "well_contents",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "well_content_sources_well_content_id_well_contents_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "well_content_sources"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "source_well_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "wells",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "well_content_sources_source_well_id_wells_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "well_content_sources"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "created_by"
+      ],
+      "schemaTo": "users",
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "well_content_sources_created_by_users_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "well_content_sources"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "well_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "wells",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "well_contents_well_id_wells_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "well_contents"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "wellable_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "wellables",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "well_contents_wellable_id_wellables_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "well_contents"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "plate_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "plates",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "name": "wells_plate_id_plates_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "wells"
+    },
+    {
+      "columns": [
+        "user_id",
+        "user_group_id"
+      ],
+      "nameExplicit": false,
+      "name": "user_group_memberships_pkey",
+      "entityType": "pks",
+      "schema": "users",
+      "table": "user_group_memberships"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "labelseq_index_primers_pkey",
+      "schema": "public",
+      "table": "labelseq_index_primers",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "nextera_index_primers_pkey",
+      "schema": "public",
+      "table": "nextera_index_primers",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "retriever_primers_pkey",
+      "schema": "public",
+      "table": "retriever_primers",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "projects_pkey",
+      "schema": "public",
+      "table": "projects",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "restriction_enzymes_pkey",
+      "schema": "public",
+      "table": "restriction_enzymes",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "superblocks_pkey",
+      "schema": "public",
+      "table": "superblocks",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "tile_variants_pkey",
+      "schema": "public",
+      "table": "tile_variants",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "tiles_pkey",
+      "schema": "public",
+      "table": "tiles",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "refseq_transcripts_pkey",
+      "schema": "public",
+      "table": "refseq_transcripts",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "password_reset_tokens_pkey",
+      "schema": "users",
+      "table": "password_reset_tokens",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "user_groups_pkey",
+      "schema": "users",
+      "table": "user_groups",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "users_pkey",
+      "schema": "users",
+      "table": "users",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "genes_pkey",
+      "schema": "public",
+      "table": "genes",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "plates_pkey",
+      "schema": "public",
+      "table": "plates",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "value"
+      ],
+      "nameExplicit": false,
+      "name": "plate_types_pkey",
+      "schema": "public",
+      "table": "plate_types",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "well_content_sources_pkey",
+      "schema": "public",
+      "table": "well_content_sources",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "well_contents_pkey",
+      "schema": "public",
+      "table": "well_contents",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "wellables_pkey",
+      "schema": "public",
+      "table": "wellables",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "wells_pkey",
+      "schema": "public",
+      "table": "wells",
+      "entityType": "pks"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "email"
+      ],
+      "nullsNotDistinct": false,
+      "name": "pre_verified_users_email_unique",
+      "entityType": "uniques",
+      "schema": "users",
+      "table": "pre_verified_users"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "email"
+      ],
+      "nullsNotDistinct": false,
+      "name": "users_email_unique",
+      "entityType": "uniques",
+      "schema": "users",
+      "table": "users"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "plates_name_unique",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "plates"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "well_content_id",
+        "source_well_id"
+      ],
+      "nullsNotDistinct": false,
+      "name": "unique_well_content_id_source_well_id",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "well_content_sources"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        "plate_id",
+        "x",
+        "y"
+      ],
+      "nullsNotDistinct": false,
+      "name": "unique_plate_coord",
+      "entityType": "uniques",
+      "schema": "public",
+      "table": "wells"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "labelseq_index_primers_name_key",
+      "schema": "public",
+      "table": "labelseq_index_primers",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "nextera_index_primers_name_key",
+      "schema": "public",
+      "table": "nextera_index_primers",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "retriever_primers_name_key",
+      "schema": "public",
+      "table": "retriever_primers",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "projects_name_key",
+      "schema": "public",
+      "table": "projects",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "restriction_enzymes_name_key",
+      "schema": "public",
+      "table": "restriction_enzymes",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "superblocks_name_key",
+      "schema": "public",
+      "table": "superblocks",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "tile_name"
+      ],
+      "nullsNotDistinct": false,
+      "name": "tiles_tile_name_key",
+      "schema": "public",
+      "table": "tiles",
+      "entityType": "uniques"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "transcript_id"
+      ],
+      "nullsNotDistinct": false,
+      "name": "refseq_transcripts_transcript_id_key",
+      "schema": "public",
+      "table": "refseq_transcripts",
+      "entityType": "uniques"
+    },
+    {
+      "value": "\"index_seq\" ~* '^[actg]*$'",
+      "name": "index_seq_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "labelseq_index_primers"
+    },
+    {
+      "value": "\"index_seq\" ~* '^[actg]*$'",
+      "name": "index_seq_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "nextera_index_primers"
+    },
+    {
+      "value": "\"seq\" ~* '^[actg]*$'",
+      "name": "seq_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "retriever_primers"
+    },
+    {
+      "value": "\"recog_seq_plus_overhang\" ~* '^[actgn]*$'",
+      "name": "recog_seq_plus_overhang_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "restriction_enzymes"
+    },
+    {
+      "value": "\"seq\" ~* '^[actg]*$'",
+      "name": "seq_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "superblocks"
+    },
+    {
+      "value": "\"cds\" ~* '^[actg]*$'",
+      "name": "cds_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "value": "\"aa\" ~* '^[ACDEFGHIKLMNPQRSTVWY]*$'",
+      "name": "aa_check",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "refseq_transcripts"
+    },
+    {
+      "value": "\"table_name\" IN ('retriever_primers', 'labelseq_index_primers', 'nextera_index_primers')",
+      "name": "wellable_table_name",
+      "entityType": "checks",
+      "schema": "public",
+      "table": "wellables"
+    },
+    {
+      "definition": "select *,\n    concat(gblock_pad_seq, gblock_seq) as gblock_order_seq\n    from (\n        select *,\n        substring('ACGCCGCCACGTGTTCGTTAACTGTTGATTGGTGGCACATAAGTAATACCATGGTCCCTGAAATTCGGCTCAGTTACTTCGAGCGTAATGTCTCAAATGGCGTAGAACGGCAATGACTGTTTGACACTAGGTGGTGTTCAGTTCGGTAACGGAGAGTCTGTGCGGCATTCTTATTAATACATTTGAAACGCGCCCAACTGACGCTAGGCAAGTCAGTGCAGGCTCCCGTGTTAGGATAAGGGTAAACATACAAGTCGATAGAAGATGGGTAGGGGCCTTCAATTCATCCAGCACTCTACG' from 1 for greatest(0, 300 - length(gblock_seq))) as gblock_pad_seq\n        from (\n            select *,\n            concat(gblock_capseq_f_seq, gblock_nterm_overhang_seq, gblock_nterm_restriction_enzyme_seq, gblock_core_seq, gblock_cterm_restriction_enzyme_seq_rev_comp, gblock_cterm_overhang_seq, gblock_capseq_r_rev_comp_seq) as gblock_seq\n            from (\n        select\n        concat(base.tile_id, '-', g.side) as id,\n        base.tile_id,\n        base.superblock_id,\n        base.tile_name,\n        g.side,\n        base.superblock_first,\n        base.superblock_last,\n        base.mutagenesis_start,\n        base.mutagenesis_end,\n        base.restriction_enzyme_name,\n        base.apply_capseq_to_gblocks,\n        case when base.apply_capseq_to_gblocks then 'CCGCGTGATTACGAGTCGGGCTACGGTCTCT' end as gblock_capseq_f_seq,\n        case when g.side = '5-prime' then 'CGTC' end as gblock_nterm_overhang_seq,\n        case when g.side = '5-prime' then base.recog_seq_plus_overhang end as gblock_nterm_restriction_enzyme_seq,\n        case when g.side = '5-prime'\n            then substring(base.seq from 1 for base.tile_start + 3)\n            else substring(base.seq from base.tile_end - 3)\n        end as gblock_core_seq,\n        case when g.side = '3-prime' then base.recog_seq_plus_overhang_rev_comp end as gblock_cterm_restriction_enzyme_seq_rev_comp,\n        case when g.side = '3-prime' then 'GCAT' end as gblock_cterm_overhang_seq,\n        case when base.apply_capseq_to_gblocks then 'AGAGACCGTAGCCAGGCTGCCACTTGCTAACCC' end as gblock_capseq_r_rev_comp_seq\n        from (\n            select\n            \"tiles\".\"id\" as tile_id,\n            \"tiles\".\"superblock_id\",\n            \"tiles\".\"tile_name\",\n            \"tiles\".\"superblock_first\",\n            \"tiles\".\"superblock_last\",\n            \"tiles\".\"tile_start\",\n            \"tiles\".\"tile_end\",\n            \"tiles\".\"mutagenesis_start\",\n            \"tiles\".\"mutagenesis_end\",\n            \"superblocks\".\"seq\" as seq,\n            \"restriction_enzymes\".\"name\" as restriction_enzyme_name,\n            \"restriction_enzymes\".\"recog_seq_plus_overhang\" as recog_seq_plus_overhang,\n            \"restriction_enzymes\".\"recog_seq_plus_overhang_rev_comp\" as recog_seq_plus_overhang_rev_comp,\n            \"projects\".\"apply_capseq_to_gblocks\" as apply_capseq_to_gblocks\n            from \"tiles\"\n            join \"superblocks\" on \"tiles\".\"superblock_id\" = \"superblocks\".\"id\"\n            join \"projects\" on \"superblocks\".\"project_id\" = \"projects\".\"id\"\n            join \"restriction_enzymes\" on \"projects\".\"restriction_enzyme_id\" = \"restriction_enzymes\".\"id\"\n        ) base\n        cross join (values ('5-prime'), ('3-prime')) as g(side)\n        where (g.side = '5-prime' and not coalesce(base.superblock_first, false))\n           or (g.side = '3-prime' and not coalesce(base.superblock_last, false))\n            ) gblocks\n        ) assembled\n    ) padded",
+      "with": null,
+      "withNoData": null,
+      "using": null,
+      "tablespace": null,
+      "materialized": false,
+      "name": "view_tile_gblocks",
+      "entityType": "views",
+      "schema": "public"
+    },
+    {
+      "definition": "select *,\n    concat(retriever_primer_f_seq, bsa1_plusone_seq, bsa1_plusone_nterm_overhang_seq, superblock_nterm_restriction_enzyme_seq, tile_variant_seq, superblock_cterm_restriction_enzyme_seq_rev_comp, bsa1_plusone_cterm_overhang_seq, bsa1_plusone_seq_rev_comp, retriever_primer_r_seq_rev_comp) as full_sequence\n    from (select\n        tile_variants.*,\n        view_tiles_with_sequences.superblock_id,\n        view_tiles_with_sequences.tile_name,\n        view_tiles_with_sequences.tile_start,\n        view_tiles_with_sequences.tile_end,\n        view_tiles_with_sequences.mutagenesis_start,\n        view_tiles_with_sequences.mutagenesis_end,\n        view_tiles_with_sequences.retriever_primer_forward_id,\n        view_tiles_with_sequences.retriever_primer_reverse_id,\n        view_tiles_with_sequences.superblock_first,\n        view_tiles_with_sequences.superblock_last,\n        view_tiles_with_sequences.tile_length,\n        view_tiles_with_sequences.mutagenesis_length,\n        view_tiles_with_sequences.retriever_primer_f_seq,\n        view_tiles_with_sequences.bsa1_plusone_seq,\n        view_tiles_with_sequences.bsa1_plusone_nterm_overhang_seq,\n        view_tiles_with_sequences.superblock_nterm_restriction_enzyme_seq,\n        view_tiles_with_sequences.tile_seq,\n        view_tiles_with_sequences.superblock_cterm_restriction_enzyme_seq_rev_comp,\n        view_tiles_with_sequences.bsa1_plusone_cterm_overhang_seq,\n        view_tiles_with_sequences.bsa1_plusone_seq_rev_comp,\n        view_tiles_with_sequences.retriever_primer_r_seq_rev_comp,\n        view_tiles_with_sequences.restriction_enzyme_name,\n        case when tile_variants.nt_alt is not null then\n            overlay(view_tiles_with_sequences.tile_seq placing tile_variants.nt_alt::text from tile_variants.nt_position)\n        else\n            overlay(view_tiles_with_sequences.tile_seq placing '' from tile_variants.nt_position for 3)\n        end as tile_variant_seq\n        from tile_variants\n        join view_tiles_with_sequences on tile_variants.tile_id = view_tiles_with_sequences.id)",
+      "with": null,
+      "withNoData": null,
+      "using": null,
+      "tablespace": null,
+      "materialized": false,
+      "name": "view_tile_variants_with_sequences",
+      "entityType": "views",
+      "schema": "public"
+    },
+    {
+      "definition": "select *,\n    concat(retriever_primer_f_seq, bsa1_plusone_seq, bsa1_plusone_nterm_overhang_seq, superblock_nterm_restriction_enzyme_seq, tile_seq, superblock_cterm_restriction_enzyme_seq_rev_comp, bsa1_plusone_cterm_overhang_seq, bsa1_plusone_seq_rev_comp, retriever_primer_r_seq_rev_comp) as full_sequence\n    from (\n        select\n        \"tiles\".\"id\",\n        \"tiles\".\"superblock_id\",\n        \"tiles\".\"tile_name\",\n        \"tiles\".\"tile_start\",\n        \"tiles\".\"tile_end\",\n        \"tiles\".\"mutagenesis_start\",\n        \"tiles\".\"mutagenesis_end\",\n        \"tiles\".\"retriever_primer_forward_id\",\n        \"tiles\".\"retriever_primer_reverse_id\",\n        \"tiles\".\"superblock_first\",\n        \"tiles\".\"superblock_last\",\n        \"tiles\".\"tile_end\" - \"tiles\".\"tile_start\" + 1 as tile_length,\n        \"tiles\".\"mutagenesis_end\" - \"tiles\".\"mutagenesis_start\" + 1 as mutagenesis_length,\n        \"retriever_primer_f\".\"seq\" as retriever_primer_f_seq,\n        'GGTCTCT' as bsa1_plusone_seq,\n        case when \"tiles\".\"superblock_first\" then 'CGTC' end as bsa1_plusone_nterm_overhang_seq,\n        case when \"tiles\".\"superblock_first\" then \"restriction_enzymes\".\"recog_seq_plus_overhang\" end as superblock_nterm_restriction_enzyme_seq,\n        substring(\"superblocks\".\"seq\" from \"tiles\".\"tile_start\" for \"tiles\".\"tile_end\" - \"tiles\".\"tile_start\" + 1) as tile_seq,\n        case when \"tiles\".\"superblock_last\" then \"restriction_enzymes\".\"recog_seq_plus_overhang_rev_comp\" end as superblock_cterm_restriction_enzyme_seq_rev_comp,\n        case when \"tiles\".\"superblock_last\" then 'GCAT' end as bsa1_plusone_cterm_overhang_seq,\n        'AGAGACC' as bsa1_plusone_seq_rev_comp,\n        \"retriever_primer_r\".\"seq_rev_comp\" as retriever_primer_r_seq_rev_comp,\n        \"restriction_enzymes\".\"name\" as restriction_enzyme_name\n        from \"tiles\"\n        join \"superblocks\" on \"tiles\".\"superblock_id\" = \"superblocks\".\"id\"\n        join \"projects\" on \"superblocks\".\"project_id\" = \"projects\".\"id\"\n        join \"restriction_enzymes\" on \"projects\".\"restriction_enzyme_id\" = \"restriction_enzymes\".\"id\"\n        join \"retriever_primers\" as retriever_primer_f on \"tiles\".\"retriever_primer_forward_id\" = \"retriever_primer_f\".\"id\"\n        join \"retriever_primers\" as retriever_primer_r on \"tiles\".\"retriever_primer_reverse_id\" = \"retriever_primer_r\".\"id\")",
+      "with": null,
+      "withNoData": null,
+      "using": null,
+      "tablespace": null,
+      "materialized": false,
+      "name": "view_tiles_with_sequences",
+      "entityType": "views",
+      "schema": "public"
+    },
+    {
+      "definition": "select\n    \"plates\".\"id\",\n    \"plates\".\"name\",\n    \"plates\".\"size_x\",\n    \"plates\".\"size_y\",\n    \"plates\".\"plate_type\",\n    \"plates\".\"discarded\",\n    \"plates\".\"processed\",\n    \"plate_types\".\"label\" as plate_type_label,\n    count(distinct(\"wells\".\"id\")) as wells_count,\n    count(distinct(\"well_contents\".\"well_id\")) as wells_with_content_count,\n    count(distinct(\"well_content_sources\".\"source_well_id\")) as wells_processed_count\n    from \"plates\"\n    join \"wells\" on \"plates\".\"id\" = \"wells\".\"plate_id\"\n    left join \"plate_types\" on \"plate_types\".\"value\" = \"plates\".\"plate_type\"\n    left join \"well_content_sources\" on \"wells\".\"id\" = \"well_content_sources\".\"source_well_id\"\n    left join \"well_contents\" on \"wells\".\"id\" = \"well_contents\".\"well_id\"\n    group by \"plates\".\"id\", \"plate_types\".\"label\"",
+      "with": null,
+      "withNoData": null,
+      "using": null,
+      "tablespace": null,
+      "materialized": false,
+      "name": "view_plates_with_well_counts",
+      "entityType": "views",
+      "schema": "public"
+    }
+  ],
+  "renames": []
+}

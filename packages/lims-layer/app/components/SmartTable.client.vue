@@ -30,6 +30,12 @@ const props = defineProps({
     showColumnFilters: { type: Boolean, default: false },
     selectionDisabled: { type: Boolean, default: false },
     emptyMessage: { type: String, default: 'No data' },
+    /** Opt into server-side pagination/sorting/filtering. When true, only one page of
+     *  rows is fetched at a time (via where/order/limit/offset) and the global search
+     *  bar + column filters are pushed to the server. Requires the record type's list
+     *  endpoint to support the `flat` query param (SQL view path). Default false keeps
+     *  the original client-side behavior. */
+    lazy: { type: Boolean, default: false },
     invalidRecords: { type: Object },
     /** Override the localStorage key used to persist column settings. Defaults
      *  to the current route path. Set this when multiple SmartTable instances
@@ -140,14 +146,16 @@ const loading = ref(false)
 const showSettings = ref(false)
 const filteringInProgress = ref(false)
 const globalFilterFields: Ref<GlobalFilterField[]> = ref([])
-const globalSearchTerm = ref(null)
+const globalSearchTerm = ref<string | null>(null)
 const columnFilterInputs = ref({})
 const lastColumnFilterInputKey = ref<string | null>(null)
 const displayColumnFilters = ref(false)
 const filters = ref({ global: { value: null, matchMode: FilterMatchMode.CONTAINS } })
 
 const filteredRecordCount = ref<number | null>(null)
-const displayedCount = computed(() => filteredRecordCount.value ?? records.value?.length ?? 0)
+const displayedCount = computed(() => props.lazy
+    ? totalRecords.value
+    : (filteredRecordCount.value ?? records.value?.length ?? 0))
 const selectionCount = computed(() =>
     props.selectionMode == 'multiple'
         ? `${selectedRecords.value?.length || 0} of ${displayedCount.value} selected`
@@ -188,6 +196,226 @@ const loadTableData = async () => {
     }
 }
 
+// ── Lazy (server-side) loading ───────────────────────────────────────────────
+// Only active when props.lazy is true. Fetches a single page at a time and pushes
+// the global search + column filters to the server as a JSON Logic `where`.
+const totalRecords = ref(0)
+const lazyFirst = ref(0)
+const lazyRows = ref(0)
+const lazySortField = ref<string | undefined>(undefined)
+const lazySortOrder = ref(1)
+// Signature of the where clause used for the last count() — lets us skip the (expensive)
+// recount on pure page/sort changes and only recount when the filter actually changes.
+let lastCountWhere: string | undefined
+
+/** A column can be pushed to the server as a flat filterable/sortable field only when it
+ *  isn't a relation path (dot), a format function, or a custom element render — those all
+ *  filter/sort on a value the server can't reproduce from a single column. */
+function isServerPushable(c: any): boolean {
+    const field = c.path ?? c.key
+    return !_.isFunction(c.format) && !c.element && !_.includes(field, '.')
+}
+/** Columns eligible to participate in the global search. */
+function isGlobalSearchColumn(c: any): boolean {
+    return c.key !== 'id' && c.display !== false && c.searchable !== false
+}
+/** Flat fields pushed to the server for the global search. */
+const serverFilterFields = computed<string[]>(() =>
+    _.uniq(_.compact(_.map(sortedColumnDefs.value, (c) =>
+        (isGlobalSearchColumn(c) && isServerPushable(c)) ? (c.path ?? c.key) : null)))
+)
+/** Search-eligible columns that CAN'T be pushed to the server (relation/formatted/element). */
+const lazySearchExclusions = computed<any[]>(() =>
+    props.lazy ? _.filter(sortedColumnDefs.value, (c) => isGlobalSearchColumn(c) && !isServerPushable(c)) : []
+)
+/** In lazy mode the global search only covers server-pushable columns, so hide it entirely
+ *  when any search column is excluded — a partial search returns confusing results. */
+const showGlobalSearch = computed(() => !props.lazy || lazySearchExclusions.value.length === 0)
+
+/** Recursively collects dotted (relation-path) `{"var": "a.b"}` field names from a JSON
+ *  Logic tree, e.g. the `props.where` prop. */
+function collectDottedVars(logic: any): string[] {
+    const found = new Set<string>()
+    const walk = (node: any) => {
+        if (_.isArray(node)) { _.forEach(node, walk); return }
+        if (!_.isPlainObject(node)) return
+        if (_.isString((node as any).var) && _.includes((node as any).var, '.')) found.add((node as any).var)
+        _.forEach(node, walk)
+    }
+    walk(logic)
+    return [...found]
+}
+/** In lazy mode, `props.where` is pushed through the flat SQL view path (jsonLogicToSql),
+ *  which resolves a var to a single column on the view and can't traverse relations — a
+ *  dotted var there fails to translate. This works fine when lazy=false: the relational
+ *  query builder (jsonLogicToFilter) natively supports dotted relation paths. */
+const lazyWhereRelationPaths = computed<string[]>(() =>
+    props.lazy ? collectDottedVars(normalizeWhere(props.where)) : [])
+
+/** props.where may be undefined, a single-element array (queryParamsToJsonLogic), or an object. */
+function normalizeWhere(where: any): any {
+    if (_.isNil(where)) return undefined
+    if (_.isArray(where)) return where.length === 1 ? where[0] : { and: where }
+    return where
+}
+
+/** Single source of truth mapping a PrimeVue `FilterMatchMode` to the JSON Logic clause the
+ *  server understands (see jsonLogicToSql). Used to translate row-mode column filters for
+ *  lazy loading; client-side filtering is done by PrimeVue itself. Match modes absent here
+ *  (e.g. ENDS_WITH, BETWEEN, DATE_*) have no server mapping yet and are ignored in lazy mode
+ *  — add them alongside their server operator when advanced (Tier 2) filtering lands. */
+const MATCH_MODE_TO_JSONLOGIC: Record<string, (field: string, value: any) => any> = {
+    [FilterMatchMode.CONTAINS]:                 (f, v) => ({ contains: [{ var: f }, String(v)] }),
+    [FilterMatchMode.STARTS_WITH]:              (f, v) => ({ startsWith: [{ var: f }, String(v)] }),
+    [FilterMatchMode.NOT_CONTAINS]:             (f, v) => ({ '!': { contains: [{ var: f }, String(v)] } }),
+    [FilterMatchMode.EQUALS]:                   (f, v) => ({ '==': [{ var: f }, v] }),
+    [FilterMatchMode.NOT_EQUALS]:               (f, v) => ({ '!=': [{ var: f }, v] }),
+    [FilterMatchMode.LESS_THAN]:                (f, v) => ({ '<': [{ var: f }, v] }),
+    [FilterMatchMode.LESS_THAN_OR_EQUAL_TO]:    (f, v) => ({ '<=': [{ var: f }, v] }),
+    [FilterMatchMode.GREATER_THAN]:             (f, v) => ({ '>': [{ var: f }, v] }),
+    [FilterMatchMode.GREATER_THAN_OR_EQUAL_TO]: (f, v) => ({ '>=': [{ var: f }, v] }),
+}
+
+/** Translate one column's row-mode filter model (`{ value, matchMode }`) into a JSON Logic
+ *  clause for lazy (server-side) filtering. Returns null when the filter is empty or its
+ *  match mode has no server mapping (PrimeVue still applies it client-side). */
+function columnFilterToJsonLogic(field: string, model: any): any {
+    const value = _.get(model, 'value')
+    if (value === null || value === undefined || value === '') return null
+    const matchMode = _.get(model, 'matchMode') || FilterMatchMode.CONTAINS
+    const build = MATCH_MODE_TO_JSONLOGIC[matchMode]
+    if (!build) {
+        if (import.meta.dev) console.warn(`[SmartTable] no server-side mapping for filter match mode "${matchMode}" on "${field}"; this column filter is ignored in lazy mode.`)
+        return null
+    }
+    return build(field, value)
+}
+
+/** Combine page-level where + global search + column filters into one JSON Logic clause. */
+function buildLazyWhere(): any {
+    const conditions: any[] = []
+
+    const base = normalizeWhere(props.where)
+    if (base) conditions.push(base)
+
+    const term = _.isString(globalSearchTerm.value) ? globalSearchTerm.value.trim() : ''
+    if (term) {
+        const ors = _.map(serverFilterFields.value, (f) => ({ contains: [{ var: f }, term] }))
+        if (ors.length) conditions.push(ors.length === 1 ? ors[0] : { or: ors })
+    }
+
+    for (const [key, model] of _.entries(filters.value)) {
+        if (key === 'global' || _.includes(key, '.')) continue
+        const clause = columnFilterToJsonLogic(key, model)
+        if (clause) conditions.push(clause)
+    }
+
+    if (conditions.length === 0) return undefined
+    return conditions.length === 1 ? conditions[0] : { and: conditions }
+}
+
+const loadLazyData = async () => {
+    // Prevent the fetch entirely rather than send an unresolvable where: the server would
+    // either drop the clause (returning too many rows) or 400 on /count — both confusing.
+    // The dev-time console.warn (see watcher below) names the offending field(s).
+    if (lazyWhereRelationPaths.value.length) {
+        records.value = []
+        totalRecords.value = 0
+        filteringInProgress.value = false
+        toast.add({
+            severity: 'error',
+            summary: 'Failed to load data',
+            detail: `This table's "where" filter uses relation field(s) not supported in lazy mode: ${lazyWhereRelationPaths.value.join(', ')}.`,
+            life: 5000,
+        })
+        return
+    }
+    loading.value = true
+    try {
+        const where = buildLazyWhere()
+        const order = lazySortField.value
+            ? { [lazySortField.value]: lazySortOrder.value === -1 ? 'desc' : 'asc' }
+            : (props.sortBy && props.sortBy.length ? { [props.sortBy[0]!]: 'asc' } : undefined)
+
+        const page = await RecordService.getRecordsPage(apiBaseUrl.value, {
+            where,
+            order,
+            limit: lazyRows.value || rowsPerPage.value,
+            offset: lazyFirst.value,
+            flat: true,
+        })
+        records.value = page ?? []
+        refreshFormattedValues()
+
+        const whereSig = JSON.stringify(where ?? null)
+        if (whereSig !== lastCountWhere) {
+            totalRecords.value = await RecordService.getCount(apiBaseUrl.value, where)
+            lastCountWhere = whereSig
+        }
+        // NB: client settings are intentionally NOT re-read here. Re-assigning
+        // clientSettings recomputes sortedColumnDefs, whose watcher rebuilds `filters`
+        // (resetting all column-filter values) — which would wipe the filter the user
+        // just typed. Settings are loaded once on mount instead.
+    } catch (err: any) {
+        toast.add({ severity: 'error', summary: 'Failed to load data', detail: err?.message ?? String(err), life: 5000 })
+    } finally {
+        loading.value = false
+        // In lazy mode the reload *is* the filtering, so the search/filter spinner
+        // (filteringInProgress, set by debounceSearch) is cleared here. The DataTable's
+        // @filter event that normally resets it doesn't fire for the global search.
+        filteringInProgress.value = false
+    }
+}
+const scheduleLazyLoad = _.debounce(() => { loadLazyData() }, 250)
+/** Force a reload that also refreshes the count (used after add/edit/delete mutations). */
+function reloadLazyWithCount() {
+    lastCountWhere = undefined
+    loadLazyData()
+}
+
+/** DataTable props applied only in lazy mode — kept out of the client-side path entirely. */
+const lazyBindings = computed(() => props.lazy
+    ? {
+        lazy: true,
+        totalRecords: totalRecords.value,
+        first: lazyFirst.value,
+        sortField: lazySortField.value,
+        sortOrder: lazySortOrder.value,
+    }
+    : {})
+
+function onPage(event: any) {
+    if (!props.lazy) return
+    lazyFirst.value = event.first
+    lazyRows.value = event.rows
+    scheduleLazyLoad()
+}
+function onSort(event: any) {
+    if (!props.lazy) return
+    lazySortField.value = event.sortField || undefined
+    lazySortOrder.value = event.sortOrder || 1
+    lazyFirst.value = 0
+    scheduleLazyLoad()
+}
+
+// Reload (from page 1) only when the effective where actually changes — this ignores
+// the initial column-filter setup (all null) and other no-op filter events, avoiding a
+// redundant second fetch on mount. lastCountWhere holds the currently-loaded where sig.
+function applyFilterChange() {
+    if (!props.lazy) return
+    const sig = JSON.stringify(buildLazyWhere() ?? null)
+    if (sig === lastCountWhere) {
+        // No effective change (e.g. typed then cleared back) — no reload will run,
+        // so clear the search spinner here instead of leaving it spinning.
+        filteringInProgress.value = false
+        return
+    }
+    lazyFirst.value = 0
+    scheduleLazyLoad()
+}
+watch(globalSearchTerm, applyFilterChange)
+watch(filters, applyFilterChange, { deep: true })
+
 // ── Frozen rows ────────────────────────────────────────────────────────────
 const frozenRecords = computed(() =>
     frozenRecordIds.value
@@ -202,7 +430,7 @@ const nonFrozenRecords = computed(() =>
 
 // ── Watchers ───────────────────────────────────────────────────────────────
 watch(isLoginModalVisible, (newValue, oldValue) => {
-    if (oldValue == true && newValue == false) loadTableData()
+    if (oldValue == true && newValue == false) props.lazy ? loadLazyData() : loadTableData()
 })
 
 watch(() => props.invalidRecords, (newValue) => {
@@ -210,8 +438,23 @@ watch(() => props.invalidRecords, (newValue) => {
 }, { immediate: true })
 
 watch(() => props.where, (newValue, oldValue) => {
-    if (!_.isEqual(newValue, oldValue)) loadTableData()
+    if (_.isEqual(newValue, oldValue)) return
+    if (props.lazy) applyFilterChange()
+    else loadTableData()
 })
+
+if (import.meta.dev) {
+    watch(lazyWhereRelationPaths, (paths) => {
+        if (paths.length) {
+            console.warn(
+                `[SmartTable] the "where" prop uses relation field(s) not supported in lazy mode `
+                + `(the server-side query has no relation traversal): ${paths.join(', ')}. `
+                + `These rows are blocked from loading — use a flat field in "where", or set lazy=false `
+                + `for tables that need relation filters.`
+            )
+        }
+    }, { immediate: true })
+}
 
 // Keep visibleColumns in sync when the available options change (e.g. zodSchema prop swapped)
 watch(visibleColumnsOptions, (newOptions) => {
@@ -247,7 +490,7 @@ watch(sortedColumnDefs, (newValue, oldValue) => {
             const filtersEntries = newValue.reduce((acc, colDef) => {
                 const key = colDef.path || colDef.key
                 if (colDef.searchable !== false) {
-                    _.set(acc, [key], { value: null, matchMode: FilterMatchMode.CONTAINS })
+                    _.set(acc, [key], { value: null, matchMode: defaultColumnMatchMode(colDef) })
                 }
                 return acc
             }, {})
@@ -260,6 +503,24 @@ watch(sortedColumnDefs, (newValue, oldValue) => {
 onMounted(async () => {
     if (!loggedIn.value) {
         showLoginModal()
+    } else if (props.lazy) {
+        clientSettings.value = JSON.parse(localStorage.getItem(localStorageKey.value) || '{}')
+        visibleColumns.value = _.get(clientSettings.value, 'columnVisibility', visibleColumnsOptions.value)
+        if (import.meta.dev) {
+            const excluded = _.filter(sortedColumnDefs.value, (c) => c.key !== 'id' && c.display !== false && !isServerPushable(c))
+            if (excluded.length) {
+                console.warn(
+                    `[SmartTable] lazy mode can only push flat view/table columns to the server. `
+                    + `These columns use a relation path, format function, or custom element and are therefore `
+                    + `excluded from server-side sorting and filtering`
+                    + `${lazySearchExclusions.value.length ? ' (and the global search is hidden)' : ''}: `
+                    + `${_.map(excluded, (c) => c.key).join(', ')}. Point them at a flat column to make them searchable/sortable.`
+                )
+            }
+        }
+        lazyRows.value = rowsPerPage.value
+        lazySortField.value = props.sortBy?.[0]
+        await loadLazyData()
     } else {
         await loadTableData()
     }
@@ -345,6 +606,7 @@ function didClickDeleteSelectedRecords() {
         records.value = _.reject(records.value, (x) => deletedRecordIds.includes(x.id))
         selectedRecords.value = _.reject(selectedRecords.value, (x) => deletedRecordIds.includes(x.id))
         if (!_.isEmpty(result)) emit('did-delete-multiple-records', result)
+        if (props.lazy) reloadLazyWithCount()
     }).catch(error => {
         toast.add({ severity: 'error', summary: 'Error', detail: error.data?.statusMessage, life: 3000 })
     })
@@ -368,6 +630,49 @@ function filteringComplete(event?: any) {
         const input = _.get(columnFilterInputs.value, lastColumnFilterInputKey.value)
         if (input) input.$el.focus()
     }
+}
+
+/** The match mode a column filters by: explicit `filterMatchMode`, else EQUALS for select
+ *  columns (an exact-value dropdown), else CONTAINS (substring text search). */
+function defaultColumnMatchMode(columnDef: SortedColumnDefinition): string {
+    if (columnDef.filterMatchMode) return columnDef.filterMatchMode
+    if (columnDef.filterType === 'select') return FilterMatchMode.EQUALS
+    return FilterMatchMode.CONTAINS
+}
+
+/** Distinct field values → select options, for client-side select columns that don't
+ *  declare explicit `filterOptions`. Empty in lazy mode: only one page is loaded, so the
+ *  distinct set would be incomplete — those columns must supply explicit `filterOptions`. */
+const derivedFilterOptions = computed<Record<string, { label: string, value: any }[]>>(() => {
+    if (props.lazy) return {}
+    const out: Record<string, { label: string, value: any }[]> = {}
+    for (const col of sortedColumnDefs.value) {
+        if (col.filterType !== 'select' || col.filterOptions) continue
+        const field = col.path ?? col.key
+        const values = _.uniq(_.flatMap(records.value ?? [], (r) => {
+            const v = _.get(r, field)
+            return _.isArray(v) ? v : [v]
+        }))
+        const clean = _.sortBy(_.reject(values, (v) => v === null || v === undefined || v === ''))
+        _.set(out, [col.key], _.map(clean, (v) => ({ label: String(v), value: v })))
+    }
+    return out
+})
+
+/** Resolved dropdown options for a select-filter column: explicit (normalized to
+ *  `{ label, value }`) if given, otherwise the values auto-derived from the loaded data. */
+function filterSelectOptions(columnDef: SortedColumnDefinition): { label: string, value: any }[] {
+    if (columnDef.filterOptions) {
+        return _.map(columnDef.filterOptions, (o) => _.isObject(o) ? o : { label: String(o), value: o })
+    }
+    return _.get(derivedFilterOptions.value, columnDef.key, [])
+}
+
+/** Apply a select-filter change. Clears the last-typed-input key first so filteringComplete
+ *  doesn't yank focus back to a text input in another column after a dropdown selection. */
+function onColumnFilterSelectChange(filterCallback: Function) {
+    lastColumnFilterInputKey.value = null
+    filterCallback()
 }
 
 function columnHeader(sortedColumnDef: SortedColumnDefinition) {
@@ -468,6 +773,10 @@ const exportOptions = [
 
 // ── Exposed API (used by crudTable composable) ─────────────────────────────
 const addOrRefreshRecordIds = async (recordIds: string[]) => {
+    if (props.lazy) {
+        reloadLazyWithCount()
+        return
+    }
     let currentRecords
     if (recordIds.length == 1) {
         const record = await RecordService.getRecord(apiBaseUrl.value, recordIds[0]!, props.withClause)
@@ -492,6 +801,10 @@ const addOrRefreshRecordIds = async (recordIds: string[]) => {
 }
 
 const removeRecordId = (recordId: string) => {
+    if (props.lazy) {
+        reloadLazyWithCount()
+        return
+    }
     records.value = _.reject(records.value, { id: recordId })
 }
 
@@ -503,6 +816,9 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
         ref="dt"
         :id="dtId"
         :key="dtKey"
+        v-bind="lazyBindings"
+        @page="onPage"
+        @sort="onSort"
         v-model:selection="selectedRecords"
         :value="nonFrozenRecords"
         :frozenValue="frozenRecords"
@@ -559,7 +875,7 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                         <ProgressSpinner :class="`max-w-12 max-h-12 ${loading || filteringInProgress ? 'visible' : 'invisible'}`" strokeWidth="4" />
                     </template>
                 </Toolbar>
-                <IconField>
+                <IconField v-if="showGlobalSearch">
                     <InputIcon>
                         <i class="pi pi-search" />
                     </InputIcon>
@@ -599,33 +915,33 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
         </Column>
         <template v-for="columnDef of filterByColumnVisibility(sortedColumnDefs)">
             <template v-if="columnDef.display !== false">
-                <Column v-if="columnDef.format == 'date-time'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="_.get(columnDef, 'sortable', true)">
-                    <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                <Column v-if="columnDef.format == 'date-time'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                    <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         {{ formatDateTime(slotProps.data[columnDef.key]) }}
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.format == 'date'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="_.get(columnDef, 'sortable', true)">
-                    <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                <Column v-else-if="columnDef.format == 'date'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                    <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         {{ formatDate(slotProps.data[columnDef.key]) }}
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.type == 'boolean' || _.includes(columnDef.type, 'boolean')" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="_.get(columnDef, 'sortable', true)">
-                    <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                <Column v-else-if="columnDef.type == 'boolean' || _.includes(columnDef.type, 'boolean')" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                    <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         {{ slotProps.data[columnDef.key] ? '✓' : '' }}
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.format == 'hyperlink'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="_.get(columnDef, 'sortable', true)">
-                    <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                <Column v-else-if="columnDef.format == 'hyperlink'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                    <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         <a class="text-blue-600 underline visited:text-purple-600 hover:text-blue-800"
@@ -635,9 +951,9 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                         </a>
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.type == 'element'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass" :showFilterMenu="false" :showClearButton="false" :sortable="_.get(columnDef, 'sortable', true)">
-                    <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                <Column v-else-if="columnDef.type == 'element'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                    <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template #body="slotProps">
                         <span v-if="_.isFunction(columnDef.element)" v-html="columnDef.element(slotProps.data)" v-on:click="columnDef.elementClick ? columnDef.elementClick(slotProps.data) : null"></span>
@@ -645,9 +961,9 @@ defineExpose({ addOrRefreshRecordIds, removeRecordId, selectedRecords, records }
                         <span v-else>err</span>
                     </template>
                 </Column>
-                <Column v-else-if="columnDef.key != 'id'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="false" :showClearButton="false" :sortable="_.get(columnDef, 'sortable', true)">
-                    <template v-if="columnDef.path && _.has(filters, columnDef.path)" #filter="{ filterModel, filterCallback }">
-                        <InputText class="w-full m-0 p-1" v-model="filterModel.value" type="text" @input="debounceSearch(filterCallback, columnDef.key)()" :ref="el => _.set(columnFilterInputs, columnDef.key, el)" />
+                <Column v-else-if="columnDef.key != 'id'" :field="columnDef.path" :header="columnHeader(columnDef)" :reorderableColumn="showSettings" :bodyClass="columnDef.bodyClass || '!w-max !max-w-max !min-w-max'" :showFilterMenu="columnDef.advancedFilter === true" :showClearButton="false" :dataType="columnDef.dataType" :filterMatchModeOptions="columnDef.filterMatchModeOptions" :sortable="props.lazy && !isServerPushable(columnDef) ? false : _.get(columnDef, 'sortable', true)">
+                    <template v-if="columnDef.path && _.has(filters, columnDef.path) && (!props.lazy || isServerPushable(columnDef))" #filter="{ filterModel, filterCallback }">
+                        <SmartTableColumnFilter :column-def="columnDef" :filter-model="filterModel" :filter-callback="filterCallback" :options="filterSelectOptions(columnDef)" :debounce-search="debounceSearch" :register-input="(el: any) => _.set(columnFilterInputs, columnDef.key, el)" :on-select-change="() => onColumnFilterSelectChange(filterCallback)" />
                     </template>
                     <template v-if="columnDef.path || columnDef.truncatable" #body="slotProps">
                         <template v-if="columnDef.truncatable">
