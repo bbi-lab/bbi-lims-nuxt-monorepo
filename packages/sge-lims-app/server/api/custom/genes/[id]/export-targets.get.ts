@@ -3,7 +3,8 @@ import { genes } from 'lims-layer/shared/db/schema/gene'
 
 interface ExportTargetsRow {
   target: string
-  chom: string
+  transcript_id: string | null
+  chrom: string
   editstart: number | null
   editstop: number | null
   ampstart: number | null
@@ -19,8 +20,11 @@ export default defineEventHandler(async (event) => {
 
   const selectedGene = await db.query.genes.findFirst({
     where: { id },
-    with: { regions: { with: { targets: true } } },
+    with: { regions: { with: { targets: true } }, ensemblRefseqId: true },
   })
+
+  // MANE Select Ensembl transcript for the gene, without the version suffix
+  const transcriptId = selectedGene?.ensemblRefseqId?.maneSelectEnsemblId?.replace(/\.\d+$/, '') || null
 
   const rows: ExportTargetsRow[] = []
   if (selectedGene && _.isArray(selectedGene.regions)) {
@@ -34,7 +38,8 @@ export default defineEventHandler(async (event) => {
           })
           rows.push({
             target: target.name,
-            chom: `chr${selectedGene?.chromosome}`,
+            transcript_id: transcriptId,
+            chrom: `chr${selectedGene?.chromosome}`,
             editstart: target.editStart,
             editstop: target.editStop,
             ampstart: target.ampStart,

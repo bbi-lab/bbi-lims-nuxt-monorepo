@@ -17,6 +17,8 @@ const props = defineProps({
     columnDefs: { type: Object as () => ColumnDefinitions },
     withClause: { type: Object },
     sortBy: { type: Array as PropType<Array<string>> },
+    // Per-key sort direction for `sortBy`, e.g. ['desc']. Defaults to ascending for every key.
+    sortByOrder: { type: Array as PropType<Array<'asc' | 'desc'>> },
     where: { type: Object },
     canAdd: { type: Boolean, default: true },
     canEdit: { type: Boolean, default: true },
@@ -178,7 +180,7 @@ const loadTableData = async () => {
     try {
         records.value = await RecordService.getRecords(apiBaseUrl.value, props.withClause, props.where)
         refreshFormattedValues()
-        if (props.sortBy) records.value = _.sortBy(records.value, props.sortBy)
+        if (props.sortBy) records.value = _.orderBy(records.value, props.sortBy, props.sortByOrder)
         clientSettings.value = JSON.parse(localStorage.getItem(localStorageKey.value) || '{}')
         visibleColumns.value = _.get(clientSettings.value, 'columnVisibility', visibleColumnsOptions.value)
     } catch (err: any) {

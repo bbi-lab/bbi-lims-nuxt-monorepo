@@ -178,6 +178,7 @@ const fieldConfigs: FormFieldConfigs = {
                 :where="whereClauses"
                 :can-edit-multiple="true"
                 :can-delete="false"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"

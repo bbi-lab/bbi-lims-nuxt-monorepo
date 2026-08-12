@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { VALID_WELL_COLORS } from "../../shared/lib/plate-diagram"
+import { leastUsedWellColor } from "../../shared/lib/plate-diagram"
 import { utils as XlsxUtils, writeFileXLSX } from 'xlsx'
 
 type PlateWithWellContents<TWellable = Record<string, any>> = Plate & {
@@ -130,11 +130,7 @@ export const usePlateLayout = <TWellable = Record<string, any>>() => {
     const nextColorToUse = computed(() => {
         const colorCounts = _.countBy(_.values(_.filter(wellSpecs.value, 'color')), 'color')
         const syncedColorCounts = _.countBy(_.values(_.filter(toValue(wellContentsDisplayConfig.value?.syncedPlateWellSpecs), 'color')), 'color')
-        const unusedColors = _.difference(VALID_WELL_COLORS, _.keys(colorCounts), _.keys(syncedColorCounts))
-        unusedColors.forEach((color) => {
-            colorCounts[color] = 0
-        })
-        return _.minBy(_.keys(colorCounts), (color) => colorCounts[color])
+        return leastUsedWellColor(colorCounts, syncedColorCounts)
     })
 
     const updateWellSpecs = () => {

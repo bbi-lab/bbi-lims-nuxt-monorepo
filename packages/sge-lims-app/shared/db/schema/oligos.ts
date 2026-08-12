@@ -7,6 +7,7 @@ import { amplificationPrimers, homologyArmPrimers, homologyArmPuc19Primers, line
 import { users } from 'lims-layer/server/db/schema/user'
 import { lots } from './lots'
 import { haPuc19Plasmids } from './plasmid'
+import { recordStatusEnum } from './status'
 
 export const sgRnaOligos = pgTable('sg_rna_oligos', {
     id: uuid('id').notNull().primaryKey().defaultRandom(),
@@ -98,6 +99,7 @@ export const snvLibAmpProducts = pgTable('snv_lib_amp_products', {
     quant: doublePrecision('quant'),
     startPosition: integer('start_position'),
     stopPosition: integer('stop_position'),
+    status: recordStatusEnum('status'),
     notes: text('notes'),
 })
 
@@ -113,6 +115,7 @@ export const snvLibLinProducts = pgTable('snv_lib_lin_products', {
     gelExtractedOn: timestamp('gel_extracted_on'),
     gelExtractedById: uuid('gel_extracted_by_id').references(() => users.id),
     quant: doublePrecision('quant'),
+    status: recordStatusEnum('status'),
     notes: text('notes'),
 })
 
@@ -135,6 +138,7 @@ export const snvLibGibsonProducts = pgTable('snv_lib_gibson_products', {
     passedQc: boolean('passed_qc').default(false),
     benchlingLink: text('benchling_link'),
     totalReactionVolume: doublePrecision('total_reaction_volume').default(10),
+    status: recordStatusEnum('status'),
     notes: text('notes'),
 }, (table) => [
   check("benchling_link_check", sql`${table.benchlingLink} ~* '^https?://.+$'`),
@@ -147,6 +151,7 @@ export const snvLibGoldenGateProducts = pgTable('snv_lib_golden_gate_products', 
     snvLibAmpProductId: uuid('snv_lib_amp_product_id').references(() => snvLibAmpProducts.id).notNull().unique(),
     clonalHaId: uuid('clonal_ha_id').references(() => clonalHas.id).notNull().unique(),
     goldenGateProductVectorAmount: doublePrecision('golden_gate_product_vector_amount').default(50),
+    status: recordStatusEnum('status'),
     notes: text('notes'),
 })
 

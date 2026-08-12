@@ -202,13 +202,13 @@ const insertReagentsSchema = createSelectSchema(reagents).omit({id: true})
 const updateReagentsSchema = insertReagentsSchema
 
 const selectSgRnaPlasmidsSchema = createSelectSchema(sgRnaPlasmids)
-const insertSgRnaPlasmidsSchema = createSelectSchema(sgRnaPlasmids, {externalLink: z.string().regex(new RegExp(/^https?:\/\/[^\s\/$.?#].[^\s]*$/i)).nullable()}).omit({id: true}).merge(
+const insertSgRnaPlasmidsSchema = createSelectSchema(sgRnaPlasmids, {benchlingLink: z.string().regex(new RegExp(/^https?:\/\/[^\s\/$.?#].[^\s]*$/i)).nullable()}).omit({id: true}).merge(
     z.object({ sgRnaPlasmidTargets: z.object({ targetId: z.string() }).array() })
 )
 const updateSgRnaPlasmidsSchema = insertSgRnaPlasmidsSchema
 
 const selectSnvLibPlasmidsSchema = createSelectSchema(snvLibPlasmids)
-const insertSnvLibPlasmidsSchema = createSelectSchema(snvLibPlasmids, {externalLink: z.string().regex(new RegExp(/^https?:\/\/[^\s\/$.?#].[^\s]*$/i)).nullable()}).omit({id: true})
+const insertSnvLibPlasmidsSchema = createSelectSchema(snvLibPlasmids, {benchlingLink: z.string().regex(new RegExp(/^https?:\/\/[^\s\/$.?#].[^\s]*$/i)).nullable(), bacterialPlateImagesLink: z.string().regex(new RegExp(/^https?:\/\/[^\s\/$.?#].[^\s]*$/i)).nullable()}).omit({id: true})
 const updateSnvLibPlasmidsSchema = insertSnvLibPlasmidsSchema
 
 const selectSgRnaOligosSchema = createSelectSchema(sgRnaOligos)

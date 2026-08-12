@@ -1,8 +1,7 @@
-import { pgTable, uuid, varchar, integer, text, check } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, varchar, integer } from 'drizzle-orm/pg-core'
 import _ from 'lodash'
 import {projects} from './project'
 import {regions} from './region'
-import { sql } from 'drizzle-orm/sql'
 
 export const targets = pgTable('targets', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),
@@ -16,7 +15,4 @@ export const targets = pgTable('targets', {
   cigar: varchar('cigar', {length: 50}),
   skipPositions: integer('skip_positions').array(),
   fixedEdits: varchar('fixed_edits', { length: 255 }).array(),
-  sequence: text('sequence'),
-}, (table) => [
-  check("sequence_check", sql`${table.sequence} ~* '^[actg]+$'`),
-])
+})

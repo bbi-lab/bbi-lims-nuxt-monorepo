@@ -345,6 +345,7 @@ const externalSamplesColumnDefs: ColumnDefinitions = {
                 :invalidRecords="invalidRecords"
                 :where="{'==': [{'var': 'sequencingRunId'}, sequencingRun.id]}"
                 v-model:frozenRecordIds="frozenRecordIds"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 @clicked-record-edit="didClickRecordEdit"
                 @clicked-multiple-record-edit="didClickMultipleRecordEdit"
                 @clicked-record-delete="didDeleteRecord"
@@ -438,6 +439,7 @@ const externalSamplesColumnDefs: ColumnDefinitions = {
                     :can-edit="false"
                     :can-edit-multiple="false"
                     :can-delete="false"
+                    :rows-per-page-options="[10, 25, 50, 100]"
                 >
                     <template #header-buttons>
                         <span>

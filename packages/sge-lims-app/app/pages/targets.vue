@@ -128,7 +128,6 @@ const columnDefs: ColumnDefinitions = {
     preseq1PrimerTargets: { display: false },
     sgRnaPlasmidTargets: { display: false },
     snvLibPlasmids: { display: false },
-    sequence: { bodyClass: 'break-all min-w-64' },
 }
 
 const fieldConfigs: FormFieldConfigs = {

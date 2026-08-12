@@ -2,6 +2,11 @@
 import _ from 'lodash'
 import { schemas } from '#shared/db/zod/zodSchemas'
 
+// Number of sample columns per printed page of the calcs grid
+const PRINT_CHUNK_SIZE = 8
+
+const { isPrinting, printView } = usePrintView()
+
 const showExperimentValuesForm = ref(false)
 const experiment = ref<{ name: string; pcrType: string; pcr2ExperimentMasterMixVolumes?: any; plate?: any } | undefined>()
 
@@ -214,22 +219,34 @@ const fieldConfigs: FormFieldConfigs = {
 
 const orderedCalcs = computed(() => _.orderBy(calcsComputed.value, ['sampleName'], ['asc']))
 
+// One grid on screen; split into page-width chunks when printing
+const calcChunks = computed(() => isPrinting.value ? _.chunk(orderedCalcs.value, PRINT_CHUNK_SIZE) : [orderedCalcs.value])
+
 const dnaVolume = computed(() => {
     return experiment.value?.pcrType === 'rna-preseq-2' ? 2.5 : experiment.value?.pcrType === 'dna-preseq-2' ? 2.0 : null
 })
 </script>
 <template>
-    <h3 class="p-5">
-        {{ experiment?.name }}
-    </h3>
-    <hr/>
+    <div class="flex flex-row items-center gap-5 p-5">
+        <h3 class="my-0">
+            {{ experiment?.name }}
+        </h3>
+        <Button
+            class="p-button-sm no-print"
+            label="Print view"
+            icon="pi pi-print"
+            severity="secondary"
+            @click="printView"
+        />
+    </div>
+    <hr class="no-print" />
 
-    <div v-if="experiment" class="flex flex-row gap-4 m-5 space-x-4">
+    <div v-if="experiment" class="flex flex-row gap-4 m-5 space-x-4 print-avoid-break">
         <div>
             <span>
                 <span class="text-xl font-bold mr-5">Master Mix Volumes</span>
                 <Button
-                    class="p-button-sm"
+                    class="p-button-sm no-print"
                     icon="pi pi-pencil"
                     v-tooltip="'Edit'"
                     @click="showExperimentValuesForm = true"
@@ -275,7 +292,7 @@ const dnaVolume = computed(() => {
             <span>
                 <span class="text-xl font-bold mr-5">{{ experiment.pcrType == 'dna-preseq-2' ? 'Targets' : 'Samples' }}</span>
                 <Button
-                    class="p-button-sm"
+                    class="p-button-sm no-print"
                     severity="info"
                     v-tooltip="'Plate Layout'"
                     @click="router.push(`/plate-layout/${experiment.plate?.plateType}/${experiment.plate?.id}`)"
@@ -302,41 +319,46 @@ const dnaVolume = computed(() => {
         <span class="m-5 text-xl font-bold mb-5">Calculated volumes</span>
         <span class="italic">(Note: Values shown here are rounded to one decimal place. Underlying calculations use precise values.)</span>
     </div>
-    <div v-if="experiment && calcsComputed.length" class="m-5 overflow-x-auto">
+    <!-- print:mb-0 on the last block, so its bottom margin can't spill onto a blank page -->
+    <div v-if="experiment && calcsComputed.length" class="m-5 overflow-x-auto print:mb-0">
         <div
-            class="calcs-grid mb-5 border bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-600 rounded text-sm grid"
-            :style="`width: max-content; grid-template-columns: minmax(180px, max-content) repeat(${orderedCalcs.length}, minmax(120px, max-content))`"
+            v-for="(chunk, chunkIndex) in calcChunks"
+            :key="chunkIndex"
+            class="calcs-grid mb-5 print:last:mb-0 border bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-600 rounded text-sm grid
+                w-max grid-cols-[minmax(180px,max-content)_repeat(var(--calc-columns),minmax(120px,max-content))]
+                print:w-full print:text-[8pt] print:break-inside-avoid print:grid-cols-[minmax(0,2fr)_repeat(var(--calc-columns),minmax(0,1fr))]"
+            :style="{ '--calc-columns': chunk.length }"
         >
             <!-- Sample name row -->
             <div class="font-semibold">{{ experiment.pcrType == 'dna-preseq-2' ? 'Target' : 'Sample' }}</div>
-            <div v-for="calc in orderedCalcs" class="font-semibold">{{ calc.sampleName }}</div>
+            <div v-for="calc in chunk" class="font-semibold">{{ calc.sampleName }}</div>
             <!-- Number of wells row -->
             <div  class="font-semibold italic">Number of Wells (*1.125)</div>
-            <div v-for="calc in orderedCalcs" class="italic">x{{ calc.multimixMultiplier }}</div>
+            <div v-for="calc in chunk" class="italic">x{{ calc.multimixMultiplier }}</div>
             <!-- 2X Kapa row -->
             <div class="font-semibold border-t-2">2X Kapa Hifi Ready Mix (μL)</div>
-            <div v-for="calc in orderedCalcs" class="border-t-2">{{ calc.twoXKapaHifiReadyMix }}</div>
+            <div v-for="calc in chunk" class="border-t-2">{{ calc.twoXKapaHifiReadyMix }}</div>
             <!-- Forward primer row -->
             <div class="font-semibold">10uM Forward Primer (μL)</div>
-            <div v-for="calc in orderedCalcs">{{ calc.tenUmForwardPrimer }}</div>
+            <div v-for="calc in chunk">{{ calc.tenUmForwardPrimer }}</div>
             <!-- Reverse primer row -->
             <div class="font-semibold">10uM Reverse Primer (μL)</div>
-            <div v-for="calc in orderedCalcs">{{ calc.tenUmReversePrimer }}</div>
+            <div v-for="calc in chunk">{{ calc.tenUmReversePrimer }}</div>
             <!-- 10X Sybr Green row -->
             <div class="font-semibold">10X Sybr Green (μL)</div>
-            <div v-for="calc in orderedCalcs">{{ calc.tenXSybrGreen }}</div>
+            <div v-for="calc in chunk">{{ calc.tenXSybrGreen }}</div>
             <!-- cDNA amount row -->
             <div v-if="experiment.pcrType == 'rna-preseq-2'" class="font-semibold">cDNA (μL)</div>
-            <div v-if="experiment.pcrType == 'rna-preseq-2'" v-for="calc in orderedCalcs">{{ calc.dnaAmount }}</div>
+            <div v-if="experiment.pcrType == 'rna-preseq-2'" v-for="calc in chunk">{{ calc.dnaAmount }}</div>
             <!-- Water row -->
             <div class="font-semibold">Water (μL)</div>
-            <div v-for="calc in orderedCalcs">{{ calc.water }}</div>
+            <div v-for="calc in chunk">{{ calc.water }}</div>
             <!-- Total row -->
             <div class="font-semibold border-t-2">Total (μL)</div>
-            <div v-for="calc in orderedCalcs" class="font-semibold border-t-2">{{ calc.total }}</div>
+            <div v-for="calc in chunk" class="font-semibold border-t-2">{{ calc.total }}</div>
             <!-- DNA amount row -->
             <div v-if="experiment.pcrType == 'dna-preseq-2'" class="font-semibold border-t-2 italic">DNA (μL) per well</div>
-            <div v-if="experiment.pcrType == 'dna-preseq-2'" class="border-t-2 italic" v-for="calc in orderedCalcs">{{ dnaVolume?.toFixed(1) }}</div>
+            <div v-if="experiment.pcrType == 'dna-preseq-2'" class="border-t-2 italic" v-for="calc in chunk">{{ dnaVolume?.toFixed(1) }}</div>
         </div>
     </div>
 
@@ -362,8 +384,9 @@ const dnaVolume = computed(() => {
     /* Tailwind v4: @apply in a scoped style needs the theme context (custom surface-* utils + dark variant) */
     @reference '../../../../../base-layer/assets/tailwind.css';
 
+    /* print: tighter cells, and sample/target names wrap mid-word so the columns fit the page */
     .calcs-grid > div {
-        @apply px-4 py-2 border-b border-l border-surface-200 dark:border-surface-600;
+        @apply px-4 py-2 border-b border-l border-surface-200 dark:border-surface-600 print:px-2 print:py-1 print:break-words;
         overflow: hidden;
         min-width: 0;
     }

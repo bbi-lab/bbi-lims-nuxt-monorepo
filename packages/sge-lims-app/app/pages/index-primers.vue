@@ -16,6 +16,7 @@ const rowActions = {}
                 :row-actions="rowActions"
                 :can-edit="false"
                 :can-delete="false"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"
             />

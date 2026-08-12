@@ -212,9 +212,13 @@ const frozenRecordIds = computed(() =>
                 :showColumnFilters="true"
                 :rowsPerPageOptions="[10, 25, 50, 100]"
                 :sortBy="['wells.displayValue']"
+                :sortByOrder="['desc']"
                 emptyMessage=""
                 :rowStyle="(data: any) => data?.archived ? { textDecoration: 'line-through' } : {}"
                 v-model:frozenRecordIds="frozenRecordIds">
+                <template #header-buttons>
+                    <PreseqPrimerImport @imported="reloadAll" />
+                </template>
             </SmartTable>
         </SplitterPanel>
         <SplitterPanel class="flex justify-center overflow-scroll mt-10" :size="40" :minSize="25">

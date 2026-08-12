@@ -473,6 +473,7 @@ const addFormZodSchema = computed(() => {
                 :column-defs="columnDefs"
                 sort-field="startedOn"
                 :sort-order="-1"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"

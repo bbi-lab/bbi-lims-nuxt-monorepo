@@ -23,7 +23,13 @@ const columnDefs: ColumnDefinitions = {
     target: {
         path: 'target.name',
         type: 'string',
-        index: 1,
+        index: 2,
+    },
+    project: {
+        header: 'Project',
+        path: 'target.project.name',
+        type: 'string',
+        index: 3,
     },
     snvLibCloningExperiment: {
         header: 'SNVlib Cloning Experiment',
@@ -35,21 +41,54 @@ const columnDefs: ColumnDefinitions = {
         exportValue: (data: any) => {
             return _.get(data, 'snvLibCloningExperiment.name', '')
         },
-        index: 1,
+        index: 4,
     },
     snvLibCloningExperimentId: { display: false},
     volume: {
         header: 'Volume (uL)',
+        index: 5,
     },
     quant: {
         header: 'Quant (ng/uL)',
+        index: 6,
     },
-    externalLink: {
+    clonedOn: {
+        header: 'Cloned On',
+        index: 7,
+    },
+    bacterialPlateImagesLink: {
         format: 'hyperlink',
+        index: 8,
+    },
+    benchlingLink: {
+        format: 'hyperlink',
+        index: 9,
+    },
+    plasmidsaurusOrderId: {
+        header: 'Plasmidsaurus Order ID',
+        index: 10,
+    },
+    ngsVerificationStatus: {
+        header: 'NGS Verification Status',
+        index: 11,
     },
     targetId: { display: false},
+    status: {
+        type: 'element',
+        element: (data: any) => recordStatusTag(data.status),
+        // format sets status.displayValue, which the column sorts, searches and exports on
+        format: (data: any) => recordStatusLabel(data.status),
+        path: 'status.displayValue',
+        index: 1,
+    },
 }
 const fieldConfigs: FormFieldConfigs = {
+    name: {
+        index: 0,
+    },
+    status: {
+        index: 1,
+    },
     targetId: {
         label: 'Target',
         autoCompleter: {
@@ -62,7 +101,10 @@ const fieldConfigs: FormFieldConfigs = {
             displayFields: ['name', 'region.gene.symbol', 'region.name'],
         }
     },
-    externalLink: {
+    bacterialPlateImagesLink: {
+        type: 'hyperlink',
+    },
+    benchlingLink: {
         type: 'hyperlink',
     },
     snvLibCloningExperimentId: {
@@ -80,11 +122,21 @@ const fieldConfigs: FormFieldConfigs = {
     quant: {
         label: 'Quant (ng/uL)',
     },
+    clonedOn: {
+        dateType: 'date',
+    },
+    plasmidsaurusOrderId: {
+        label: 'Plasmidsaurus Order ID',
+    },
+    ngsVerificationStatus: {
+        label: 'NGS Verification Status',
+    },
 }
 const displayWithClause = {
     target: {
         columns: {name: true},
         with: {
+            project: {columns: {name: true}},
             region: {
                 columns: {name: true},
                 with: {
@@ -128,6 +180,7 @@ const displayWithClause = {
                 :with-clause="displayWithClause"
                 :where="whereClauses"
                 :can-edit-multiple="true"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"

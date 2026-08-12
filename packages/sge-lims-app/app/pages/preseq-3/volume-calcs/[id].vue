@@ -3,6 +3,8 @@ import _ from 'lodash'
 
 const experiment = ref<{ name: string; pcrType: string; plate?: any } | undefined>()
 
+const { printView } = usePrintView()
+
 const route = useRoute()
 const router = useRouter()
 
@@ -90,12 +92,21 @@ const wellsWithSamples = computed(() => {
 
 </script>
 <template>
-    <h3 class="p-5">
-        {{ experiment?.name }}
-    </h3>
-    <hr/>
+    <div class="flex flex-row items-center gap-5 p-5">
+        <h3 class="my-0">
+            {{ experiment?.name }}
+        </h3>
+        <Button
+            class="p-button-sm no-print"
+            label="Print view"
+            icon="pi pi-print"
+            severity="secondary"
+            @click="printView"
+        />
+    </div>
+    <hr class="no-print" />
 
-    <div v-if="experiment" class="flex flex-row gap-4 m-5 space-x-4">
+    <div v-if="experiment" class="flex flex-row gap-4 m-5 space-x-4 print-avoid-break">
         <div>
             <table class="mt-3 w-full text-sm border-collapse bg-surface-0 dark:bg-surface-900">
                 <thead>
@@ -129,7 +140,7 @@ const wellsWithSamples = computed(() => {
             <span>
                 <span class="text-xl font-bold mr-5">Well count: {{ wellsWithSamples.length }}</span>
                 <Button
-                    class="p-button-sm"
+                    class="p-button-sm no-print"
                     severity="info"
                     v-tooltip="'Plate Layout'"
                     @click="router.push(`/plate-layout/${experiment.plate?.plateType}/${experiment.plate?.id}`)"
@@ -142,7 +153,8 @@ const wellsWithSamples = computed(() => {
         </div>
     </div>
 
-    <div v-if="experiment" class="flex flex-row gap-4 m-5 space-x-4">
+    <!-- print:mb-0 on the last block, so its bottom margin can't spill onto a blank page -->
+    <div v-if="experiment" class="flex flex-row gap-4 m-5 space-x-4 print-avoid-break print:mb-0">
         <div>
             <table class="calcs-table">
                 <thead>

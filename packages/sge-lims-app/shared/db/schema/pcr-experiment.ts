@@ -5,6 +5,7 @@ import { users } from 'lims-layer/server/db/schema/user'
 import { plates } from 'lims-layer/shared/db/schema/plate'
 import { pcrTypes } from './pcrTypes'
 import { transfectTargets } from './transfect-experiment'
+import { recordStatusEnum } from './status'
 
 export const pcrExperiments = pgTable('pcr_experiments', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),
@@ -14,6 +15,7 @@ export const pcrExperiments = pgTable('pcr_experiments', {
   startedOn: timestamp('started_on').defaultNow(),
   plateId: uuid('plate_id').references(() => plates.id),
   gelImagesLink: text('gel_images_link'),
+  status: recordStatusEnum('status'),
   notes: text('notes'),
 }, (table) => [
   check("gel_images_link_check", sql`${table.gelImagesLink} ~* '^https?://.+$'`),

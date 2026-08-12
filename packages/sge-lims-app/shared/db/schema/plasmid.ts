@@ -1,10 +1,11 @@
-import { pgTable, uuid, varchar, text, doublePrecision, check, timestamp, boolean } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, varchar, text, doublePrecision, check, timestamp } from 'drizzle-orm/pg-core'
 import { type InferSelectModel } from 'drizzle-orm/table'
 import { snvLibCloningExperiments } from './plasmid-experiment'
 import { targets } from './target'
 import { sql } from 'drizzle-orm/sql'
 import { haPuc19GibsonProducts } from './oligos'
 import { users } from 'lims-layer/server/db/schema/user'
+import { recordStatusEnum } from './status'
 
 export const sgRnaPlasmids = pgTable('sg_rna_plasmids', {
   id: uuid('id').notNull().primaryKey().defaultRandom(),
@@ -13,11 +14,13 @@ export const sgRnaPlasmids = pgTable('sg_rna_plasmids', {
   quant: doublePrecision('quant'),
   // targetId: uuid('target_id').references(() => targets.id).notNull(),
   // sgRnaCloningExperimentId: uuid('sg_rna_cloning_experiment_id').references(() => sgRnaCloningExperiments.id),
-  verificationStatus: varchar('verification_status', {enum: ['passed', 'failed']}),
-  externalLink: text('external_link'),
+  clonedOn: timestamp('cloned_on'),
+  genewizOrderNumber: varchar('genewiz_order_number', { length: 255 }),
+  benchlingLink: text('benchling_link'),
+  status: recordStatusEnum('status'),
   notes: text('notes'),
 }, (table) => [
-  check("external_link_check", sql`${table.externalLink} ~* '^https?://.+$'`),
+  check("benchling_link_check", sql`${table.benchlingLink} ~* '^https?://.+$'`),
 ])
 
 export const sgRnaPlasmidTargets = pgTable('sg_rna_plasmid_targets', {
@@ -33,12 +36,16 @@ export const snvLibPlasmids = pgTable('snv_lib_plasmids', {
   quant: doublePrecision('quant'),
   targetId: uuid('target_id').references(() => targets.id).notNull(),
   snvLibCloningExperimentId: uuid('snv_lib_cloning_experiment_id').references(() => snvLibCloningExperiments.id).unique(),
-  plasmidsaurusVerification: boolean('plasmidsaurus_verification').default(false),
+  plasmidsaurusOrderId: varchar('plasmidsaurus_order_id', { length: 255 }),
+  clonedOn: timestamp('cloned_on'),
+  bacterialPlateImagesLink: text('bacterial_plate_images_link'),
+  benchlingLink: text('benchling_link'),
   ngsVerificationStatus: varchar('ngs_verification_status', {enum: ['passed', 'failed']}),
-  externalLink: text('external_link'),
+  status: recordStatusEnum('status'),
   notes: text('notes'),
 }, (table) => [
-  check("external_link_check", sql`${table.externalLink} ~* '^https?://.+$'`),
+  check("benchling_link_check", sql`${table.benchlingLink} ~* '^https?://.+$'`),
+  check("bacterial_plate_images_link_check", sql`${table.bacterialPlateImagesLink} ~* '^https?://.+$'`),
 ])
 
 export const haPuc19Plasmids = pgTable('ha_puc19_plasmids', {

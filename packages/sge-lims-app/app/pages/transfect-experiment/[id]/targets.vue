@@ -264,6 +264,7 @@ const displayWithClause = {
                 :column-defs="columnDefs"
                 :where="{'==':[{'var': 'experimentId'}, route.params.id]}"
                 :with-clause="displayWithClause"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"
             />

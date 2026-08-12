@@ -1,0 +1,54 @@
+/* Print rules: hide the app chrome and interactive controls, and flatten the
+   themed (possibly dark) colors to something that reads on paper. Loaded last
+   so it wins over the layout styles, which are not screen-only. */
+@page {
+    size: landscape;
+    margin: 0.5in;
+}
+
+@media print {
+    .layout-topbar,
+    .layout-sidebar,
+    .layout-mask,
+    .p-toast,
+    .p-dialog-mask,
+    .no-print {
+        display: none !important;
+    }
+
+    html,
+    body {
+        height: auto !important;
+    }
+
+    .layout-wrapper,
+    .layout-main-container {
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .layout-main {
+        margin-top: 0 !important;
+        height: auto !important;
+    }
+
+    .layout-main,
+    .layout-main * {
+        background: transparent !important;
+        color: #000 !important;
+        border-color: #64748b !important;
+        box-shadow: none !important;
+    }
+
+    /* Scroll containers clip whatever is off-screen when printed */
+    .layout-main .overflow-auto,
+    .layout-main .overflow-x-auto,
+    .layout-main .overflow-y-auto {
+        overflow: visible !important;
+    }
+
+    .print-avoid-break {
+        break-inside: avoid;
+    }
+}

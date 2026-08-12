@@ -22,7 +22,9 @@ export default defineNuxtConfig({
   ],
   css: [
     join(currentDir, './assets/tailwind.css'),
-    join(currentDir, './assets/styles.scss')
+    join(currentDir, './assets/styles.scss'),
+    // loaded last so its @media print rules win over the layout styles, which are not screen-only
+    join(currentDir, './assets/print.css')
   ],
   primevue: {
       options: {

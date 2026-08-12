@@ -7,7 +7,7 @@
     "prepare": "pnpm run -r dev:prepare",
     "postinstall": "rm -rf packages/*/.nuxt packages/*/node_modules/.cache",
     "clean-install": "rm -rf node_modules packages/*/node_modules pnpm-lock.yaml && pnpm install",
-    "test": "pnpm --filter lims-layer test"
+    "test": "pnpm --filter lims-layer --filter sge-lims-app test"
   },
   "keywords": [],
   "author": "",

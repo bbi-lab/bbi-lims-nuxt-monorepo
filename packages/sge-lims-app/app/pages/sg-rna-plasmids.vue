@@ -26,39 +26,63 @@ const columnDefs: ColumnDefinitions = {
         format: (data: any) => {
             return _.map(data.sgRnaPlasmidTargets, 'target.name')
         },
-        index: 1,
+        index: 2,
         path: 'sgRnaPlasmidTargets.displayValue',
+    },
+    project: {
+        header: 'Project',
+        format: (data: any) => {
+            return _.join(_.uniq(_.compact(_.map(data.sgRnaPlasmidTargets, 'target.project.name'))), ',')
+        },
+        index: 3,
+        path: 'project.displayValue',
     },
     plateWellLocation: {
         header: 'Plate: Well Location',
         format: (data: any) => {
-            const wellContents = data.wellable?.wellContents || []
-            if (wellContents.length > 0) {
-                const well = wellContents[0].well
+            return _.map(data.wellable?.wellContents || [], (wellContent: any) => {
+                const well = wellContent.well
                 return `${well.plate.name}: ${wellCoordinateToChar(well.y)}${well.x}`
-            }
-            return ''
+            }).join(', ')
         },
         path: 'plateWellLocation.displayValue',
-        index: 4,
+        index: 5,
     },
     sgRnaCloningExperiment: {
         header: 'sgRNA Cloning Experiment',
         format: (data: any) => {
-            // each sgRNA plasmid should only be associated with one well and one cloning experiment
-            return data.wellable?.wellContents?.[0]?.well.plate?.sgRnaCloningExperiments?.[0]?.name || ''
+            return _.uniq(_.compact(_.flatMap(data.wellable?.wellContents || [], (wellContent: any) => {
+                return _.map(wellContent.well?.plate?.sgRnaCloningExperiments, 'name')
+            }))).join(', ')
         },
         path: 'sgRnaCloningExperiment.displayValue',
-        index: 2,
+        index: 4,
     },
-    externalLink: {
+    benchlingLink: {
         format: 'hyperlink',
-        index: 3,
+        index: 6,
+    },
+    genewizOrderNumber: {
+        header: 'GeneWiz Order Number',
     },
     targetId: { display: false},
     wellContents: { display: false },
+    status: {
+        type: 'element',
+        element: (data: any) => recordStatusTag(data.status),
+        // format sets status.displayValue, which the column sorts, searches and exports on
+        format: (data: any) => recordStatusLabel(data.status),
+        path: 'status.displayValue',
+        index: 1,
+    },
 }
 const fieldConfigs: FormFieldConfigs = {
+    name: {
+        index: 0,
+    },
+    status: {
+        index: 1,
+    },
     sgRnaPlasmidTargets: {
         label: 'Targets',
         inputArray: {
@@ -76,8 +100,14 @@ const fieldConfigs: FormFieldConfigs = {
             },
         },
     },
-    externalLink: {
+    benchlingLink: {
         type: 'hyperlink',
+    },
+    genewizOrderNumber: {
+        label: 'GeneWiz Order Number',
+    },
+    clonedOn: {
+        dateType: 'date',
     },
 }
 const displayWithClause = {
@@ -86,6 +116,7 @@ const displayWithClause = {
             target: {
                 columns: {name: true, id: true},
                 with: {
+                    project: {columns: {name: true}},
                     region: {
                         columns: {name: true},
                         with: {
@@ -141,6 +172,7 @@ const editWithClause = {
                 :with-clause="displayWithClause"
                 :where="whereClauses"
                 :can-edit-multiple="true"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"

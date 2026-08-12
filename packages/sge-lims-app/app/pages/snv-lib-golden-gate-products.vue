@@ -31,7 +31,7 @@ const columnDefs: ColumnDefinitions = {
         exportValue: (data: any) => {
             return _.get(data.snvLibCloningExperiment, 'name', '')
         },
-        index: 1,
+        index: 2,
     },
     snvLibCloningExperimentId: { display: false },
     snvLibAmpProduct: {
@@ -44,7 +44,7 @@ const columnDefs: ColumnDefinitions = {
         exportValue: (data: any) => {
             return _.get(data.snvLibAmpProduct, 'name', '')
         },
-        index: 2,
+        index: 3,
     },
     snvLibAmpProductId: { display: false },
     clonalHa: {
@@ -57,11 +57,19 @@ const columnDefs: ColumnDefinitions = {
         exportValue: (data: any) => {
             return _.get(data.clonalHa, 'name', '')
         },
-        index: 3,
+        index: 4,
     },
     clonalHaId: { display: false },
     goldenGateProductVectorAmount: {
         header: 'Golden Gate Product Vector Amount (ng)',
+    },
+    status: {
+        type: 'element',
+        element: (data: any) => recordStatusTag(data.status),
+        // format sets status.displayValue, which the column sorts, searches and exports on
+        format: (data: any) => recordStatusLabel(data.status),
+        path: 'status.displayValue',
+        index: 1,
     },
 }
 // fieldConfigs is computed so we can access crudTable.state.editingRecord and crudTable.state.editingMultipleRecordsIds
@@ -69,6 +77,10 @@ const columnDefs: ColumnDefinitions = {
 const fieldConfigs: ComputedRef<FormFieldConfigs> = computed(() => {
     return {
         name: {
+            index: 0,
+        },
+        status: {
+            index: 1,
         },
         snvLibCloningExperimentId: {
             label: 'SNV Library Cloning Experiment',
@@ -128,6 +140,7 @@ const displayWithClause = {
                 :with-clause="displayWithClause"
                 :where="whereClauses"
                 :can-edit-multiple="true"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"

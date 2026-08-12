@@ -77,6 +77,7 @@ const readonlyValues = {experimentId: route.params.id}
                 :column-defs="columnDefs"
                 :where="{'==':[{'var': 'experimentId'}, route.params.id]}"
                 :with-clause="{lot: {columns: {lotNumber: true}, with: {reagent: true}}}"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"
             />

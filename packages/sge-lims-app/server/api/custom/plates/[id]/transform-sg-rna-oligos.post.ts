@@ -12,6 +12,9 @@ interface PlasmidToCreate {
   wellContentIds: string[]
 }
 
+// drizzle reports the failed SQL as the message; the reason (constraint violation, etc.) is on the cause
+const errorDetail = (error: any) => error.cause?.detail || error.cause?.message
+
 export default defineEventHandler(async (event) => {
   const { id: plateId } = event.context.params as { id: string }
   const db = useSgeDrizzle()
@@ -66,6 +69,19 @@ export default defineEventHandler(async (event) => {
       }
     ))
 
+    // plasmid names are unique, so report every collision up front rather than failing on the first insert
+    const plasmidNames = _.compact(_.map(plasmidsToCreate, 'name'))
+    const namesInUse = _.isEmpty(plasmidNames) ? [] : await db.query.sgRnaPlasmids.findMany({
+      columns: { name: true },
+      where: { name: { in: plasmidNames } },
+    })
+    if (!_.isEmpty(namesInUse)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: `Plasmid name(s) already in use: ${_.map(namesInUse, 'name').sort().join(', ')}`,
+      })
+    }
+
     await db.transaction(async (tx) => {
       for (const plasmid of plasmidsToCreate) {
         if (!plasmid) continue
@@ -80,12 +96,14 @@ export default defineEventHandler(async (event) => {
           await tx.delete(wellContents).where(eq(wellContents.wellId, plasmid.wellId))
           await tx.insert(wellContents).values({ wellId: plasmid.wellId, wellableId: newPlasmidRow.id })
         } catch (error: any) {
-          throw new Error(`Failed to create plasmid ${plasmid.name}: ${error.message}`)
+          const detail = errorDetail(error)
+          throw new Error(`Failed to create plasmid ${plasmid.name}: ${detail || error.message}`)
         }
       }
       await tx.update(plates).set({ plateType: 'sg-rna-plasmid' }).where(eq(plates.id, plateId))
     })
   } catch (error: any) {
-    throw createError({ statusCode: 400, statusMessage: error.message })
+    const detail = errorDetail(error)
+    throw createError({ statusCode: 400, statusMessage: detail ? `${error.message} — ${detail}` : error.message })
   }
 })

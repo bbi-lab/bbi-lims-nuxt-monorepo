@@ -10,6 +10,7 @@ const { viewPlatesWithWellCounts: _layerPlatesView, ...layerSchema } = baseSchem
 
 // sge tables
 import { genes } from 'lims-layer/shared/db/schema/gene'
+import { ensemblRefseqIds } from '#shared/db/schema/ensembl-refseq-ids'
 import { targets } from '#shared/db/schema/target'
 import { regions } from '#shared/db/schema/region'
 import { cycles } from '#shared/db/schema/cycle'
@@ -50,6 +51,7 @@ export const sgeSchema = {
 
   // sge tables
   genes,
+  ensemblRefseqIds,
   targets,
   regions,
   cycles,

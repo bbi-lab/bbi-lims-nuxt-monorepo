@@ -266,6 +266,7 @@ const fieldConfigs: FormFieldConfigs = {
                 :where="whereClauses?.[0]"
                 sortField="cycle.name"
                 :sortOrder="-1"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"
             />

@@ -8,7 +8,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxi typecheck"
+    "typecheck": "nuxi typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "lims-layer": "workspace:*",
@@ -23,6 +25,7 @@
     "drizzle-kit": "1.0.0-rc.1",
     "drizzle-orm": "1.0.0-rc.1",
     "nuxt": "^4.4.2",
+    "vitest": "^4.1.4",
     "vue-tsc": "^3.2.7"
   }
 }

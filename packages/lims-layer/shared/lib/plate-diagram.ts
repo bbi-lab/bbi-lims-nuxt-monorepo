@@ -48,6 +48,21 @@ export const VALID_WELL_COLORS = [
     "#FF5005"
 ]
 
+/**
+ * The palette colour used least across a plate and the plate it is synced with.
+ *
+ * Ranks the whole palette rather than only the colours already in use, so an unused colour
+ * always wins and a saturated palette falls back to the least-used colour. Ranking the used
+ * colours alone returns undefined once the synced plate has taken all 24, which renders
+ * wells grey.
+ */
+export function leastUsedWellColor(
+    colorCounts: Record<string, number>,
+    syncedColorCounts: Record<string, number> = {},
+): string | undefined {
+    return _.minBy(VALID_WELL_COLORS, (color) => (colorCounts[color] || 0) + (syncedColorCounts[color] || 0))
+}
+
 export function wellCoordinateToChar(number: number) {
     return String.fromCharCode(96 + number).toUpperCase()
 }

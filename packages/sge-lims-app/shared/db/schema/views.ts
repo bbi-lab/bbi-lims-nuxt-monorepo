@@ -13,6 +13,7 @@ import { targets } from "./target"
 import { cycles } from "./cycle"
 import { preseq1Primers, preseq1PrimerTargets, preseq2Primers, rnaPreseq1Primers, rnaPreseq1PrimerTargets, rnaPreseq2Primers, rnaPreseq2PrimerTargets } from "./primer"
 import { projects } from "./project"
+import { recordStatusEnum } from "./status"
 
 export const viewHaPuc19GibsonProductsWithCalcs = pgView('view_ha_puc19_gibson_products_with_calcs', {
     id: uuid('id'),
@@ -126,6 +127,7 @@ export const viewSnvLibGibsonProducts = pgView('view_snv_lib_gibson_products', {
     ngsChecked: boolean('ngs_checked'),
     passedQc: boolean('passed_qc'),
     benchlingLink: text('benchling_link'),
+    status: recordStatusEnum('status'),
     notes: text('notes'),
     ampVolume: doublePrecision('amp_volume'),
     linVolume: doublePrecision('lin_volume'),
@@ -171,6 +173,7 @@ FROM (
     ${snvLibGibsonProducts.ngsChecked} AS ngs_checked,
     ${snvLibGibsonProducts.passedQc} AS passed_qc,
     ${snvLibGibsonProducts.benchlingLink} AS benchling_link,
+    ${snvLibGibsonProducts.status} AS status,
     ${snvLibGibsonProducts.notes} AS notes,
     ${snvLibGibsonProducts.totalReactionVolume} AS total_reaction_volume,
     ${snvLibCloningExperiments.name} AS snv_lib_cloning_experiment_name,

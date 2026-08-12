@@ -31,7 +31,7 @@ const columnDefs: ColumnDefinitions = {
         exportValue: (data: any) => {
             return _.get(data.snvLibCloningExperiment, 'name', '')
         },
-        index: 1,
+        index: 2,
     },
     linPrimers: {
         header: 'LIN Primers',
@@ -45,13 +45,13 @@ const columnDefs: ColumnDefinitions = {
             return _.compact([data.linPrimerForward?.name, data.linPrimerReverse?.name]).join(', ')
         },
         path: 'linPrimers.displayValue',
-        index: 2,
+        index: 3,
     },
     haPuc19PlasmidId: { display: false },
     haPuc19Plasmid: {
         header: 'HA pUC19 Plasmid',
         path: 'haPuc19Plasmid.name',
-        index: 3,
+        index: 4,
     },
     snvLibCloningExperimentId: { display: false },
     linPrimerForwardId: { display: false },
@@ -71,12 +71,24 @@ const columnDefs: ColumnDefinitions = {
     },
     dpn1DigestById: { display: false },
     gelExtractedById: { display: false },
+    status: {
+        type: 'element',
+        element: (data: any) => recordStatusTag(data.status),
+        // format sets status.displayValue, which the column sorts, searches and exports on
+        format: (data: any) => recordStatusLabel(data.status),
+        path: 'status.displayValue',
+        index: 1,
+    },
 }
 // fieldConfigs is computed so we can access crudTable.state.editingRecord and crudTable.state.editingMultipleRecordsIds
 // to apply additional logic to certain properties (e.g. readonly, searchWhereClause)
 const fieldConfigs: ComputedRef<FormFieldConfigs> = computed(() => {
     return {
         name: {
+            index: 0,
+        },
+        status: {
+            index: 1,
         },
         snvLibCloningExperimentId: {
             label: 'SNV Library Cloning Experiment',
@@ -186,6 +198,7 @@ const displayWithClause = {
                 :with-clause="displayWithClause"
                 :where="whereClauses"
                 :can-edit-multiple="true"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 sortField="name"
                 :sortOrder="1"

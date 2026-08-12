@@ -1293,8 +1293,15 @@ BEFORE INSERT ON "index_primers"
 FOR EACH ROW
 EXECUTE FUNCTION "wellables_insert"();--> statement-breakpoint
 
-CREATE OR REPLACE TRIGGER "nucleic_acids_wellables_insert"
-BEFORE INSERT ON "nucleic_acids"
+-- nucleic_acids was split into dna and rna upstream (bbi-lims-sge migration 0139); this
+-- baseline creates dna/rna, so the triggers attach to those rather than the retired table.
+CREATE OR REPLACE TRIGGER "dna_wellables_insert"
+BEFORE INSERT ON "dna"
+FOR EACH ROW
+EXECUTE FUNCTION "wellables_insert"();--> statement-breakpoint
+
+CREATE OR REPLACE TRIGGER "rna_wellables_insert"
+BEFORE INSERT ON "rna"
 FOR EACH ROW
 EXECUTE FUNCTION "wellables_insert"();--> statement-breakpoint
 
@@ -1361,8 +1368,14 @@ BEFORE DELETE ON "index_primers"
 FOR EACH ROW
 EXECUTE FUNCTION "wellables_delete"();--> statement-breakpoint
 
-CREATE OR REPLACE TRIGGER "nucleic_acids_wellables_delete"
-BEFORE DELETE ON "nucleic_acids"
+-- see the dna/rna insert triggers above
+CREATE OR REPLACE TRIGGER "dna_wellables_delete"
+BEFORE DELETE ON "dna"
+FOR EACH ROW
+EXECUTE FUNCTION "wellables_delete"();--> statement-breakpoint
+
+CREATE OR REPLACE TRIGGER "rna_wellables_delete"
+BEFORE DELETE ON "rna"
 FOR EACH ROW
 EXECUTE FUNCTION "wellables_delete"();--> statement-breakpoint
 
@@ -1659,19 +1672,13 @@ FOR EACH ROW
 EXECUTE FUNCTION "wellables_delete"();--> statement-breakpoint
 
 -- ============================================================
--- Triggers: snv_lib_clonal_dna_products and snv_lib_golden_gate_products wellables
+-- Triggers: snv_lib_golden_gate_products wellables
 -- (listed in wellable_table_name CHECK constraint in 0154 but never given trigger definitions)
+--
+-- snv_lib_clonal_dna_products is also allowed by that CHECK constraint, but no such table
+-- exists in either repo's schema — the constraint keeps the value for historical rows only,
+-- so there is nothing to attach a trigger to.
 -- ============================================================
-
-CREATE OR REPLACE TRIGGER "snv_lib_clonal_dna_products_wellables_insert"
-BEFORE INSERT ON "snv_lib_clonal_dna_products"
-FOR EACH ROW
-EXECUTE FUNCTION "wellables_insert"();--> statement-breakpoint
-
-CREATE OR REPLACE TRIGGER "snv_lib_clonal_dna_products_wellables_delete"
-BEFORE DELETE ON "snv_lib_clonal_dna_products"
-FOR EACH ROW
-EXECUTE FUNCTION "wellables_delete"();--> statement-breakpoint
 
 CREATE OR REPLACE TRIGGER "snv_lib_golden_gate_products_wellables_insert"
 BEFORE INSERT ON "snv_lib_golden_gate_products"

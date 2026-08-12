@@ -253,10 +253,10 @@ describe('getFormFieldDefinition', () => {
         expect(result.vBindObject).toHaveProperty('binary', true)
     })
 
-    it('maps z.date() to DatePicker', () => {
+    it('maps z.date() to SmartFormDatePicker', () => {
         const schema = z.object({ createdAt: z.date() })
         const result = getFormFieldDefinition('createdAt', schema)
-        expect(result.primeVueComponent).toBe('DatePicker')
+        expect(result.primeVueComponent).toBe('SmartFormDatePicker')
     })
 
     it('maps z.enum() to Select with options', () => {

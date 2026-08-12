@@ -49,6 +49,7 @@ const fieldConfigs: FormFieldConfigs = {
                 :with-clause="{transfectExperiments: true}"
                 :column-defs="columnDefs"
                 :can-edit-multiple="true"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-multiple-record-edit="crudTable.didClickMultipleRecordEdit"

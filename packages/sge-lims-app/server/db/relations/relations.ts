@@ -6,6 +6,7 @@ import { plateTypes } from 'lims-layer/shared/db/schema/plateTypes'
 
 // sge tables
 import { genes } from 'lims-layer/shared/db/schema/gene'
+import { ensemblRefseqIds } from '#shared/db/schema/ensembl-refseq-ids'
 import { targets } from '#shared/db/schema/target'
 import { regions } from '#shared/db/schema/region'
 import { cycles } from '#shared/db/schema/cycle'
@@ -48,6 +49,7 @@ export const relations = defineRelations({
 
   // sge tables
   genes,
+  ensemblRefseqIds,
   targets,
   regions,
   cycles,
@@ -286,6 +288,14 @@ export const relations = defineRelations({
   genes: {
     regions: r.many.regions(),
     rnaRtPrimers: r.many.rnaRtPrimers(),
+    // The gene's MANE Select transcript, matched on its RefSeq accession
+    ensemblRefseqId: r.one.ensemblRefseqIds({
+      from: r.genes.transcriptsAccession,
+      to: r.ensemblRefseqIds.maneSelectRefseqAcc,
+    }),
+  },
+  ensemblRefseqIds: {
+    genes: r.many.genes(),
   },
   regions: {
     gene: r.one.genes({

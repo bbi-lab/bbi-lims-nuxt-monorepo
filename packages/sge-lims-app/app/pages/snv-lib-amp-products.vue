@@ -31,7 +31,7 @@ const columnDefs: ColumnDefinitions = {
         exportValue: (data: any) => {
             return _.get(data.snvLibCloningExperiment, 'name', '')
         },
-        index: 1,
+        index: 2,
     },
     ampPrimers: {
         header: 'AMP Primers',
@@ -45,13 +45,13 @@ const columnDefs: ColumnDefinitions = {
             return _.compact([data.ampPrimerForward?.name, data.ampPrimerReverse?.name]).join(', ')
         },
         path: 'ampPrimers.displayValue',
-        index: 2,
+        index: 3,
     },
     sgeOligoId: { display: false },
     sgeOligo: {
         header: 'SGE Oligo',
         path: 'sgeOligo.name',
-        index: 3,
+        index: 4,
     },
     lots: {
         header: 'Lot(s)',
@@ -59,13 +59,13 @@ const columnDefs: ColumnDefinitions = {
             return _.join(_.compact(_.map(data.sgeOligo?.sgeOligoLots, (sgeOligoLot: any) => sgeOligoLot.lot?.lotNumber)), ', ')
         },
         path: 'lots.displayValue',
-        index: 4,
-    },
-    startPosition: {
         index: 5,
     },
-    stopPosition: {
+    startPosition: {
         index: 6,
+    },
+    stopPosition: {
+        index: 7,
     },
     length: {
         header: 'Length (bp)',
@@ -77,7 +77,7 @@ const columnDefs: ColumnDefinitions = {
             }
         },
         path: 'length.displayValue',
-        index: 7,
+        index: 8,
     },
     snvLibCloningExperimentId: { display: false },
     ampPrimerForwardId: { display: false },
@@ -89,12 +89,24 @@ const columnDefs: ColumnDefinitions = {
         path: 'cleanedBy.name'
     },
     cleanedById: { display: false },
+    status: {
+        type: 'element',
+        element: (data: any) => recordStatusTag(data.status),
+        // format sets status.displayValue, which the column sorts, searches and exports on
+        format: (data: any) => recordStatusLabel(data.status),
+        path: 'status.displayValue',
+        index: 1,
+    },
 }
 // fieldConfigs is computed so we can access crudTable.state.editingRecord and crudTable.state.editingMultipleRecordsIds
 // to apply additional logic to certain properties (e.g. readonly, searchWhereClause)
 const fieldConfigs: ComputedRef<FormFieldConfigs> = computed(() => {
     return {
         name: {
+            index: 0,
+        },
+        status: {
+            index: 1,
         },
         snvLibCloningExperimentId: {
             label: 'SNV Library Cloning Experiment',
@@ -204,6 +216,7 @@ const displayWithClause = {
                 :with-clause="displayWithClause"
                 :where="whereClauses"
                 :can-edit-multiple="true"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"

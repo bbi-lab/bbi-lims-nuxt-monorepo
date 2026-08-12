@@ -14,20 +14,27 @@ enums, indexes, views, and the `users` schema from scratch.
 
 ## Existing SGE production databases
 
-The production SGE database already has ~180 migrations applied from the old standalone `bbi-lims-sge`
+The production SGE database already has ~190 migrations applied from the old standalone `bbi-lims-sge`
 repository. Running the baseline migration against it would fail (tables already exist).
 
-### Option 1 — Mark baseline as already applied (recommended)
+### Option 1 — Run the cutover script (recommended)
 
-After deploying the new app, tell Drizzle the baseline is already applied without re-running it:
+`server/db/cutover/prod_migration_to_monorepo.sql` moves the production database to the shape this
+package expects (users schema, lookup tables, renamed user FK columns, rebuilt views) and then
+registers every migration in `server/db/migrations/` as already applied, without running them.
 
-```sql
--- Run once on the existing production database
-INSERT INTO drizzle_migrations (hash, created_at)
-VALUES ('0000_sge_baseline', extract(epoch from now())::bigint * 1000);
+```bash
+psql "$PROD_URL" -f packages/sge-lims-app/server/db/cutover/prod_migration_to_monorepo.sql
 ```
 
-Drizzle will then only run new migrations created after the migration to this monorepo.
+Read the pre-flight checks in its header first — it assumes the standalone app has applied its
+migrations through `0193`, and it aborts if any plate still uses a retired plate type.
+
+This file is the authority on the cutover; it lived in `bbi-lims-sge/scripts/` until 2026-08-10,
+where it drifted out of step with the baseline twice (a dropped `status` column and two
+mismatched FK constraint names). **Whenever `0000_sge_baseline` or `shared/db/schema/*` changes,
+update this script in the same commit.** The stale copy in `bbi-lims-sge/scripts/` should be
+deleted there.
 
 ### Option 2 — Push schema changes only
 
@@ -48,12 +55,23 @@ The old `bbi-lims-sge` repository used 180 incremental migrations built up over 
 This monorepo replaces all of them with a single baseline snapshot (`0000_sge_baseline`).
 The final schema state is identical — no data migrations are required.
 
+`0003`–`0010` port the upstream migrations (`0184`–`0193`) that landed in `bbi-lims-sge` after
+this package branched off. Production has already had those applied by the standalone app, so the
+cutover script registers them rather than running them; a fresh database runs them in order after
+the baseline.
+
 ## Generating new migrations after changes
 
 ```bash
 cd packages/sge-lims-app
-pnpm drizzle-kit generate
+pnpm exec drizzle-kit generate
 ```
 
 New migrations are written to `server/db/migrations/` with auto-generated names.
 Rename them to a descriptive slug if desired before committing.
+
+Only directories containing a `snapshot.json` are part of drizzle-kit's diff chain, and the
+hand-written migrations here deliberately carry no snapshot — so `generate` diffs against the
+newest one that does. Keep exactly one authoritative snapshot as the chain's tail (currently
+`0010_add_status_to_snv_lib_gibson_products_view/snapshot.json`) and refresh it whenever the TS
+schema changes, or `generate` will re-emit DDL that earlier migrations already applied.

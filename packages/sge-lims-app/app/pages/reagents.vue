@@ -33,6 +33,7 @@ const columnDefs: ColumnDefinitions = {
                 title="Reagents"
                 :column-defs="columnDefs"
                 :row-actions="rowActions"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"
             />

@@ -33,7 +33,7 @@ const columnDefs: ColumnDefinitions = {
         exportValue: (data: any) => {
             return _.get(data, 'snvLibCloningExperimentName', '')
         },
-        index: 1,
+        index: 2,
     },
     snvLibCloningExperimentId: { display: false },
     snvLibCloningExperimentName: { display: false },
@@ -41,58 +41,58 @@ const columnDefs: ColumnDefinitions = {
     linProductId: { display: false },
     linProductVectorAmount: {
         header: 'LIN Product Vector Amount (ng)',
-        index: 3,
+        index: 4,
     },
     quant: {
         header: 'Quant (ng/µL)',
-        index: 4,
+        index: 5,
     },
     gibsonOn: {
-        index: 5,
+        index: 6,
     },
     gibsonByName: {
         header: 'Gibson By',
-        index: 6,
+        index: 7,
     },
     cleanedOn: {
-        index: 7,
+        index: 8,
     },
     cleanedByName: {
         header: 'Cleaned By',
-        index: 8,
+        index: 9,
     },
     transformedOn: {
-        index: 9,
+        index: 10,
     },
     transformedByName: {
         header: 'Transformed By',
-        index: 10,
+        index: 11,
     },
     preppedOn: {
-        index: 11,
+        index: 12,
     },
     preppedByName: {
         header: 'Prepped By',
-        index: 12,
+        index: 13,
     },
     plasmidsaurusChecked: {
         header: 'Plasmidsaurus Checked',
-        index: 13,
+        index: 14,
     },
     ngsChecked: {
         header: 'NGS Checked',
-        index: 14,
+        index: 15,
     },
     passedQc: {
         header: 'Passed QC',
-        index: 15,
+        index: 16,
     },
     benchlingLink: {
         format: 'hyperlink',
-        index: 16,
+        index: 17,
     },
     notes: {
-        index: 17,
+        index: 18,
     },
     ampProductName: {
         header: 'AMP Product Name',
@@ -204,10 +204,21 @@ const columnDefs: ColumnDefinitions = {
     cleanedById: { display: false },
     transformedById: { display: false },
     preppedById: { display: false },
+    status: {
+        type: 'element',
+        element: (data: any) => recordStatusTag(data.status),
+        // format sets status.displayValue, which the column sorts, searches and exports on
+        format: (data: any) => recordStatusLabel(data.status),
+        path: 'status.displayValue',
+        index: 1,
+    },
 }
 const fieldConfigs: FormFieldConfigs = {
     name: {
         index: 0,
+    },
+    status: {
+        index: 1,
     },
     snvLibCloningExperimentId: {
         label: 'SNVlib Cloning Experiment',
@@ -218,11 +229,11 @@ const fieldConfigs: FormFieldConfigs = {
             displayFields: ['name'],
             dropdown: true,
         },
-        index: 1,
+        index: 2,
     },
     linProductVectorAmount: {
         label: 'LIN Product Vector Amount (ng)',
-        index: 2,
+        index: 3,
     },
     gibsonById: {
         label: 'Gibson By',
@@ -291,6 +302,7 @@ const fieldConfigs: FormFieldConfigs = {
                 :where="whereClauses"
                 :can-edit-multiple="true"
                 :can-delete="false"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"

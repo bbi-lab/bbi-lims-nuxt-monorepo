@@ -76,6 +76,7 @@ const withClause = {
                 :row-actions="rowActions"
                 :with-clause="withClause"
                 :column-defs="columnDefs"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"
             />

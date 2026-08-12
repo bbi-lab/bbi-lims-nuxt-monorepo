@@ -14,14 +14,14 @@ async function didAddRecord(event: any) {
 const columnDefs: ColumnDefinitions = {
     startedOn: {
         format: 'date-time',
-        index: 2,
+        index: 3,
     },
     plate: {
         display: false,
     },
     technician: {
         path: 'technician.name',
-        index: 3,
+        index: 4,
     },
     pcrType: {
         display: false,
@@ -44,7 +44,7 @@ const columnDefs: ColumnDefinitions = {
             return _.get(x, 'pcrTypeRef.label')
         },
         path: 'pcrTypeLabel.displayValue',
-        index: 1,
+        index: 2,
     },
     cycleTarget: {
         header: 'Cycle: target(s)',
@@ -61,6 +61,14 @@ const columnDefs: ColumnDefinitions = {
         display: false,
     },
     technicianId: { display: false },
+    status: {
+        type: 'element',
+        element: (data: any) => recordStatusTag(data.status),
+        // format sets status.displayValue, which the column sorts, searches and exports on
+        format: (data: any) => recordStatusLabel(data.status),
+        path: 'status.displayValue',
+        index: 1,
+    },
 }
 
 const rowActions = {
@@ -92,6 +100,12 @@ const rowActions = {
 }
 
 const addFieldConfigs: FormFieldConfigs = {
+    name: {
+        index: 0,
+    },
+    status: {
+        index: 1,
+    },
     pcrType: {
         autoCompleter: {
             searchBaseUrl: '/api/pcr-types',
@@ -237,6 +251,7 @@ const formWithClause = {
                 :row-actions="rowActions"
                 :with-clause="withClause"
                 :column-defs="columnDefs"
+                :rows-per-page-options="[10, 25, 50, 100]"
                 @clicked-record-edit="crudTable.didClickRecordEdit"
                 @clicked-record-add="crudTable.didClickRecordAdd"
             />

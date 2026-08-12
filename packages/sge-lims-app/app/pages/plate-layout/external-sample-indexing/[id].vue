@@ -43,7 +43,7 @@ watch (selectedSourcePlate, async (newValue) => {
     if (newValue) {
         sourcePlateLayout.setPlateId(newValue.id)
 
-        if (newValue.plateType === 'preseq-2') {
+        if (newValue.plateType === 'dna-preseq-2') {
             sourcePlateLayout.wellContentsDisplayConfig.value = {
                 colorBy: ['dna.id'],
                 selectionTableRecordIdPaths: [(wellable: any) => {
@@ -240,7 +240,7 @@ const columnDefs = computed((): ColumnDefinitions => {
             wellsProcessedCount: {
                 header: 'Wells processed',
                 format: (data: any) => {
-                    return _.includes(['preseq-1', 'preseq-2'], data.plateType) ? data.wellsProcessedCount : ''
+                    return _.includes(['dna-preseq-1', 'dna-preseq-2', 'rna-preseq-1', 'rna-preseq-2'], data.plateType) ? data.wellsProcessedCount : ''
                 },
                 path: 'wellsProcessedCount.displayValue',
             },

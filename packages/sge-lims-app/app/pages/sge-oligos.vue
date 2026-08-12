@@ -11,23 +11,29 @@ const columnDefs: ColumnDefinitions = {
         index: 1,
         path: 'target.name',
     },
-    sequence: {
+    project: {
+        header: 'Project',
         index: 2,
+        path: 'target.project.name',
+        type: 'string',
+    },
+    sequence: {
+        index: 3,
         bodyClass: 'max-w-64 truncate',
     },
     libraryType: {
         header: 'Library Type',
-        index: 3,
+        index: 4,
     },
     sgeOligoLots: {
         header: 'Twist Lot(s)',
-        index: 4,
+        index: 5,
         format: (data: any) => {
             return _.map(data.sgeOligoLots, (sgeOligoLot: any) => sgeOligoLot.lot?.lotNumber).filter(Boolean)
         },
         path: 'sgeOligoLots.displayValue',
     },
-    notes: { index: 5 },
+    notes: { index: 6 },
     targetId: { display: false },
 }
 
@@ -69,6 +75,7 @@ const fieldConfigs: FormFieldConfigs = {
 const displayWithClause = {
     target: {
         columns: { id: true, name: true },
+        with: { project: { columns: { name: true } } },
     },
     sgeOligoLots: {
         with: {
