@@ -7,7 +7,7 @@ import { z } from 'zod'
 const { createSelectSchema } = createSchemaFactory({ coerce: { date: true } })
 import { projects } from '../schema/project'
 import { restrictionEnzymes } from '../schema/reagents'
-import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '../schema/primers'
+import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, retrieverPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '../schema/primers'
 import { superblocks, tiles, tileVariants } from '../schema/tiles'
 import { refseqTranscripts } from '../schema/transcripts'
 import { pcrExperiments } from '../schema/pcrExperiments'
@@ -43,6 +43,22 @@ const insertNexteraIndexPrimerSchema = selectNexteraIndexPrimerSchema.omit({ id:
 const updateNexteraIndexPrimerSchema = insertNexteraIndexPrimerSchema.extend({
     indexSeqRevComp: selectNexteraIndexPrimerSchema.shape.indexSeqRevComp.readonly(),
 }).partial()
+
+const selectSequencingReadPrimerSchema = createSelectSchema(sequencingReadPrimers)
+const insertSequencingReadPrimerSchema = selectSequencingReadPrimerSchema.omit({ id: true }).partial()
+const updateSequencingReadPrimerSchema = insertSequencingReadPrimerSchema
+
+const selectSequencingIndexPrimerSchema = createSelectSchema(sequencingIndexPrimers)
+const insertSequencingIndexPrimerSchema = selectSequencingIndexPrimerSchema.omit({ id: true }).partial()
+const updateSequencingIndexPrimerSchema = insertSequencingIndexPrimerSchema
+
+const selectSequencingIlluminaPrimerSchema = createSelectSchema(sequencingIlluminaPrimers)
+const insertSequencingIlluminaPrimerSchema = selectSequencingIlluminaPrimerSchema.omit({ id: true }).partial()
+const updateSequencingIlluminaPrimerSchema = insertSequencingIlluminaPrimerSchema
+
+const selectPcr1PrimerSchema = createSelectSchema(pcr1Primers)
+const insertPcr1PrimerSchema = selectPcr1PrimerSchema.omit({ id: true }).partial()
+const updatePcr1PrimerSchema = insertPcr1PrimerSchema
 
 const selectSuperblocksSchema = createSelectSchema(superblocks)
 const insertSuperblocksSchema = selectSuperblocksSchema.omit({ id: true, aaSeq: true }).partial()
@@ -123,6 +139,26 @@ export const schemas = freezeSchemas({
         select: selectNexteraIndexPrimerSchema,
         insert: insertNexteraIndexPrimerSchema,
         update: updateNexteraIndexPrimerSchema,
+    },
+    sequencingReadPrimers: {
+        select: selectSequencingReadPrimerSchema,
+        insert: insertSequencingReadPrimerSchema,
+        update: updateSequencingReadPrimerSchema,
+    },
+    sequencingIndexPrimers: {
+        select: selectSequencingIndexPrimerSchema,
+        insert: insertSequencingIndexPrimerSchema,
+        update: updateSequencingIndexPrimerSchema,
+    },
+    sequencingIlluminaPrimers: {
+        select: selectSequencingIlluminaPrimerSchema,
+        insert: insertSequencingIlluminaPrimerSchema,
+        update: updateSequencingIlluminaPrimerSchema,
+    },
+    pcr1Primers: {
+        select: selectPcr1PrimerSchema,
+        insert: insertPcr1PrimerSchema,
+        update: updatePcr1PrimerSchema,
     },
     superblocks: {
         select: selectSuperblocksSchema,

@@ -7,7 +7,7 @@ const DnaIcon = h(Icon, { name: 'mdi:dna', class: 'm-1' })
 const PhGridNineFill = h(Icon, { name: 'ph:grid-nine-fill', class: 'm-1' })
 const TilesIcon = h(Icon, { name: 'fluent-mdl2:tiles', class: 'm-1' })
 const TileVariantsIcon = h(Icon, { name: 'mdi:compare-horizontal', class: 'm-1' })
-const OligosIcon = h(Icon, { name: 'icon-park-outline:comb', class: 'm-1' })
+const PrimersIcon = h(Icon, { name: 'icon-park-outline:comb', class: 'm-1' })
 const BeakerOutlineIcon = h(Icon, { name: 'mdi:beaker-outline', class: 'm-1' })
 const ExperimentIcon = h(Icon, { name: 'icon-park-solid:experiment', class: 'm-1' })
 
@@ -38,12 +38,16 @@ const model = ref([
                 ]
             },
             {
-                label: 'Oligos',
-                iconComponent: OligosIcon,
+                label: 'Primers',
+                iconComponent: PrimersIcon,
                 items: [
-                    { label: 'Retriever Primers', to: '/oligos/primers/retriever-primers' },
-                    { label: 'LABEL-seq Index Primers', to: '/oligos/primers/labelseq-index-primers' },
-                    { label: 'Nextera Index Primers', to: '/oligos/primers/nextera-index-primers' },
+                    { label: 'Retriever Primers', to: '/primers/retriever-primers' },
+                    { label: 'LABEL-seq Index Primers', to: '/primers/labelseq-index-primers' },
+                    { label: 'Nextera Index Primers', to: '/primers/nextera-index-primers' },
+                    { label: 'Sequencing Read Primers', to: '/primers/sequencing-read-primers' },
+                    { label: 'Sequencing Index Primers', to: '/primers/sequencing-index-primers' },
+                    { label: 'Sequencing Illumina Primers', to: '/primers/sequencing-illumina-primers' },
+                    { label: 'PCR 1 Primers', to: '/primers/pcr-1-primers' },
                 ]
             },
             {

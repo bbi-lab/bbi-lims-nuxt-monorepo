@@ -22,7 +22,7 @@ const groups = [
     {
         label: 'Reagents',
         items: [
-            { label: 'Retriever Primers', iconName: 'icon-park-outline:comb', path: '/oligos/primers/retriever-primers',  api: '/api/retriever-primers' },
+            { label: 'Retriever Primers', iconName: 'icon-park-outline:comb', path: '/primers/retriever-primers',  api: '/api/retriever-primers' },
             { label: 'Restriction Enzymes', iconName: 'mdi:molecule', path: '/reagents/restriction-enzymes', api: '/api/restriction-enzymes' },
         ],
     },

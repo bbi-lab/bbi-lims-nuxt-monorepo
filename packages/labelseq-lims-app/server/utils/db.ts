@@ -6,7 +6,7 @@ import { pool, schema as baseSchema } from '../../../lims-layer/server/utils/db'
 // labelseq-lims-app tables
 import { projects } from '#shared/db/schema/project'
 import { superblocks, tiles, tileVariants } from '#shared/db/schema/tiles'
-import { retrieverPrimers } from '#shared/db/schema/primers'
+import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, retrieverPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '#shared/db/schema/primers'
 import { restrictionEnzymes } from '#shared/db/schema/reagents'
 import { viewTilesWithSequences, viewTileVariantsWithSequences, viewTileGblocks } from '#shared/db/schema/views'
 import { plateTypes } from 'lims-layer/shared/db/schema/plateTypes'
@@ -24,6 +24,12 @@ export const appSchema = {
   tiles,
   tileVariants,
   retrieverPrimers,
+  labelseqIndexPrimers,
+  nexteraIndexPrimers,
+  sequencingReadPrimers,
+  sequencingIndexPrimers,
+  sequencingIlluminaPrimers,
+  pcr1Primers,
   restrictionEnzymes,
   viewTilesWithSequences,
   viewTileVariantsWithSequences,

@@ -10,7 +10,7 @@ import { wellables, wellContents, wellContentSources, wells } from 'lims-layer/s
 // labelseq-lims-app tables
 import { projects } from '#shared/db/schema/project'
 import { superblocks, tiles, tileVariants } from '#shared/db/schema/tiles'
-import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '#shared/db/schema/primers'
+import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, retrieverPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '#shared/db/schema/primers'
 import { restrictionEnzymes } from '#shared/db/schema/reagents'
 import { refseqTranscripts } from '#shared/db/schema/transcripts'
 import { pcrExperiments } from '#shared/db/schema/pcrExperiments'
@@ -38,6 +38,10 @@ export const relations = defineRelations({
   retrieverPrimers,
   labelseqIndexPrimers,
   nexteraIndexPrimers,
+  sequencingReadPrimers,
+  sequencingIndexPrimers,
+  sequencingIlluminaPrimers,
+  pcr1Primers,
   restrictionEnzymes,
   refseqTranscripts,
   pcrExperiments,
@@ -105,6 +109,22 @@ export const relations = defineRelations({
     nexteraIndexPrimer: r.one.nexteraIndexPrimers({
       from: r.wellables.id,
       to: r.nexteraIndexPrimers.id,
+    }),
+    sequencingReadPrimer: r.one.sequencingReadPrimers({
+      from: r.wellables.id,
+      to: r.sequencingReadPrimers.id,
+    }),
+    sequencingIndexPrimer: r.one.sequencingIndexPrimers({
+      from: r.wellables.id,
+      to: r.sequencingIndexPrimers.id,
+    }),
+    sequencingIlluminaPrimer: r.one.sequencingIlluminaPrimers({
+      from: r.wellables.id,
+      to: r.sequencingIlluminaPrimers.id,
+    }),
+    pcr1Primer: r.one.pcr1Primers({
+      from: r.wellables.id,
+      to: r.pcr1Primers.id,
     }),
   },
   wellContentSources: {
@@ -202,6 +222,30 @@ export const relations = defineRelations({
   nexteraIndexPrimers: {
     wellable: r.one.wellables({
       from: r.nexteraIndexPrimers.id,
+      to: r.wellables.id,
+    }),
+  },
+  sequencingReadPrimers: {
+    wellable: r.one.wellables({
+      from: r.sequencingReadPrimers.id,
+      to: r.wellables.id,
+    }),
+  },
+  sequencingIndexPrimers: {
+    wellable: r.one.wellables({
+      from: r.sequencingIndexPrimers.id,
+      to: r.wellables.id,
+    }),
+  },
+  sequencingIlluminaPrimers: {
+    wellable: r.one.wellables({
+      from: r.sequencingIlluminaPrimers.id,
+      to: r.wellables.id,
+    }),
+  },
+  pcr1Primers: {
+    wellable: r.one.wellables({
+      from: r.pcr1Primers.id,
       to: r.wellables.id,
     }),
   },
