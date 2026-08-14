@@ -10,6 +10,7 @@ import { restrictionEnzymes } from '../schema/reagents'
 import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '../schema/primers'
 import { superblocks, tiles, tileVariants } from '../schema/tiles'
 import { refseqTranscripts } from '../schema/transcripts'
+import { pcrExperiments } from '../schema/pcrExperiments'
 import { viewTileGblocks } from '../schema/views'
 
 const selectProjectSchema = createSelectSchema(projects)
@@ -69,6 +70,16 @@ const updateRefseqTranscriptsSchema = selectRefseqTranscriptsSchema.omit({ id: t
 }).partial()
 // only allow geneType and notes to be updated directly, other fields are either readonly or auto-populated
 const updateRefseqTranscriptValuesSchema = selectRefseqTranscriptsSchema.pick({geneType: true,notes: true}).partial()
+
+const selectPcrExperimentsSchema = createSelectSchema(pcrExperiments)
+// plateId is omitted: POST /api/pcr-experiments creates the plate and links it.
+// startedOn is optional (defaults to now in the DB); name and pcrType are required.
+const insertPcrExperimentsSchema = selectPcrExperimentsSchema.omit({ id: true, plateId: true }).partial({ startedOn: true })
+// pcrType is fixed once the experiment exists: its plate was created with the matching
+// plate type, so editing it would leave the two inconsistent.
+const updatePcrExperimentsSchema = insertPcrExperimentsSchema.extend({
+    pcrType: selectPcrExperimentsSchema.shape.pcrType.readonly(),
+})
 
 // views (read-only — no insert/update schemas)
 const selectViewTileGblocksSchema = createSelectSchema(viewTileGblocks)
@@ -133,6 +144,11 @@ export const schemas = freezeSchemas({
         insert: insertRefseqTranscriptsSchema,
         update: updateRefseqTranscriptsSchema,
         updateValues: updateRefseqTranscriptValuesSchema,
+    },
+    pcrExperiments: {
+        select: selectPcrExperimentsSchema,
+        insert: insertPcrExperimentsSchema,
+        update: updatePcrExperimentsSchema,
     },
     // views
     viewTileGblocks: {

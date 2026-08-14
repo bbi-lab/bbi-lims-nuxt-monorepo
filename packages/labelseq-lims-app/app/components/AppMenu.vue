@@ -9,6 +9,7 @@ const TilesIcon = h(Icon, { name: 'fluent-mdl2:tiles', class: 'm-1' })
 const TileVariantsIcon = h(Icon, { name: 'mdi:compare-horizontal', class: 'm-1' })
 const OligosIcon = h(Icon, { name: 'icon-park-outline:comb', class: 'm-1' })
 const BeakerOutlineIcon = h(Icon, { name: 'mdi:beaker-outline', class: 'm-1' })
+const ExperimentIcon = h(Icon, { name: 'icon-park-solid:experiment', class: 'm-1' })
 
 const model = ref([
     {
@@ -17,6 +18,7 @@ const model = ref([
             { label: 'Home', icon: 'pi pi-fw pi-home', to: '/' },
             { label: 'Projects', icon: 'pi pi-fw pi-briefcase', to: '/projects' },
             { label: 'Plates', iconComponent: PhGridNineFill, to: '/plates' },
+            { label: 'PCR Experiments', iconComponent: ExperimentIcon, to: '/pcr-experiments' },
             {
                 label: 'Reference',
                 iconComponent: DnaIcon,

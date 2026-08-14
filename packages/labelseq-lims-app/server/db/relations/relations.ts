@@ -13,6 +13,7 @@ import { superblocks, tiles, tileVariants } from '#shared/db/schema/tiles'
 import { labelseqIndexPrimers, nexteraIndexPrimers, retrieverPrimers } from '#shared/db/schema/primers'
 import { restrictionEnzymes } from '#shared/db/schema/reagents'
 import { refseqTranscripts } from '#shared/db/schema/transcripts'
+import { pcrExperiments } from '#shared/db/schema/pcrExperiments'
 import { viewTilesWithSequences, viewTileVariantsWithSequences, viewTileGblocks } from '#shared/db/schema/views'
 
 export const relations = defineRelations({
@@ -39,6 +40,7 @@ export const relations = defineRelations({
   nexteraIndexPrimers,
   restrictionEnzymes,
   refseqTranscripts,
+  pcrExperiments,
 
   // labelseq views
   viewTilesWithSequences,
@@ -201,6 +203,12 @@ export const relations = defineRelations({
     wellable: r.one.wellables({
       from: r.nexteraIndexPrimers.id,
       to: r.wellables.id,
+    }),
+  },
+  pcrExperiments: {
+    plate: r.one.plates({
+      from: r.pcrExperiments.plateId,
+      to: r.plates.id,
     }),
   },
   viewTilesWithSequences: {

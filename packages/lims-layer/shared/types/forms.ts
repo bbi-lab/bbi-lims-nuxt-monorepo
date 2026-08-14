@@ -56,6 +56,9 @@ export interface FormFieldConfig {
     // properties passed to the PrimeVue component as v-bind options
     disabled?: boolean
     readonly?: boolean
+    // Overrides the label shown for each option of an enum field's Select (defaults to the
+    // raw enum value).
+    optionLabel?: string | ((option: any) => string)
     // numeric constraints forwarded to SmartFormInputNumber for number/integer fields
     min?: number
     max?: number

@@ -11,6 +11,7 @@ import { restrictionEnzymes } from '#shared/db/schema/reagents'
 import { viewTilesWithSequences, viewTileVariantsWithSequences, viewTileGblocks } from '#shared/db/schema/views'
 import { plateTypes } from 'lims-layer/shared/db/schema/plateTypes'
 import { refseqTranscripts } from '#shared/db/schema/transcripts'
+import { pcrExperiments } from '#shared/db/schema/pcrExperiments'
 
 import { relations } from '../db/relations/relations'
 
@@ -29,6 +30,7 @@ export const appSchema = {
   viewTileGblocks,
   plateTypes,
   refseqTranscripts,
+  pcrExperiments,
 }
 
 // Named `appDb` / `useAppDrizzle` to avoid auto-import collision with
