@@ -1,4 +1,4 @@
-import { check, pgTable, integer, uuid, varchar } from 'drizzle-orm/pg-core'
+import { check, pgTable, doublePrecision, integer, text, uuid, varchar } from 'drizzle-orm/pg-core'
 import { SQL, sql } from 'drizzle-orm/sql'
 
 export const restrictionEnzymes = pgTable('restriction_enzymes', {
@@ -11,4 +11,16 @@ export const restrictionEnzymes = pgTable('restriction_enzymes', {
     recogSeqPlusOverhangRevComp: varchar('recog_seq_plus_overhang_rev_comp').generatedAlwaysAs((): SQL => sql`reverse(translate(${restrictionEnzymes.recogSeqPlusOverhang}, 'aAcCgGtT', 'tTgGcCaA'))`),
 }, (t) => [
     check("recog_seq_plus_overhang_check", sql`${t.recogSeqPlusOverhang} ~* '^[actgn]*$'`),
+])
+
+export const generalPlasmids = pgTable('general_plasmids', {
+    id: uuid('id').primaryKey().defaultRandom().notNull(),
+    fullName: text('full_name').notNull().unique(),
+    shortName: text('short_name').notNull().unique(),
+    benchlingName: text('benchling_name'),
+    benchlingLink: text('benchling_link'),
+    quant: doublePrecision('quant'),
+    volume: doublePrecision('volume'),
+}, (t) => [
+    check("benchling_link_check", sql`${t.benchlingLink} ~* '^https?://.+$'`),
 ])

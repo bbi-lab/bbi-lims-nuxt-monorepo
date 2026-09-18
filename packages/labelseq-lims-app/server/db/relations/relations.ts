@@ -11,7 +11,7 @@ import { wellables, wellContents, wellContentSources, wells } from 'lims-layer/s
 import { projects } from '#shared/db/schema/project'
 import { superblocks, tiles, tileVariants } from '#shared/db/schema/tiles'
 import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, retrieverPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '#shared/db/schema/primers'
-import { restrictionEnzymes } from '#shared/db/schema/reagents'
+import { generalPlasmids, restrictionEnzymes } from '#shared/db/schema/reagents'
 import { refseqTranscripts } from '#shared/db/schema/transcripts'
 import { pcrExperiments } from '#shared/db/schema/pcrExperiments'
 import { viewTilesWithSequences, viewTileVariantsWithSequences, viewTileGblocks } from '#shared/db/schema/views'
@@ -43,6 +43,7 @@ export const relations = defineRelations({
   sequencingIlluminaPrimers,
   pcr1Primers,
   restrictionEnzymes,
+  generalPlasmids,
   refseqTranscripts,
   pcrExperiments,
 

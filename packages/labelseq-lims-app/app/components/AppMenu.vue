@@ -61,6 +61,7 @@ const model = ref([
                 iconComponent: BeakerOutlineIcon,
                 items: [
                     { label: 'Restriction Enzymes', to: '/reagents/restriction-enzymes' },
+                    { label: 'Plasmids', to: '/reagents/general-plasmids' },
                 ]
             }
         ]

@@ -7,7 +7,7 @@ import { pool, schema as baseSchema } from '../../../lims-layer/server/utils/db'
 import { projects } from '#shared/db/schema/project'
 import { superblocks, tiles, tileVariants } from '#shared/db/schema/tiles'
 import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, retrieverPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '#shared/db/schema/primers'
-import { restrictionEnzymes } from '#shared/db/schema/reagents'
+import { generalPlasmids, restrictionEnzymes } from '#shared/db/schema/reagents'
 import { viewTilesWithSequences, viewTileVariantsWithSequences, viewTileGblocks } from '#shared/db/schema/views'
 import { plateTypes } from 'lims-layer/shared/db/schema/plateTypes'
 import { refseqTranscripts } from '#shared/db/schema/transcripts'
@@ -31,6 +31,7 @@ export const appSchema = {
   sequencingIlluminaPrimers,
   pcr1Primers,
   restrictionEnzymes,
+  generalPlasmids,
   viewTilesWithSequences,
   viewTileVariantsWithSequences,
   viewTileGblocks,

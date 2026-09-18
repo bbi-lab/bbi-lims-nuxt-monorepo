@@ -6,7 +6,7 @@ import { z } from 'zod'
 // Coerced dates are still detected as `date` by the SmartForm field builder.
 const { createSelectSchema } = createSchemaFactory({ coerce: { date: true } })
 import { projects } from '../schema/project'
-import { restrictionEnzymes } from '../schema/reagents'
+import { generalPlasmids, restrictionEnzymes } from '../schema/reagents'
 import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, retrieverPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '../schema/primers'
 import { superblocks, tiles, tileVariants } from '../schema/tiles'
 import { refseqTranscripts } from '../schema/transcripts'
@@ -25,6 +25,13 @@ const insertRestrictionEnzymeSchema = selectRestrictionEnzymeSchema.omit({
     recogSeqPlusOverhangRevComp: true,
 }).partial()
 const updateRestrictionEnzymeSchema = insertRestrictionEnzymeSchema
+
+const selectGeneralPlasmidSchema = createSelectSchema(generalPlasmids)
+// fullName and shortName stay required so the form flags them instead of the insert
+// failing on the NOT NULL columns.
+const insertGeneralPlasmidSchema = selectGeneralPlasmidSchema.omit({ id: true })
+    .partial({ benchlingName: true, benchlingLink: true, quant: true, volume: true })
+const updateGeneralPlasmidSchema = insertGeneralPlasmidSchema
 
 const selectRetrieverPrimerSchema = createSelectSchema(retrieverPrimers)
 const insertRetrieverPrimerSchema = selectRetrieverPrimerSchema.omit({ id: true, seqRevComp: true }).partial()
@@ -124,6 +131,11 @@ export const schemas = freezeSchemas({
         select: selectRestrictionEnzymeSchema,
         insert: insertRestrictionEnzymeSchema,
         update: updateRestrictionEnzymeSchema,
+    },
+    generalPlasmids: {
+        select: selectGeneralPlasmidSchema,
+        insert: insertGeneralPlasmidSchema,
+        update: updateGeneralPlasmidSchema,
     },
     retrieverPrimers: {
         select: selectRetrieverPrimerSchema,
