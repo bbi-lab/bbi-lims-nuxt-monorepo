@@ -18,7 +18,13 @@ const model = ref([
             { label: 'Home', icon: 'pi pi-fw pi-home', to: '/' },
             { label: 'Projects', icon: 'pi pi-fw pi-briefcase', to: '/projects' },
             { label: 'Plates', iconComponent: PhGridNineFill, to: '/plates' },
-            { label: 'PCR Experiments', iconComponent: ExperimentIcon, to: '/pcr-experiments' },
+            {
+                label: 'Experiments',
+                iconComponent: ExperimentIcon,
+                items: [
+                    { label: 'PCR', to: '/pcr-experiments' },
+                ]
+            },
             {
                 label: 'Reference',
                 iconComponent: DnaIcon,

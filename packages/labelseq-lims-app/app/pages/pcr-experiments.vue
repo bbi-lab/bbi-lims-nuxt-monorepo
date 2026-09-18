@@ -50,7 +50,6 @@ const addFieldConfigs: FormFieldConfigs = {
     },
     pcrType: {
         label: 'Type',
-        subtext: 'Sets the plate type: pcr-1-plate, pcr-2-plate or pcr-rt-plate.',
         optionLabel: (option: any) => pcrTypeLabel(option.name),
     },
     startedOn: {
