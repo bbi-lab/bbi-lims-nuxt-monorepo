@@ -10,7 +10,7 @@ import { wellables, wellContents, wellContentSources, wells } from 'lims-layer/s
 // labelseq-lims-app tables
 import { projects } from '#shared/db/schema/project'
 import { superblocks, tiles, tileVariants } from '#shared/db/schema/tiles'
-import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, retrieverPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '#shared/db/schema/primers'
+import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, pcr2Primers, retrieverPrimers, rtPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '#shared/db/schema/primers'
 import { generalPlasmids, restrictionEnzymes } from '#shared/db/schema/reagents'
 import { refseqTranscripts } from '#shared/db/schema/transcripts'
 import { pcrExperiments } from '#shared/db/schema/pcrExperiments'
@@ -42,6 +42,8 @@ export const relations = defineRelations({
   sequencingIndexPrimers,
   sequencingIlluminaPrimers,
   pcr1Primers,
+  pcr2Primers,
+  rtPrimers,
   restrictionEnzymes,
   generalPlasmids,
   refseqTranscripts,
@@ -126,6 +128,14 @@ export const relations = defineRelations({
     pcr1Primer: r.one.pcr1Primers({
       from: r.wellables.id,
       to: r.pcr1Primers.id,
+    }),
+    pcr2Primer: r.one.pcr2Primers({
+      from: r.wellables.id,
+      to: r.pcr2Primers.id,
+    }),
+    rtPrimer: r.one.rtPrimers({
+      from: r.wellables.id,
+      to: r.rtPrimers.id,
     }),
   },
   wellContentSources: {
@@ -247,6 +257,18 @@ export const relations = defineRelations({
   pcr1Primers: {
     wellable: r.one.wellables({
       from: r.pcr1Primers.id,
+      to: r.wellables.id,
+    }),
+  },
+  pcr2Primers: {
+    wellable: r.one.wellables({
+      from: r.pcr2Primers.id,
+      to: r.wellables.id,
+    }),
+  },
+  rtPrimers: {
+    wellable: r.one.wellables({
+      from: r.rtPrimers.id,
       to: r.wellables.id,
     }),
   },

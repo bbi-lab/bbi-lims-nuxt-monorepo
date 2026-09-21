@@ -17,9 +17,14 @@ watch(() => route.query, async (newValue, oldValue) => {
 
 const columnDefs: ColumnDefinitions = {
     name: { index: 0 },
-    direction: { index: 1 },
-    seq: { index: 2 },
-    seqRevComp: { header: 'Rev Comp Seq', index: 3 },
+    referenceId: { index: 1 },
+    direction: { index: 2 },
+    seq: { index: 3 },
+    seqRevComp: { header: 'Rev Comp Seq', index: 4 },
+}
+
+const fieldConfigs: FormFieldConfigs = {
+    notes: { inputType: 'textarea' },
 }
 </script>
 <template>
@@ -48,6 +53,7 @@ const columnDefs: ColumnDefinitions = {
                 submitUrl="/api/retriever-primers"
                 submitMethod="POST"
                 :zodSchema="schemas.retrieverPrimers.insert"
+                :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
                 @record-add="crudTable.didAddRecord"
@@ -59,6 +65,7 @@ const columnDefs: ColumnDefinitions = {
                 submitUrl="/api/retriever-primers"
                 submitMethod="PUT"
                 :zodSchema="schemas.retrieverPrimers.update"
+                :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
@@ -72,6 +79,7 @@ const columnDefs: ColumnDefinitions = {
                 submitUrl="/api/retriever-primers"
                 submitMethod="PUT"
                 :zodSchema="schemas.retrieverPrimers.update"
+                :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelMultipleEditForm"
                 @records-update="crudTable.didUpdateMultipleRecords"

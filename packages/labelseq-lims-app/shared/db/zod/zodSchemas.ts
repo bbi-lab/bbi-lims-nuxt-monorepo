@@ -7,7 +7,7 @@ import { z } from 'zod'
 const { createSelectSchema } = createSchemaFactory({ coerce: { date: true } })
 import { projects } from '../schema/project'
 import { generalPlasmids, restrictionEnzymes } from '../schema/reagents'
-import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, retrieverPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '../schema/primers'
+import { labelseqIndexPrimers, nexteraIndexPrimers, pcr1Primers, pcr2Primers, retrieverPrimers, rtPrimers, sequencingIlluminaPrimers, sequencingIndexPrimers, sequencingReadPrimers } from '../schema/primers'
 import { superblocks, tiles, tileVariants } from '../schema/tiles'
 import { refseqTranscripts } from '../schema/transcripts'
 import { pcrExperiments } from '../schema/pcrExperiments'
@@ -66,6 +66,14 @@ const updateSequencingIlluminaPrimerSchema = insertSequencingIlluminaPrimerSchem
 const selectPcr1PrimerSchema = createSelectSchema(pcr1Primers)
 const insertPcr1PrimerSchema = selectPcr1PrimerSchema.omit({ id: true }).partial()
 const updatePcr1PrimerSchema = insertPcr1PrimerSchema
+
+const selectPcr2PrimerSchema = createSelectSchema(pcr2Primers)
+const insertPcr2PrimerSchema = selectPcr2PrimerSchema.omit({ id: true }).partial()
+const updatePcr2PrimerSchema = insertPcr2PrimerSchema
+
+const selectRtPrimerSchema = createSelectSchema(rtPrimers)
+const insertRtPrimerSchema = selectRtPrimerSchema.omit({ id: true }).partial()
+const updateRtPrimerSchema = insertRtPrimerSchema
 
 const selectSuperblocksSchema = createSelectSchema(superblocks)
 const insertSuperblocksSchema = selectSuperblocksSchema.omit({ id: true, aaSeq: true }).partial()
@@ -171,6 +179,16 @@ export const schemas = freezeSchemas({
         select: selectPcr1PrimerSchema,
         insert: insertPcr1PrimerSchema,
         update: updatePcr1PrimerSchema,
+    },
+    pcr2Primers: {
+        select: selectPcr2PrimerSchema,
+        insert: insertPcr2PrimerSchema,
+        update: updatePcr2PrimerSchema,
+    },
+    rtPrimers: {
+        select: selectRtPrimerSchema,
+        insert: insertRtPrimerSchema,
+        update: updateRtPrimerSchema,
     },
     superblocks: {
         select: selectSuperblocksSchema,

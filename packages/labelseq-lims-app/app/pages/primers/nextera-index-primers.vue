@@ -30,6 +30,10 @@ const columnDefs: ColumnDefinitions = {
         path: 'fullSequence.displayValue',
     }
 }
+
+const fieldConfigs: FormFieldConfigs = {
+    notes: { inputType: 'textarea' },
+}
 </script>
 <template>
     <Splitter class="h-full overflow-y-hidden">
@@ -57,6 +61,7 @@ const columnDefs: ColumnDefinitions = {
                 submitUrl="/api/nextera-index-primers"
                 submitMethod="POST"
                 :zodSchema="schemas.nexteraIndexPrimers.insert"
+                :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
                 @record-add="crudTable.didAddRecord"
@@ -68,6 +73,7 @@ const columnDefs: ColumnDefinitions = {
                 submitUrl="/api/nextera-index-primers"
                 submitMethod="PUT"
                 :zodSchema="schemas.nexteraIndexPrimers.update"
+                :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
@@ -81,6 +87,7 @@ const columnDefs: ColumnDefinitions = {
                 submitUrl="/api/nextera-index-primers"
                 submitMethod="PUT"
                 :zodSchema="schemas.nexteraIndexPrimers.update"
+                :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelMultipleEditForm"
                 @records-update="crudTable.didUpdateMultipleRecords"

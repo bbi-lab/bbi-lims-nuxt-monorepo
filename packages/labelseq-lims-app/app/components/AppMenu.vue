@@ -54,6 +54,8 @@ const model = ref([
                     { label: 'Sequencing Index Primers', to: '/primers/sequencing-index-primers' },
                     { label: 'Sequencing Illumina Primers', to: '/primers/sequencing-illumina-primers' },
                     { label: 'PCR 1 Primers', to: '/primers/pcr-1-primers' },
+                    { label: 'PCR 2 Primers', to: '/primers/pcr-2-primers' },
+                    { label: 'RT Primers', to: '/primers/rt-primers' },
                 ]
             },
             {

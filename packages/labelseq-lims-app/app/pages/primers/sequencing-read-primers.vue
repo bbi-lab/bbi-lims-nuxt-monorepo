@@ -17,8 +17,13 @@ watch(() => route.query, async (newValue, oldValue) => {
 
 const columnDefs: ColumnDefinitions = {
     name: { index: 0 },
-    direction: { index: 1 },
-    seq: { header: 'Sequence', index: 2 },
+    referenceId: { index: 1 },
+    direction: { index: 2 },
+    seq: { header: 'Sequence', index: 3 },
+}
+
+const fieldConfigs: FormFieldConfigs = {
+    notes: { inputType: 'textarea' },
 }
 </script>
 <template>
@@ -47,6 +52,7 @@ const columnDefs: ColumnDefinitions = {
                 submitUrl="/api/sequencing-read-primers"
                 submitMethod="POST"
                 :zodSchema="schemas.sequencingReadPrimers.insert"
+                :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
                 @record-add="crudTable.didAddRecord"
@@ -58,6 +64,7 @@ const columnDefs: ColumnDefinitions = {
                 submitUrl="/api/sequencing-read-primers"
                 submitMethod="PUT"
                 :zodSchema="schemas.sequencingReadPrimers.update"
+                :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
                 @cancel="crudTable.didClickCancelEditForm"
@@ -71,6 +78,7 @@ const columnDefs: ColumnDefinitions = {
                 submitUrl="/api/sequencing-read-primers"
                 submitMethod="PUT"
                 :zodSchema="schemas.sequencingReadPrimers.update"
+                :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelMultipleEditForm"
                 @records-update="crudTable.didUpdateMultipleRecords"

@@ -32,9 +32,9 @@ const fieldConfigs: FormFieldConfigs = {
             <SmartTable
                 :key="tableKey"
                 :ref="crudTable.setTableRef"
-                table-name="pcr-1-primers"
-                :zodSchema="schemas.pcr1Primers.select"
-                title="PCR 1 Primers"
+                table-name="pcr-2-primers"
+                :zodSchema="schemas.pcr2Primers.select"
+                title="PCR 2 Primers"
                 :selection-disabled="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm"
                 :column-defs="columnDefs"
                 :where="whereClauses"
@@ -49,9 +49,9 @@ const fieldConfigs: FormFieldConfigs = {
         <SplitterPanel v-if="crudTable.state.showAddForm || crudTable.state.showEditForm || crudTable.state.showMultipleEditForm">
             <RecordsSmartForm
                 v-if="crudTable.state.showAddForm"
-                submitUrl="/api/pcr-1-primers"
+                submitUrl="/api/pcr-2-primers"
                 submitMethod="POST"
-                :zodSchema="schemas.pcr1Primers.insert"
+                :zodSchema="schemas.pcr2Primers.insert"
                 :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelAddForm"
@@ -59,11 +59,11 @@ const fieldConfigs: FormFieldConfigs = {
             />
             <RecordsSmartForm
                 v-if="crudTable.state.editingRecordId && crudTable.state.showEditForm"
-                selectUrl="/api/pcr-1-primers"
+                selectUrl="/api/pcr-2-primers"
                 :recordIds="[crudTable.state.editingRecordId]"
-                submitUrl="/api/pcr-1-primers"
+                submitUrl="/api/pcr-2-primers"
                 submitMethod="PUT"
-                :zodSchema="schemas.pcr1Primers.update"
+                :zodSchema="schemas.pcr2Primers.update"
                 :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 :canDelete="true"
@@ -73,11 +73,11 @@ const fieldConfigs: FormFieldConfigs = {
             />
             <RecordsSmartForm
                 v-if="crudTable.state.showMultipleEditForm && crudTable.state.editingMultipleRecordsIds.length > 0"
-                selectUrl="/api/pcr-1-primers"
+                selectUrl="/api/pcr-2-primers"
                 :recordIds="crudTable.state.editingMultipleRecordsIds"
-                submitUrl="/api/pcr-1-primers"
+                submitUrl="/api/pcr-2-primers"
                 submitMethod="PUT"
-                :zodSchema="schemas.pcr1Primers.update"
+                :zodSchema="schemas.pcr2Primers.update"
                 :fieldConfigs="fieldConfigs"
                 :readonlyValues="readonlyValues"
                 @cancel="crudTable.didClickCancelMultipleEditForm"
