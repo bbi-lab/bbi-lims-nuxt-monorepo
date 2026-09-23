@@ -14,16 +14,36 @@ const groups = [
             ],
     },
     {
+        label: 'Experiments',
+        items: [
+            { label: 'PCR Experiments', iconName: 'icon-park-solid:experiment', path: '/pcr-experiments',             api: '/api/pcr-experiments' },
+        ],
+    },
+    {
         label: 'Storage',
         items: [
             { label: 'Plates',      iconName: 'ph:grid-nine-fill', path: '/plates',                               api: '/api/plates' },
         ],
     },
     {
-        label: 'Reagents',
+        label: 'Primers',
         items: [
             { label: 'Retriever Primers', iconName: 'icon-park-outline:comb', path: '/primers/retriever-primers',  api: '/api/retriever-primers' },
+            { label: 'LABEL-seq Index Primers', iconName: 'icon-park-outline:comb', path: '/primers/labelseq-index-primers', api: '/api/labelseq-index-primers' },
+            { label: 'Nextera Index Primers', iconName: 'icon-park-outline:comb', path: '/primers/nextera-index-primers', api: '/api/nextera-index-primers' },
+            { label: 'Sequencing Read Primers', iconName: 'icon-park-outline:comb', path: '/primers/sequencing-read-primers', api: '/api/sequencing-read-primers' },
+            { label: 'Sequencing Index Primers', iconName: 'icon-park-outline:comb', path: '/primers/sequencing-index-primers', api: '/api/sequencing-index-primers' },
+            { label: 'Sequencing Illumina Primers', iconName: 'icon-park-outline:comb', path: '/primers/sequencing-illumina-primers', api: '/api/sequencing-illumina-primers' },
+            { label: 'PCR 1 Primers', iconName: 'icon-park-outline:comb', path: '/primers/pcr-1-primers',          api: '/api/pcr-1-primers' },
+            { label: 'PCR 2 Primers', iconName: 'icon-park-outline:comb', path: '/primers/pcr-2-primers',          api: '/api/pcr-2-primers' },
+            { label: 'RT Primers',    iconName: 'icon-park-outline:comb', path: '/primers/rt-primers',             api: '/api/rt-primers' },
+        ],
+    },
+    {
+        label: 'Reagents',
+        items: [
             { label: 'Restriction Enzymes', iconName: 'mdi:molecule', path: '/reagents/restriction-enzymes', api: '/api/restriction-enzymes' },
+            { label: 'Plasmids',    icon: 'pi pi-fw pi-spinner',   path: '/reagents/general-plasmids',            api: '/api/general-plasmids' },
         ],
     },
     {
