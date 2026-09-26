@@ -5,9 +5,13 @@ import { pcrExperiments } from '#shared/db/schema/pcrExperiments'
 // Each PCR type runs on its own plate type. The plate rows must exist in `plate_types`
 // (plates.plate_type is an FK) — see the add_pcr_experiments migration.
 const PLATE_TYPES_BY_PCR_TYPE = {
-    'pcr-1': 'pcr-1-plate',
-    'pcr-2': 'pcr-2-plate',
-    'pcr-rt': 'pcr-rt-plate',
+    'tile-oligo-pcr-1': 'tile-oligo-pcr-1-plate',
+    'tile-oligo-pcr-2': 'tile-oligo-pcr-2-plate',
+    'plasmid-barcode-pcr-1': 'plasmid-barcode-pcr-1-plate',
+    'plasmid-barcode-pcr-2': 'plasmid-barcode-pcr-2-plate',
+    'rt-pcr': 'rt-pcr-plate',
+    'post-rt-pcr-1': 'post-rt-pcr-1-plate',
+    'post-rt-pcr-2': 'post-rt-pcr-2-plate',
 } as const
 
 export default defineEventHandler(async (event) => {

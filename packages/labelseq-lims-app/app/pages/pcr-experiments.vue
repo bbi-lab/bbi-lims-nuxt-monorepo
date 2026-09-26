@@ -8,8 +8,18 @@ const crudTable = useCrudTable()
 
 const definedRoutes = router.getRoutes()
 
-// Stored kebab-case ('pcr-1') is shown to the user as 'PCR 1'.
-const pcrTypeLabel = (value: unknown) => _.upperCase(_.toString(value))
+// Casing here is the lab's own, so the stored kebab-case values map to it explicitly.
+// Values outside the map (retired PCR types still on old records) fall back to upper case.
+const PCR_TYPE_LABELS: Record<string, string> = {
+    'tile-oligo-pcr-1': 'tile oligo PCR 1',
+    'tile-oligo-pcr-2': 'tile oligo PCR 2',
+    'plasmid-barcode-pcr-1': 'plasmid barcode PCR 1',
+    'plasmid-barcode-pcr-2': 'plasmid barcode PCR 2',
+    'rt-pcr': 'RT PCR',
+    'post-rt-pcr-1': 'post-RT PCR 1',
+    'post-rt-pcr-2': 'post-RT PCR 2',
+}
+const pcrTypeLabel = (value: unknown) => PCR_TYPE_LABELS[_.toString(value)] ?? _.upperCase(_.toString(value))
 
 const columnDefs: ColumnDefinitions = {
     name: { index: 0 },
